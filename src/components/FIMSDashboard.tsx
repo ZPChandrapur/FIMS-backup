@@ -979,11 +979,15 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                           {inspection.inspection_number}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-900 hover:text-blue-700 transition-colors duration-200">
-                        <div>
-                          <div className="font-medium">{inspection.location_name}</div>
+                      <td className="px-6 py-4 text-sm font-bold text-blue-900 hover:text-blue-700 transition-colors duration-200">
+                        <div className="max-w-xs">
+                          <div className="font-medium truncate" title={inspection.location_name}>
+                            {inspection.location_name}
+                          </div>
                           {inspection.address && (
-                            <div className="text-xs text-gray-500">{inspection.address}</div>
+                            <div className="text-xs text-gray-500 truncate" title={inspection.address}>
+                              {inspection.address}
+                            </div>
                           )}
                         </div>
                       </td>
@@ -1131,9 +1135,11 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                   </div>
                   
                   <div className="text-sm text-gray-600 mb-1">
-                    <div className="font-medium">{inspection.location_name}</div>
+                    <div className="font-medium truncate">{inspection.location_name}</div>
                     {inspection.address && (
-                      <div className="text-xs text-gray-500 mt-1">{inspection.address}</div>
+                      <div className="text-xs text-gray-500 mt-1 truncate" title={inspection.address}>
+                        {inspection.address}
+                      </div>
                     )}
                   </div>
                   
