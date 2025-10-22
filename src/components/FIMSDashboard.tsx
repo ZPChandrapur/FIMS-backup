@@ -29,7 +29,9 @@ import {
   Home,
   PieChart,
   Globe,
-  Check
+  Check,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import {
   fetchInspectionStats,
@@ -153,6 +155,23 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
       fetchAllData();
     }
   }, [isLoadingRole, userRole]);
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (showPhotoModal && viewingPhotos.length > 0) {
+        if (e.key === 'ArrowLeft' && selectedPhotoIndex > 0) {
+          setSelectedPhotoIndex(selectedPhotoIndex - 1);
+        } else if (e.key === 'ArrowRight' && selectedPhotoIndex < viewingPhotos.length - 1) {
+          setSelectedPhotoIndex(selectedPhotoIndex + 1);
+        } else if (e.key === 'Escape') {
+          setShowPhotoModal(false);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [showPhotoModal, selectedPhotoIndex, viewingPhotos.length]);
 
   const viewingInspection = editingInspection?.mode === 'view';
 
@@ -1355,49 +1374,93 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
 
       {/* Photo Modal */}
       {showPhotoModal && viewingPhotos.length > 0 && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-          <div className="max-w-4xl max-h-[90vh] bg-white rounded-lg overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Photo {selectedPhotoIndex + 1} of {viewingPhotos.length}
-              </h3>
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
+          <div className="max-w-5xl w-full max-h-[95vh] bg-white rounded-lg overflow-hidden shadow-2xl">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {t('fims.inspectionPhotos', 'Inspection Photos')} ({selectedPhotoIndex + 1}/{viewingPhotos.length})
+                </h3>
+                {viewingPhotos[selectedPhotoIndex]?.photo_name && (
+                  <p className="text-sm text-gray-600 mt-1">
+                    {viewingPhotos[selectedPhotoIndex]?.photo_name}
+                  </p>
+                )}
+              </div>
               <button
                 onClick={() => setShowPhotoModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-200 rounded-full transition-colors"
+                title="Close (ESC)"
               >
-                <X className="h-5 w-5" />
+                <X className="h-6 w-6" />
               </button>
             </div>
-            
-            <div className="p-4">
+
+            <div className="relative bg-gray-100">
               <img
                 src={viewingPhotos[selectedPhotoIndex]?.photo_url}
                 alt={viewingPhotos[selectedPhotoIndex]?.photo_name || 'Inspection photo'}
-                className="max-w-full max-h-[70vh] object-contain mx-auto"
+                className="w-full max-h-[calc(95vh-200px)] object-contain mx-auto"
               />
-              
-              <div className="mt-4 text-center">
-                <p className="text-sm text-gray-600">
+
+              {/* Navigation Arrows on Image */}
+              {selectedPhotoIndex > 0 && (
+                <button
+                  onClick={() => setSelectedPhotoIndex(selectedPhotoIndex - 1)}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-3 rounded-full transition-all"
+                  title="Previous (←)"
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                </button>
+              )}
+
+              {selectedPhotoIndex < viewingPhotos.length - 1 && (
+                <button
+                  onClick={() => setSelectedPhotoIndex(selectedPhotoIndex + 1)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-3 rounded-full transition-all"
+                  title="Next (→)"
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </button>
+              )}
+            </div>
+
+            <div className="p-4 bg-white border-t border-gray-200">
+              {viewingPhotos[selectedPhotoIndex]?.description && (
+                <p className="text-sm text-gray-700 mb-3 text-center">
                   {viewingPhotos[selectedPhotoIndex]?.description}
                 </p>
-              </div>
-              
-              <div className="flex items-center justify-center space-x-4 mt-4">
+              )}
+
+              <div className="flex items-center justify-center space-x-3">
                 <button
                   onClick={() => setSelectedPhotoIndex(Math.max(0, selectedPhotoIndex - 1))}
                   disabled={selectedPhotoIndex === 0}
-                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg disabled:opacity-50"
+                  className="flex items-center space-x-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-gray-300 transition-colors font-medium"
                 >
-                  Previous
+                  <ChevronLeft className="h-5 w-5" />
+                  <span>{t('fims.previous', 'Previous')}</span>
                 </button>
+
+                <div className="px-4 py-2 bg-gray-100 rounded-lg">
+                  <span className="text-sm font-semibold text-gray-700">
+                    {selectedPhotoIndex + 1} / {viewingPhotos.length}
+                  </span>
+                </div>
+
                 <button
                   onClick={() => setSelectedPhotoIndex(Math.min(viewingPhotos.length - 1, selectedPhotoIndex + 1))}
                   disabled={selectedPhotoIndex === viewingPhotos.length - 1}
-                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg disabled:opacity-50"
+                  className="flex items-center space-x-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-gray-300 transition-colors font-medium"
                 >
-                  Next
+                  <span>{t('fims.next', 'Next')}</span>
+                  <ChevronRight className="h-5 w-5" />
                 </button>
               </div>
+
+              <p className="text-xs text-gray-500 text-center mt-3">
+                {t('fims.useArrowKeys', 'Use arrow keys (← →) to navigate, ESC to close')}
+              </p>
             </div>
           </div>
         </div>

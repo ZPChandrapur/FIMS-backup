@@ -550,7 +550,11 @@
     "uploadingPhotos": "Uploading photos...",
     "noPhotosFound": "No photos found",
     "maxPhotosAllowed": "Maximum 5 photos allowed",
-    "selectcategory" :"select Category"
+    "selectcategory" :"select Category",
+    "inspectionPhotos": "Inspection Photos",
+    "previous": "Previous",
+    "next": "Next",
+    "useArrowKeys": "Use arrow keys (← →) to navigate, ESC to close"
   },
   "statuses": {
     "planned": "Planned",
