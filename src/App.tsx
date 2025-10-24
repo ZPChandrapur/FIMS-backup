@@ -24,26 +24,31 @@ function App() {
         const { data: { user } } = await supabase.auth.getUser();
 
         if (user) {
-          // Check if user has FIMS access permission
-          const { data: permissionData, error: permissionError } = await supabase
+          // Step 1: Get user's role_id from user_roles
+          const { data: userRoleData } = await supabase
             .from('user_roles')
-            .select(`
-              role_id,
-              roles!inner(
-                id,
-                name
-              ),
-              application_permissions!inner(
-                application_name,
-                can_read
-              )
-            `)
+            .select('role_id')
             .eq('user_id', user.id)
-            .eq('application_permissions.application_name', 'fims')
             .maybeSingle();
 
-          // If no permission record or no read access, sign out
-          if (!permissionData || permissionData.application_permissions?.can_read !== true) {
+          if (userRoleData) {
+            // Step 2: Check FIMS permission for this role_id
+            const { data: permissionData } = await supabase
+              .from('application_permissions')
+              .select('can_read')
+              .eq('role_id', userRoleData.role_id)
+              .eq('application_name', 'fims')
+              .maybeSingle();
+
+            // If no permission record or no read access, sign out
+            if (!permissionData || !permissionData.can_read) {
+              await supabase.auth.signOut();
+              setUser(null);
+              setIsLoading(false);
+              return;
+            }
+          } else {
+            // No user role found, sign out
             await supabase.auth.signOut();
             setUser(null);
             setIsLoading(false);
