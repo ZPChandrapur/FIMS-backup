@@ -74,8 +74,8 @@ export const getInspections = async (userId?: string, userRole?: string): Promis
       `)
       .order('created_at', { ascending: false });
 
-    // Developer role can see all inspections, others only see their own
-    if (userId && userRole !== 'developer') {
+    // super_admin and developer can see all inspections, others only see their own
+    if (userId && userRole !== 'developer' && userRole !== 'super_admin') {
       query = query.eq('inspector_id', userId);
     }
 

@@ -14,6 +14,7 @@ export interface UserPermission {
 export interface UserProfile {
   name: string | null;
   role_name: string | null;
+  role_description: string | null;
   email: string | null;
   phone_number: string | null;
 }
@@ -54,7 +55,7 @@ export const usePermissions = (user: User | null): PermissionCheck => {
             name,
             phone_number,
             role_id,
-            roles!inner(name)
+            roles!inner(name, description)
           `)
           .eq('user_id', user.id);
 
@@ -66,7 +67,8 @@ export const usePermissions = (user: User | null): PermissionCheck => {
         // Get role IDs for permission lookup
         const roleIds = userRolesData?.map(ur => ur.role_id) || [];
         const primaryRole = userRolesData?.[0]?.roles?.name || null;
-        
+        const roleDescription = userRolesData?.[0]?.roles?.description || null;
+
         setUserRole(primaryRole);
 
         // Fetch permissions for user's roles
@@ -107,6 +109,7 @@ export const usePermissions = (user: User | null): PermissionCheck => {
         setUserProfile({
           name: primaryUserRole?.name || null,
           role_name: primaryRole,
+          role_description: roleDescription,
           email: user.email || null,
           phone_number: primaryUserRole?.phone_number || null
         });
@@ -118,6 +121,7 @@ export const usePermissions = (user: User | null): PermissionCheck => {
         setUserProfile({
           name: null,
           role_name: null,
+          role_description: null,
           email: user?.email || null,
           phone_number: null
         });

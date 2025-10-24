@@ -104,7 +104,7 @@ interface InspectionPhoto {
 
 export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut }) => {
   const { t, i18n } = useTranslation();
-  const { userRole, isLoading: isLoadingRole } = usePermissions(user);
+  const { userRole, userProfile, isLoading: isLoadingRole } = usePermissions(user);
   const [activeTab, setActiveTab] = useState('dashboard');
 
   // Get translation function
@@ -532,10 +532,10 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                   </div>
                   <div>
                     <div className="font-medium text-gray-900 text-sm">
-                      {user.email?.split('@')[0]}
+                      {userProfile?.name || user.email?.split('@')[0]}
                     </div>
                     <div className="text-xs text-gray-500">
-                      Field Inspector
+                      {userProfile?.role_name || 'User'}
                     </div>
                   </div>
                 </div>
@@ -1316,13 +1316,18 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                         <div className="bg-purple-100 p-2 rounded-full">
                           <User className="h-5 w-5 text-purple-600" />
                         </div>
-                        <div>
-                          <div className="font-medium text-gray-900">
-                            {user.email?.split('@')[0]}
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-gray-900 truncate">
+                            {userProfile?.name || user.email?.split('@')[0]}
                           </div>
                           <div className="text-sm text-gray-500">
-                            Field Inspector
+                            {userProfile?.role_name || 'User'}
                           </div>
+                          {userProfile?.role_description && (
+                            <div className="text-xs text-gray-400 mt-1">
+                              {userProfile.role_description}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

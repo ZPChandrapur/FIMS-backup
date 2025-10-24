@@ -25,7 +25,7 @@ export const SignInForm: React.FC<SignInFormProps> = ({ onSignInSuccess }) => {
 const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
     // Basic validation
     if (!email || !password) {
       setError(t('auth.fillAllFields'));
@@ -58,7 +58,41 @@ const handleSignIn = async (e: React.FormEvent) => {
 
       if (signInError) {
         setError(signInError.message);
-      } else if (data.user) {
+        setIsLoading(false);
+        return;
+      }
+
+      if (data.user) {
+        // Step 2: Get user's role_id from user_roles table
+        const { data: userRoleData, error: userRoleError } = await supabase
+          .from('user_roles')
+          .select('role_id')
+          .eq('user_id', data.user.id)
+          .maybeSingle();
+
+        if (userRoleError || !userRoleData) {
+          await supabase.auth.signOut();
+          setError('User role not found. Please contact administrator.');
+          setIsLoading(false);
+          return;
+        }
+
+        // Step 3: Check if role has access to FIMS application
+        const { data: permissionData, error: permissionError } = await supabase
+          .from('application_permissions')
+          .select('can_read')
+          .eq('role_id', userRoleData.role_id)
+          .eq('application_name', 'fims')
+          .maybeSingle();
+
+        if (permissionError || !permissionData || !permissionData.can_read) {
+          await supabase.auth.signOut();
+          setError('You do not have access to FIMS application. Please contact administrator.');
+          setIsLoading(false);
+          return;
+        }
+
+        // All checks passed, proceed with sign in
         onSignInSuccess();
       }
     } catch (err) {
