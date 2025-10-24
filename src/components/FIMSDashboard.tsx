@@ -104,10 +104,13 @@ interface InspectionPhoto {
 
 export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut }) => {
   const { t, i18n } = useTranslation();
-  const { userRole, isLoading: isLoadingRole } = usePermissions(user);
+  const { userRole, isLoading: isLoadingRole, hasAccess } = usePermissions(user);
   const [activeTab, setActiveTab] = useState('dashboard');
 
-  // Get translation function
+  // Check if user is admin (super_admin or developer)
+  const isAdmin = userRole === 'super_admin' || userRole === 'developer';
+  const canDelete = hasAccess('fims', 'delete');
+  const canAdmin = hasAccess('fims', 'admin');
 
   const [isLoading, setIsLoading] = useState(false);
   const [inspections, setInspections] = useState<InspectionData[]>([]);
@@ -1053,21 +1056,23 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                             <Edit className="h-4 w-4" />
                             <span className="text-xs font-medium">Edit</span>
                           </button>
-                          <button
-                            onClick={() => handleDeleteInspection(inspection.id)}
-                            className="
-                              bg-gradient-to-r from-red-500 to-red-600 
-                              hover:from-red-600 hover:to-red-700
-                              text-white px-3 py-1 rounded-lg shadow-md
-                              hover:shadow-lg hover:scale-105 
-                              transition-all duration-200
-                              flex items-center space-x-1
-                            "
-                            title="Delete Inspection"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                            <span className="text-xs font-medium">Delete</span>
-                          </button>
+                          {canDelete && (
+                            <button
+                              onClick={() => handleDeleteInspection(inspection.id)}
+                              className="
+                                bg-gradient-to-r from-red-500 to-red-600
+                                hover:from-red-600 hover:to-red-700
+                                text-white px-3 py-1 rounded-lg shadow-md
+                                hover:shadow-lg hover:scale-105
+                                transition-all duration-200
+                                flex items-center space-x-1
+                              "
+                              title="Delete Inspection"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              <span className="text-xs font-medium">Delete</span>
+                            </button>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -1088,13 +1093,15 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                           >
                             Complete
                           </button>
-                          <button
-                            onClick={() => handleRevisitInspection(inspection.id)}
-                            className="px-2 py-1 text-xs bg-orange-100 text-orange-700 hover:bg-orange-200 rounded"
-                            title="Revisit"
-                          >
-                            Revisit
-                          </button>
+                          {isAdmin && (
+                            <button
+                              onClick={() => handleRevisitInspection(inspection.id)}
+                              className="px-2 py-1 text-xs bg-orange-100 text-orange-700 hover:bg-orange-200 rounded"
+                              title="Revisit"
+                            >
+                              Revisit
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -1189,12 +1196,14 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                       >
                         Complete
                       </button>
-                      <button
-                        onClick={() => handleRevisitInspection(inspection.id)}
-                        className="px-2 py-1 text-xs bg-orange-100 text-orange-700 hover:bg-orange-200 rounded"
-                      >
-                        Revisit
-                      </button>
+                      {isAdmin && (
+                        <button
+                          onClick={() => handleRevisitInspection(inspection.id)}
+                          className="px-2 py-1 text-xs bg-orange-100 text-orange-700 hover:bg-orange-200 rounded"
+                        >
+                          Revisit
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
