@@ -112,6 +112,27 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
   const canDelete = hasAccess('fims', 'delete');
   const canAdmin = hasAccess('fims', 'admin');
 
+  // Get display name for role
+  const getRoleDisplayName = (role: string | null): string => {
+    if (!role) return 'User';
+    switch (role) {
+      case 'developer':
+        return 'Developer';
+      case 'super_admin':
+        return 'Super Admin';
+      case 'inspector':
+        return 'Field Inspector';
+      case 'admin':
+        return 'Administrator';
+      case 'officer':
+        return 'Officer';
+      case 'clerk':
+        return 'Clerk';
+      default:
+        return role.charAt(0).toUpperCase() + role.slice(1);
+    }
+  };
+
   const [isLoading, setIsLoading] = useState(false);
   const [inspections, setInspections] = useState<InspectionData[]>([]);
   const [categories, setCategories] = useState<CategoryData[]>([]);
@@ -269,9 +290,9 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
           name,
           roles!inner(name)
         `)
-        .in('roles.name', ['inspector', 'officer', 'admin','developer'])
+        .eq('roles.name', 'inspector')
         .not('name', 'is', null);
-      
+
       if (error) throw error;
       setAvailableInspectors(data || []);
     } catch (error) {
@@ -538,7 +559,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                       {user.email?.split('@')[0]}
                     </div>
                     <div className="text-xs text-gray-500">
-                      Field Inspector
+                      {getRoleDisplayName(userRole)}
                     </div>
                   </div>
                 </div>
@@ -1330,7 +1351,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                             {user.email?.split('@')[0]}
                           </div>
                           <div className="text-sm text-gray-500">
-                            Field Inspector
+                            {getRoleDisplayName(userRole)}
                           </div>
                         </div>
                       </div>
