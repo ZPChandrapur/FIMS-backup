@@ -22,6 +22,35 @@ function App() {
 
       try {
         const { data: { user } } = await supabase.auth.getUser();
+
+        if (user) {
+          // Check if user has FIMS access permission
+          const { data: permissionData, error: permissionError } = await supabase
+            .from('user_roles')
+            .select(`
+              role_id,
+              roles!inner(
+                id,
+                name
+              ),
+              application_permissions!inner(
+                application_name,
+                can_read
+              )
+            `)
+            .eq('user_id', user.id)
+            .eq('application_permissions.application_name', 'fims')
+            .maybeSingle();
+
+          // If no permission record or no read access, sign out
+          if (!permissionData || permissionData.application_permissions?.can_read !== true) {
+            await supabase.auth.signOut();
+            setUser(null);
+            setIsLoading(false);
+            return;
+          }
+        }
+
         setUser(user);
       } catch (error) {
         console.error('Error checking user:', error);

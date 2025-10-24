@@ -59,6 +59,42 @@ const handleSignIn = async (e: React.FormEvent) => {
       if (signInError) {
         setError(signInError.message);
       } else if (data.user) {
+        // Check if user has FIMS access permission
+        const { data: permissionData, error: permissionError } = await supabase
+          .from('user_roles')
+          .select(`
+            role_id,
+            roles!inner(
+              id,
+              name
+            ),
+            application_permissions!inner(
+              application_name,
+              can_read
+            )
+          `)
+          .eq('user_id', data.user.id)
+          .eq('application_permissions.application_name', 'fims')
+          .single();
+
+        if (permissionError || !permissionData) {
+          // User doesn't have FIMS permission record
+          await supabase.auth.signOut();
+          setError('You do not have access to FIMS application. Please contact your administrator.');
+          return;
+        }
+
+        // Check if user has at least read permission for FIMS
+        const hasAccess = permissionData.application_permissions?.can_read === true;
+
+        if (!hasAccess) {
+          // User has no read access to FIMS
+          await supabase.auth.signOut();
+          setError('You do not have access to FIMS application. Please contact your administrator.');
+          return;
+        }
+
+        // User has FIMS access, proceed
         onSignInSuccess();
       }
     } catch (err) {
