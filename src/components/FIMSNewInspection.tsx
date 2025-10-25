@@ -12,6 +12,7 @@ import { RajyaGunwattaNirikshakTapasaniForm } from './RajyaGunwattaNirikshakTapa
 import { MahatmaGandhiRojgarHamiForm } from './MahatmaGandhiRojgarHamiForm';
 import { MumbaiNyayalayTapasaniForm } from './MumbaiNyayalayTapasaniForm';
 import { PahuvaidhakiyaTapasaniForm } from './PahuvaidhakiyaTapasaniForm.tsx';
+import GrampanchayatInspectionForm from './GrampanchayatInspectionForm';
 
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
@@ -192,6 +193,18 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
       );
     }
 
+    if (selectedInspectionType === 'grampanchayat' || selectedInspectionType === 'gram_panchayat') {
+      return (
+        <GrampanchayatInspectionForm
+          user={user}
+          onBack={handleBackToSelection}
+          categories={categories}
+          onInspectionCreated={onInspectionCreated}
+          editingInspection={editingInspection}
+        />
+      );
+    }
+
     return null;
   };
 
@@ -347,7 +360,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
             { key: 'mahatma_gandhi_rojgar_hami', title: 'महात्मा गांधी रोजगार हमी योजना', subtitle: 'MGNREGA Work Inspection Form', color: 'green', active: true },
             { key: 'mumbai_nyayalay', title: 'मुंबई न्यायालय तपासणी प्रपत्र', subtitle: 'Mumbai High Court School Inspection Form', color: 'red', active: true },
             { key: 'pashutapasani', title: 'पशुवैद्यकीय संस्थांचे तांत्रिक निरीक्षण', subtitle: 'Veterinary Institution Technical Inspection Form', color: 'red', active: true },
-         //   { key: 'form_10', title: 'Form 10 Title', subtitle: 'Form 10 Description', color: 'cyan' },
+            { key: 'grampanchayat', title: 'ग्राम पंचायत सर्वसाधारण तपासणी', subtitle: 'Gram Panchayat General Inspection Form', color: 'cyan', active: true },
          //   { key: 'form_11', title: 'Form 11 Title', subtitle: 'Form 11 Description', color: 'violet' },
          //   { key: 'form_12', title: 'Form 12 Title', subtitle: 'Form 12 Description', color: 'lime' },
          //   { key: 'form_13', title: 'Form 13 Title', subtitle: 'Form 13 Description', color: 'amber' },
@@ -423,6 +436,13 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
                     <p>• कृत्रिम रेतन व गर्भधारणा तपासणी</p>
                     <p>• रोग माहिती व लसीकरण कार्यक्रम</p>
                     <p>• योजना प्रगती व तांत्रिक मूल्यांकन</p>
+                    </>
+                ) : form.key === 'grampanchayat' ? (
+                  <>
+                    <p>• ग्राम पंचायत मूळ माहिती</p>
+                    <p>• मासिक सभा व नोंदवही तपासणी</p>
+                    <p>• कर आकारणी व वसुली तपशील</p>
+                    <p>• बांधकाम कामे व निधी खर्च</p>
                     </>
                 ) : (
                   <></>
