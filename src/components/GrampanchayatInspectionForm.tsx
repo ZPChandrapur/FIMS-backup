@@ -64,7 +64,7 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
     location_detected: ''
   });
 
-  const grampanchayatCategory = categories.find(cat => cat.form_type === 'Grampanchayat Inspection' || cat.form_type === 'Grampanchayat Inspection');
+  const grampanchayatCategory = categories.find(cat => cat.form_type === 'grampanchayat' || cat.form_type === 'gram_panchayat');
 
   useEffect(() => {
     if (grampanchayatCategory) {
@@ -76,36 +76,51 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
   }, [grampanchayatCategory]);
 
   useEffect(() => {
-    if (editingInspection && editingInspection.id) {
-      setInspectionData({
-        category_id: editingInspection.category_id || '',
-        location_name: editingInspection.location_name || '',
-        planned_date: editingInspection.planned_date ? editingInspection.planned_date.split('T')[0] : '',
-        latitude: editingInspection.latitude,
-        longitude: editingInspection.longitude,
-        location_accuracy: editingInspection.location_accuracy,
-        location_detected: editingInspection.location_detected || ''
-      });
+    const loadInspectionData = async () => {
+      if (editingInspection && editingInspection.id) {
+        setInspectionData({
+          category_id: editingInspection.category_id || '',
+          location_name: editingInspection.location_name || '',
+          planned_date: editingInspection.planned_date ? editingInspection.planned_date.split('T')[0] : '',
+          latitude: editingInspection.latitude,
+          longitude: editingInspection.longitude,
+          location_accuracy: editingInspection.location_accuracy,
+          location_detected: editingInspection.location_detected || ''
+        });
 
-      const formData = editingInspection.form_data;
-      if (formData) {
-        setMonthlyMeetings(formData.monthlyMeetings || '');
-        setAgendaUpToDate(formData.agendaUpToDate || '');
-        setReceiptUpToDate(formData.receiptUpToDate || '');
-        setReassessmentDone(formData.reassessmentDone || '');
-        setReassessmentAction(formData.reassessmentAction || '');
-        setGpName(formData.gpName || '');
-        setPsName(formData.psName || '');
-        setInspectionDate(formData.inspectionDate || '');
-        setInspectionPlace(formData.inspectionPlace || '');
-        setOfficerName(formData.officerName || '');
-        setOfficerPost(formData.officerPost || '');
-        setSecretaryName(formData.secretaryName || '');
-        setSecretaryTenure(formData.secretaryTenure || '');
-        setResolutionNo(formData.resolutionNo || '');
-        setResolutionDate(formData.resolutionDate || '');
+        // Load data from grampanchayat_inspection_form table
+        const { data: formData, error } = await supabase
+          .from('grampanchayat_inspection_form')
+          .select('*')
+          .eq('inspection_id', editingInspection.id)
+          .maybeSingle();
+
+        if (error) {
+          console.error('Error loading form data:', error);
+          return;
+        }
+
+        if (formData) {
+          setGpName(formData.gram_panchayat_name || '');
+          setPsName(formData.panchayat_samiti || '');
+          setInspectionDate(formData.general_inspection_date || '');
+          setInspectionPlace(formData.general_inspection_place || '');
+          setOfficerName(formData.inspection_officer_name || '');
+          setOfficerPost(formData.inspection_officer_post || '');
+          setSecretaryName(formData.secretary_name || '');
+          setSecretaryTenure(formData.secretary_tenure || '');
+          setMonthlyMeetings(formData.monthly_meetings || '');
+          setAgendaUpToDate(formData.meeting_agenda_up_to_date || '');
+          setReceiptUpToDate(formData.receipt_up_to_date || '');
+          setReassessmentDone(formData.reassessment_done || '');
+          setReassessmentAction(formData.reassessment_action || '');
+          setResolutionNo(formData.resolution_no || '');
+          setResolutionDate(formData.resolution_date || '');
+        }
       }
-    }
+    };
+
+    loadInspectionData();
   }, [editingInspection]);
 
   const getCurrentLocation = () => {
@@ -240,24 +255,6 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
     try {
       setIsLoading(true);
 
-      const formData = {
-        monthlyMeetings,
-        agendaUpToDate,
-        receiptUpToDate,
-        reassessmentDone,
-        reassessmentAction,
-        gpName,
-        psName,
-        inspectionDate,
-        inspectionPlace,
-        officerName,
-        officerPost,
-        secretaryName,
-        secretaryTenure,
-        resolutionNo,
-        resolutionDate
-      };
-
       const sanitizedInspectionData = {
         ...inspectionData,
         planned_date: inspectionData.planned_date || null
@@ -266,6 +263,7 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
       let inspectionResult;
 
       if (editingInspection && editingInspection.id) {
+        // Update existing inspection
         const { data: updateResult, error: updateError } = await supabase
           .from('fims_inspections')
           .update({
@@ -276,8 +274,7 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
             location_detected: sanitizedInspectionData.location_detected,
             planned_date: sanitizedInspectionData.planned_date,
             inspection_date: new Date().toISOString(),
-            status: isDraft ? 'draft' : 'submitted',
-            form_data: formData
+            status: isDraft ? 'draft' : 'submitted'
           })
           .eq('id', editingInspection.id)
           .select()
@@ -285,7 +282,34 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
 
         if (updateError) throw updateError;
         inspectionResult = updateResult;
+
+        // Update grampanchayat_inspection_form table
+        const { error: formUpdateError } = await supabase
+          .from('grampanchayat_inspection_form')
+          .update({
+            gram_panchayat_name: gpName,
+            panchayat_samiti: psName,
+            general_inspection_date: inspectionDate || null,
+            general_inspection_place: inspectionPlace,
+            inspection_officer_name: officerName,
+            inspection_officer_post: officerPost,
+            secretary_name: secretaryName,
+            secretary_tenure: secretaryTenure,
+            monthly_meetings: monthlyMeetings,
+            meeting_agenda_up_to_date: agendaUpToDate,
+            receipt_up_to_date: receiptUpToDate,
+            reassessment_done: reassessmentDone,
+            reassessment_action: reassessmentAction,
+            resolution_no: resolutionNo,
+            resolution_date: resolutionDate || null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('inspection_id', editingInspection.id);
+
+        if (formUpdateError) throw formUpdateError;
+
       } else {
+        // Create new inspection
         const inspectionNumber = generateInspectionNumber();
 
         const { data: createResult, error: createError } = await supabase
@@ -301,14 +325,39 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
             location_detected: sanitizedInspectionData.location_detected,
             planned_date: sanitizedInspectionData.planned_date,
             inspection_date: new Date().toISOString(),
-            status: isDraft ? 'draft' : 'submitted',
-            form_data: formData
+            status: isDraft ? 'draft' : 'submitted'
           })
           .select()
           .single();
 
         if (createError) throw createError;
         inspectionResult = createResult;
+
+        // Insert into grampanchayat_inspection_form table
+        const { error: formInsertError } = await supabase
+          .from('grampanchayat_inspection_form')
+          .insert({
+            inspection_id: inspectionResult.id,
+            gram_panchayat_name: gpName,
+            panchayat_samiti: psName,
+            general_inspection_date: inspectionDate || null,
+            general_inspection_place: inspectionPlace,
+            inspection_officer_name: officerName,
+            inspection_officer_post: officerPost,
+            secretary_name: secretaryName,
+            secretary_tenure: secretaryTenure,
+            monthly_meetings: monthlyMeetings,
+            meeting_agenda_up_to_date: agendaUpToDate,
+            receipt_up_to_date: receiptUpToDate,
+            reassessment_done: reassessmentDone,
+            reassessment_action: reassessmentAction,
+            resolution_no: resolutionNo,
+            resolution_date: resolutionDate || null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+
+        if (formInsertError) throw formInsertError;
       }
 
       if (uploadedPhotos.length > 0) {
