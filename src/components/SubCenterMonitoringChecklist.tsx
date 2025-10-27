@@ -1,1159 +1,1323 @@
-import React, { useState } from 'react';
-import { FileText, Calendar, MapPin, Users, Stethoscope, Pill, Clipboard, BookOpen, Truck, Eye, UserCheck, Target } from 'lucide-react';
+// Sub Centre Monitoring Checklist Form
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  ArrowLeft,
+  Camera,
+  MapPin,
+  Save,
+  Send,
+  FileText,
+  Users
+} from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
-type ChecklistItem = {
-  id: string;
-  label: string;
-  value: string;
-  comments?: string;
-};
+interface SubCenterFormProps {
+  user: SupabaseUser;
+  onBack: () => void;
+  categories: any[];
+  onInspectionCreated: () => void;
+  editingInspection?: any;
+}
 
-type HumanResource = {
-  id: string;
-  label: string;
-  numbers: string;
-  training: string;
-  remarks: string;
-};
+export const SubCenterMonitoringChecklist: React.FC<SubCenterFormProps> = ({
+  user,
+  onBack,
+  categories,
+  onInspectionCreated,
+  editingInspection
+}) => {
+  const { t } = useTranslation();
 
-type Equipment = {
-  id: string;
-  equipment: string;
-  availableFunctional: boolean;
-  availableNotFunctional: boolean;
-  notAvailable: boolean;
-  remarks: string;
-};
+  const isViewMode = editingInspection?.mode === 'view';
+  const isEditMode = editingInspection?.mode === 'edit';
+  const [monthlyMeetings, setMonthlyMeetings] = useState('');
+  const [agendaUpToDate, setAgendaUpToDate] = useState('');
+  const [receiptUpToDate, setReceiptUpToDate] = useState('');
+  const [reassessmentDone, setReassessmentDone] = useState('');
+  const [reassessmentAction, setReassessmentAction] = useState('');
 
-type ServiceDelivery = {
-  id: string;
-  label: string;
-  actual: string;
-  expected: string;
-  remarks: string;
-};
+  const [gpName, setGpName] = useState('');
+  const [psName, setPsName] = useState('');
+  const [inspectionDate, setInspectionDate] = useState('');
+  const [inspectionPlace, setInspectionPlace] = useState('');
+  const [officerName, setOfficerName] = useState('');
+  const [officerPost, setOfficerPost] = useState('');
+  const [secretaryName, setSecretaryName] = useState('');
+  const [secretaryTenure, setSecretaryTenure] = useState('');
+  const [resolutionNo, setResolutionNo] = useState('');
+  const [resolutionDate, setResolutionDate] = useState('');
 
-type EssentialSkill = {
-  id: string;
-  skill: string;
-  knowledge: string;
-  skillLevel: string;
-  remarks: string;
-};
+  const [isLoading, setIsLoading] = useState(false);
+  const [uploadedPhotos, setUploadedPhotos] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
-type RecordMaintenance = {
-  id: string;
-  record: string;
-  availableUpdated: boolean;
-  availableNotMaintained: boolean;
-  notAvailable: boolean;
-  remarks: string;
-};
+  const [inspectionData, setInspectionData] = useState({
+    category_id: '',
+    location_name: '',
+    planned_date: '',
+    latitude: null as number | null,
+    longitude: null as number | null,
+    location_accuracy: null as number | null,
+    location_detected: ''
+  });
 
-type ReferralLinkage = {
-  id: string;
-  modeOfTransport: string;
-  womenTransported: string;
-  sickInfantsTransported: string;
-  freePaid: string;
-};
+  const grampanchayatCategory = categories.find(cat => cat.form_type === 'Sub Centre Monitoring' || cat.form_type === 'Sub Centre Monitoring');
 
-type IECDisplay = {
-  id: string;
-  material: string;
-  available: boolean;
-  remarks: string;
-};
+  useEffect(() => {
+    if (grampanchayatCategory) {
+      setInspectionData(prev => ({
+        ...prev,
+        category_id: grampanchayatCategory.id
+      }));
+    }
+  }, [grampanchayatCategory]);
 
-type MonitoringSupervisor = {
-  id: string;
-  name: string;
-  designation: string;
-  sign: string;
-};
+  useEffect(() => {
+    const loadInspectionData = async () => {
+      if (editingInspection && editingInspection.id) {
+        setInspectionData({
+          category_id: editingInspection.category_id || '',
+          location_name: editingInspection.location_name || '',
+          planned_date: editingInspection.planned_date ? editingInspection.planned_date.split('T')[0] : '',
+          latitude: editingInspection.latitude,
+          longitude: editingInspection.longitude,
+          location_accuracy: editingInspection.location_accuracy,
+          location_detected: editingInspection.location_detected || ''
+        });
 
-type KeyFinding = {
-  id: number;
-  keyFinding: string;
-  action: string;
-  responsible: string;
-  timeline: string;
-};
+        // Load data from sub_centre_monitoring_checklist table
+        const { data: formData, error } = await supabase
+          .from('sub_centre_monitoring_checklist')
+          .select('*')
+          .eq('inspection_id', editingInspection.id)
+          .maybeSingle();
 
-const SubCenterMonitoringChecklist: React.FC = () => {
-  const [facilityName, setFacilityName] = useState("");
-  const [blockName, setBlockName] = useState("");
-  const [scName, setScName] = useState("");
-  const [district, setDistrict] = useState("CHANDRAPUR");
-  const [catchmentPopulation, setCatchmentPopulation] = useState("");
-  const [totalVillages, setTotalVillages] = useState("");
-  const [distanceFromPHC, setDistanceFromPHC] = useState("");
-  const [lastVisit, setLastVisit] = useState("");
-  const [date, setDate] = useState<string>(new Date().toISOString().slice(0, 10));
-  const [monitorName, setMonitorName] = useState("");
-  const [staffAvailable, setStaffAvailable] = useState("");
-  const [staffNotAvailable, setStaffNotAvailable] = useState("");
-  const [generalComments, setGeneralComments] = useState("");
-  const [currentSection, setCurrentSection] = useState(1);
+        if (error) {
+          console.error('Error loading form data:', error);
+          return;
+        }
 
-  const [section1, setSection1] = useState<ChecklistItem[]>([
-    { id: "1.1", label: "Sub-centre located near a main habitation (वस्ती)", value: "" },
-    { id: "1.2", label: "Functioning in Govt. building", value: "" },
-    { id: "1.3", label: "Building in good condition", value: "" },
-    { id: "1.4", label: "Electricity with functional power back up", value: "" },
-    { id: "1.5", label: "Running 24*7 water supply", value: "" },
-    { id: "1.6", label: "ANM quarter available", value: "" },
-    { id: "1.7", label: "ANM residing at SC", value: "" },
-    { id: "1.8", label: "Functional labour room", value: "" },
-    { id: "1.9", label: "Functional and clean toilet attached to labour room", value: "" },
-    { id: "1.10", label: "Functional New Born Care Corner (Functional neo-natal ambu bag)", value: "" },
-    { id: "1.11", label: "General cleanliness in the facility", value: "" },
-    { id: "1.12", label: "Availability of complain / suggestion box", value: "" },
-    { id: "1.13", label: "BMW mechanism", value: "" },
-  ]);
-
-  const [humanResources, setHumanResources] = useState<HumanResource[]>([
-    { id: '2.1', label: 'CHO', numbers: '', training: '', remarks: '' },
-    { id: '2.2', label: 'ANM', numbers: '', training: '', remarks: '' },
-    { id: '2.3', label: '2nd ANM', numbers: '', training: '', remarks: '' },
-    { id: '2.4', label: 'MPW – Male', numbers: '', training: '', remarks: '' },
-    { id: '2.5', label: 'मदतनीस', numbers: '', training: '', remarks: '' },
-  ]);
-
-  const [equipment, setEquipment] = useState<Equipment[]>([
-    { id: '3.1', equipment: 'Equipment for Haemoglobin Estimation', availableFunctional: false, availableNotFunctional: false, notAvailable: false, remarks: '' },
-    { id: '3.2', equipment: 'Blood sugar testing kits', availableFunctional: false, availableNotFunctional: false, notAvailable: false, remarks: '' },
-    { id: '3.3', equipment: 'BP Instrument and Stethoscope', availableFunctional: false, availableNotFunctional: false, notAvailable: false, remarks: '' },
-    { id: '3.4', equipment: 'Delivery equipment', availableFunctional: false, availableNotFunctional: false, notAvailable: false, remarks: '' },
-    { id: '3.5', equipment: 'Neonatal ambu bag', availableFunctional: false, availableNotFunctional: false, notAvailable: false, remarks: '' },
-    { id: '3.6', equipment: 'Adult weighing machine', availableFunctional: false, availableNotFunctional: false, notAvailable: false, remarks: '' },
-    { id: '3.7', equipment: 'Infant / New born weighing machine', availableFunctional: false, availableNotFunctional: false, notAvailable: false, remarks: '' },
-    { id: '3.8', equipment: 'Needle & Hub Cutter', availableFunctional: false, availableNotFunctional: false, notAvailable: false, remarks: '' },
-    { id: '3.9', equipment: 'Colour coded bins', availableFunctional: false, availableNotFunctional: false, notAvailable: false, remarks: '' }
-  ]);
-
-  const [section4, setSection4] = useState<ChecklistItem[]>([
-    { id: "4.1", label: "IFA tablets", value: "" },
-    { id: "4.2", label: "IFA syrup with dispenser", value: "" },
-    { id: "4.3", label: "Vit A syrup", value: "" },
-    { id: "4.4", label: "ORS packets", value: "" },
-    { id: "4.5", label: "Zinc tablets", value: "" },
-    { id: "4.6", label: "Inj Magnesium Sulphate", value: "" },
-    { id: "4.7", label: "Inj Oxytocin", value: "" },
-    { id: "4.8", label: "Gentamycin inj. 40 mg", value: "" },
-    { id: "4.9", label: "Antibiotics, if any, pls specify", value: "" },
-    { id: "4.10", label: "Availability of drugs for common ailments e.g PCM, anti-allergic drugs etc.", value: "" },
-    { id: "4.11", label: "Syrup Calcium with Phosphate 200ml", value: "" },
-    { id: "4.12", label: "cotrimazole 100mg Vaginal Pessaries with applicator", value: "" },
-    { id: "4.13", label: "Flucona: zole Tab. 150mg", value: "" },
-    { id: "4.14", label: "Albendazole Tab 400mg", value: "" },
-    { id: "4.15", label: "Albendazole Susp. 200mg/5ml, 10ml Bottle", value: "" },
-    { id: "4.16", label: "ANTI HYPERTENSIVE DRUGS", value: "" },
-    { id: "4.17", label: "ANTI DIABETIC DRUGS", value: "" },
-    { id: "4.18", label: "Glucostrip", value: "" },
-    { id: "4.19", label: "Calcium Carbonate Tab+ Vit D3", value: "" },
-  ]);
-
-  const [section5, setSection5] = useState<ChecklistItem[]>([
-    { id: "5.1", label: "Pregnancy testing Kits", value: "" },
-    { id: "5.2", label: "Urine albumin and sugar testing kit", value: "" },
-    { id: "5.3", label: "OCPs", value: "" },
-    { id: "5.4", label: "EC pills", value: "" },
-    { id: "5.5", label: "IUCDs", value: "" },
-    { id: "5.6", label: "Sanitary napkins", value: "" },
-  ]);
-
-  const [serviceDelivery, setServiceDelivery] = useState<ServiceDelivery[]>([
-    { id: '6.1', label: 'Number of estimated pregnancies', actual: '', expected: '', remarks: '' },
-    { id: '6.2', label: 'Percentage of women registered in the first trimester', actual: '', expected: '', remarks: '' },
-    { id: '6.3', label: 'Percentage of (4 ANC checkup) out of total registered', actual: '', expected: '', remarks: '' },
-    { id: '6.4', label: 'No. of pregnant women given IFA', actual: '', expected: '', remarks: '' },
-    { id: '6.5', label: 'Number of deliveries conducted at SC', actual: '', expected: '', remarks: '' },
-    { id: '6.6', label: 'Number of deliveries conducted at home', actual: '', expected: '', remarks: '' },
-    { id: '6.7', label: 'No. of neonates initiated breast feeding within one hour', actual: '', expected: '', remarks: '' },
-  ]);
-
-  const [essentialSkills, setEssentialSkills] = useState<EssentialSkill[]>([
-    { id: '7.1', skill: 'Correctly measure BP', knowledge: '', skillLevel: '', remarks: '' },
-    { id: '7.2', skill: 'Correctly measure haemoglobin', knowledge: '', skillLevel: '', remarks: '' },
-    { id: '7.3', skill: 'Correctly measure urine albumin and protein', knowledge: '', skillLevel: '', remarks: '' },
-    { id: '7.4', skill: 'Identify high risk pregnancy', knowledge: '', skillLevel: '', remarks: '' },
-    { id: '7.5', skill: 'Awareness on mechanisms for referral to PHC and FRU', knowledge: '', skillLevel: '', remarks: '' },
-    { id: '7.6', skill: 'Correct use of partograph', knowledge: '', skillLevel: '', remarks: '' },
-    { id: '7.7', skill: 'Provide essential newborn care (thermoregulation, breastfeeding and asepsis)', knowledge: '', skillLevel: '', remarks: '' },
-    { id: '7.8', skill: 'Correctly insert IUCD', knowledge: '', skillLevel: '', remarks: '' },
-    { id: '7.9', skill: 'Correctly administer vaccine', knowledge: '', skillLevel: '', remarks: '' },
-    { id: '7.10', skill: 'Adherence to IMEP protocols', knowledge: '', skillLevel: '', remarks: '' },
-    { id: '7.11', skill: 'Segregation of wastes in colour coded bins', knowledge: '', skillLevel: '', remarks: '' },
-    { id: '7.12', skill: 'Guidance / Support for breast feeding method', knowledge: '', skillLevel: '', remarks: '' },
-    { id: '7.13', skill: 'Correctly identified signs of Pneumonia and dehydration', knowledge: '', skillLevel: '', remarks: '' },
-    { id: '7.14', skill: 'Awareness on Immunization Schedule', knowledge: '', skillLevel: '', remarks: '' },
-    { id: '7.15', skill: 'Awareness on site of administration of vaccine', knowledge: '', skillLevel: '', remarks: '' },
-  ]);
-
-  const [recordMaintenance, setRecordMaintenance] = useState<RecordMaintenance[]>([
-    { id: '8.1', record: 'Untied funds expenditure (Rs.10,000) Check % expenditure', availableUpdated: false, availableNotMaintained: false, notAvailable: false, remarks: '' },
-    { id: '8.2', record: 'Annual maintenance grant (Rs.10,000) Check % expenditure', availableUpdated: false, availableNotMaintained: false, notAvailable: false, remarks: '' },
-    { id: '8.3', record: 'Payments under JSY', availableUpdated: false, availableNotMaintained: false, notAvailable: false, remarks: '' },
-    { id: '8.4', record: 'VHSNC plan', availableUpdated: false, availableNotMaintained: false, notAvailable: false, remarks: '' },
-    { id: '8.5', record: 'VHSNC meeting minutes and action taken', availableUpdated: false, availableNotMaintained: false, notAvailable: false, remarks: '' },
-    { id: '8.6', record: 'Eligible couple register', availableUpdated: false, availableNotMaintained: false, notAvailable: false, remarks: '' },
-    { id: '8.7', record: 'MCH register (as per GOI)', availableUpdated: false, availableNotMaintained: false, notAvailable: false, remarks: '' },
-    { id: '8.8', record: 'Delivery Register as per GOI format', availableUpdated: false, availableNotMaintained: false, notAvailable: false, remarks: '' },
-    { id: '8.9', record: 'Stock register', availableUpdated: false, availableNotMaintained: false, notAvailable: false, remarks: '' },
-    { id: '8.10', record: 'Due lists', availableUpdated: false, availableNotMaintained: false, notAvailable: false, remarks: '' },
-    { id: '8.11', record: 'MCP cards', availableUpdated: false, availableNotMaintained: false, notAvailable: false, remarks: '' },
-    { id: '8.12', record: 'Referral Registers (in and out)', availableUpdated: false, availableNotMaintained: false, notAvailable: false, remarks: '' },
-    { id: '8.13', record: 'List of families with 0-6 years children under RBSK', availableUpdated: false, availableNotMaintained: false, notAvailable: false, remarks: '' },
-    { id: '8.14', record: 'Line listing of severely anaemic pregnant women', availableUpdated: false, availableNotMaintained: false, notAvailable: false, remarks: '' },
-    { id: '8.15', record: 'Line list of SAM, MAM Children', availableUpdated: false, availableNotMaintained: false, notAvailable: false, remarks: '' },
-    { id: '8.15A', record: 'Updated Micro plan', availableUpdated: false, availableNotMaintained: false, notAvailable: false, remarks: '' },
-    { id: '8.16', record: 'Vaccine supply for each session day (check availability of all vaccines)', availableUpdated: false, availableNotMaintained: false, notAvailable: false, remarks: '' },
-    { id: '8.17', record: 'Due list and work plan received from RCH Portal through Mobile / Physically', availableUpdated: false, availableNotMaintained: false, notAvailable: false, remarks: '' },
-  ]);
-
-  const [referralLinkages, setReferralLinkages] = useState<ReferralLinkage[]>([
-    { id: '9.1', modeOfTransport: 'Home to facility', womenTransported: '', sickInfantsTransported: '', freePaid: '' },
-    { id: '9.2', modeOfTransport: 'Inter facility', womenTransported: '', sickInfantsTransported: '', freePaid: '' },
-    { id: '9.3', modeOfTransport: 'Facility to Home (drop back)', womenTransported: '', sickInfantsTransported: '', freePaid: '' },
-  ]);
-
-  const [iecDisplay, setIecDisplay] = useState<IECDisplay[]>([
-    { id: '10.1', material: 'Approach roads have directions to the sub centre', available: false, remarks: '' },
-    { id: '10.2', material: 'Citizen Charter', available: false, remarks: '' },
-    { id: '10.3', material: 'Timings of the Sub Centre', available: false, remarks: '' },
-    { id: '10.4', material: 'Visit schedule of ANMs', available: false, remarks: '' },
-    { id: '10.5', material: 'Area distribution of the ANMs / VHNSC plan', available: false, remarks: '' },
-    { id: '10.6', material: 'SBA Protocol Posters', available: false, remarks: '' },
-    { id: '10.7', material: 'Immunization Schedule', available: false, remarks: '' },
-    { id: '10.8', material: 'List of services provided at SC', available: false, remarks: '' },
-    { id: '10.9', material: 'Display of JSY benefits', available: false, remarks: '' },
-    { id: '10.10', material: 'Display of referral transport facility', available: false, remarks: '' },
-  ]);
-
-  const [monitoringSupervisors, setMonitoringSupervisors] = useState<MonitoringSupervisor[]>([
-    { id: '11.1', name: '', designation: '', sign: '' },
-    { id: '11.2', name: '', designation: '', sign: '' },
-    { id: '11.3', name: '', designation: '', sign: '' },
-    { id: '11.4', name: '', designation: '', sign: '' },
-    { id: '11.5', name: '', designation: '', sign: '' },
-  ]);
-
-  const [keyFindings, setKeyFindings] = useState<KeyFinding[]>([
-    { id: 1, keyFinding: '', action: '', responsible: '', timeline: '' },
-    { id: 2, keyFinding: '', action: '', responsible: '', timeline: '' },
-    { id: 3, keyFinding: '', action: '', responsible: '', timeline: '' },
-    { id: 4, keyFinding: '', action: '', responsible: '', timeline: '' },
-    { id: 5, keyFinding: '', action: '', responsible: '', timeline: '' },
-  ]);
-
-  const sections = [
-    { id: 1, title: 'Basic Information', icon: FileText },
-    { id: 2, title: 'Infrastructure', icon: MapPin },
-    { id: 3, title: 'Human Resources', icon: Users },
-    { id: 4, title: 'Equipment', icon: Stethoscope },
-    { id: 5, title: 'Essential Drugs', icon: Pill },
-    { id: 6, title: 'Essential Supplies', icon: Clipboard },
-    { id: 7, title: 'Service Delivery', icon: Target },
-    { id: 8, title: 'Essential Skills', icon: BookOpen },
-    { id: 9, title: 'Record Maintenance', icon: FileText },
-    { id: 10, title: 'Referral Linkages', icon: Truck },
-    { id: 11, title: 'IEC Display', icon: Eye },
-    { id: 12, title: 'Monitoring Supervisors', icon: UserCheck },
-    { id: 13, title: 'Key Findings', icon: Target },
-  ];
-
-  const updateSection1Item = (id: string, field: keyof ChecklistItem, value: string) => {
-    setSection1(prev => prev.map(item =>
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
-
-  const updateSection4Item = (id: string, field: keyof ChecklistItem, value: string) => {
-    setSection4(prev => prev.map(item =>
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
-
-  const updateSection5Item = (id: string, field: keyof ChecklistItem, value: string) => {
-    setSection5(prev => prev.map(item =>
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
-
-  const updateHumanResource = (id: string, field: keyof HumanResource, value: string) => {
-    setHumanResources(prev => prev.map(item =>
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
-
-  const updateEquipment = (id: string, field: keyof Equipment, value: boolean | string) => {
-    setEquipment(prev => prev.map(item =>
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
-
-  const updateServiceDelivery = (id: string, field: keyof ServiceDelivery, value: string) => {
-    setServiceDelivery(prev => prev.map(item =>
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
-
-  const updateEssentialSkill = (id: string, field: keyof EssentialSkill, value: string) => {
-    setEssentialSkills(prev => prev.map(item =>
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
-
-  const updateRecordMaintenance = (id: string, field: keyof RecordMaintenance, value: boolean | string) => {
-    setRecordMaintenance(prev => prev.map(item =>
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
-
-  const updateReferralLinkage = (id: string, field: keyof ReferralLinkage, value: string) => {
-    setReferralLinkages(prev => prev.map(item =>
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
-
-  const updateIecDisplay = (id: string, field: keyof IECDisplay, value: boolean | string) => {
-    setIecDisplay(prev => prev.map(item =>
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
-
-  const updateMonitoringSupervisor = (id: string, field: keyof MonitoringSupervisor, value: string) => {
-    setMonitoringSupervisors(prev => prev.map(item =>
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
-
-  const updateKeyFinding = (id: number, field: keyof KeyFinding, value: string) => {
-    setKeyFindings(prev => prev.map(item =>
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const payload = {
-      basicInfo: {
-        district,
-        blockName,
-        scName,
-        facilityName,
-        catchmentPopulation,
-        totalVillages,
-        distanceFromPHC,
-        lastVisit,
-        date,
-        monitorName,
-        staffAvailable,
-        staffNotAvailable,
-      },
-      infrastructure: section1,
-      humanResources,
-      equipment,
-      essentialDrugs: section4,
-      essentialSupplies: section5,
-      serviceDelivery,
-      essentialSkills,
-      recordMaintenance,
-      referralLinkages,
-      iecDisplay,
-      monitoringSupervisors,
-      keyFindings,
-      generalComments,
-      submittedAt: new Date().toISOString(),
+        if (formData) {
+          setGpName(formData.gram_panchayat_name || '');
+          setPsName(formData.panchayat_samiti || '');
+          setInspectionDate(formData.general_inspection_date || '');
+          setInspectionPlace(formData.general_inspection_place || '');
+          setOfficerName(formData.inspection_officer_name || '');
+          setOfficerPost(formData.inspection_officer_post || '');
+          setSecretaryName(formData.secretary_name || '');
+          setSecretaryTenure(formData.secretary_tenure || '');
+          setMonthlyMeetings(formData.monthly_meetings || '');
+          setAgendaUpToDate(formData.meeting_agenda_up_to_date || '');
+          setReceiptUpToDate(formData.receipt_up_to_date || '');
+          setReassessmentDone(formData.reassessment_done || '');
+          setReassessmentAction(formData.reassessment_action || '');
+          setResolutionNo(formData.resolution_no || '');
+          setResolutionDate(formData.resolution_date || '');
+        }
+      }
     };
 
-    const w = window.open();
-    if (w) {
-      w.document.write('<pre>' + JSON.stringify(payload, null, 2) + '</pre>');
-      w.document.title = `${scName || 'SubCenter'}-monitoring-checklist`;
+    loadInspectionData();
+  }, [editingInspection]);
+
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
     }
-  }
 
-  const renderBasicInfo = () => (
-    <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">District</label>
-          <input
-            type="text"
-            value={district}
-            onChange={(e) => setDistrict(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Block Name</label>
-          <input
-            type="text"
-            value={blockName}
-            onChange={(e) => setBlockName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Sub Centre Name</label>
-          <input
-            type="text"
-            value={scName}
-            onChange={(e) => setScName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Facility Name</label>
-          <input
-            type="text"
-            value={facilityName}
-            onChange={(e) => setFacilityName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Catchment Population</label>
-          <input
-            type="text"
-            value={catchmentPopulation}
-            onChange={(e) => setCatchmentPopulation(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Total Villages</label>
-          <input
-            type="text"
-            value={totalVillages}
-            onChange={(e) => setTotalVillages(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Distance from PHC (km)</label>
-          <input
-            type="text"
-            value={distanceFromPHC}
-            onChange={(e) => setDistanceFromPHC(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Last Visit Date</label>
-          <input
-            type="date"
-            value={lastVisit}
-            onChange={(e) => setLastVisit(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Current Visit Date</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Monitor Name</label>
-          <input
-            type="text"
-            value={monitorName}
-            onChange={(e) => setMonitorName(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Staff Available</label>
-          <input
-            type="text"
-            value={staffAvailable}
-            onChange={(e) => setStaffAvailable(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Staff Not Available</label>
-          <input
-            type="text"
-            value={staffNotAvailable}
-            onChange={(e) => setStaffNotAvailable(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
-      </div>
-    </div>
-  );
+    setIsGettingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const accuracy = position.coords.accuracy;
 
-  const renderChecklistSection = (items: ChecklistItem[], updateFunction: any, title: string) => (
-    <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-      <div className="space-y-4">
-        {items.map((item) => (
-          <div key={item.id} className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
-            <div className="mb-3">
-              <label className="font-medium text-gray-900">{item.id}. {item.label}</label>
-            </div>
-            <div className="flex gap-6 mb-3">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name={item.id}
-                  value="yes"
-                  checked={item.value === 'yes'}
-                  onChange={(e) => updateFunction(item.id, 'value', e.target.value)}
-                  className="mr-2 w-4 h-4 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-sm text-gray-700">Yes</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name={item.id}
-                  value="no"
-                  checked={item.value === 'no'}
-                  onChange={(e) => updateFunction(item.id, 'value', e.target.value)}
-                  className="mr-2 w-4 h-4 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-sm text-gray-700">No</span>
-              </label>
-            </div>
-            <div>
-              <textarea
-                placeholder="Remarks"
-                value={item.comments || ''}
-                onChange={(e) => updateFunction(item.id, 'comments', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                rows={2}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+        try {
+          const response = await fetch(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${import.meta.env.VITE_GOOGLE_API_KEY}`
+          );
+          const data = await response.json();
 
-  const renderCurrentSection = () => {
-    switch (currentSection) {
-      case 1:
-        return renderBasicInfo();
-      case 2:
-        return renderChecklistSection(section1, updateSection1Item, 'Infrastructure');
-      case 3:
-        return (
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">S.No.</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Human Resource</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Numbers</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Training Received</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Remarks</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {humanResources.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="border border-gray-300 px-4 py-3 text-sm">{item.id}</td>
-                      <td className="border border-gray-300 px-4 py-3 text-sm font-medium">{item.label}</td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.numbers}
-                          onChange={(e) => updateHumanResource(item.id, 'numbers', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.training}
-                          onChange={(e) => updateHumanResource(item.id, 'training', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.remarks}
-                          onChange={(e) => updateHumanResource(item.id, 'remarks', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        );
-      case 4:
-        return (
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">S.No.</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Equipment</th>
-                    <th className="border border-gray-300 px-4 py-3 text-center font-medium text-gray-900">Available & Functional</th>
-                    <th className="border border-gray-300 px-4 py-3 text-center font-medium text-gray-900">Available but Not Functional</th>
-                    <th className="border border-gray-300 px-4 py-3 text-center font-medium text-gray-900">Not Available</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Remarks</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {equipment.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="border border-gray-300 px-4 py-3 text-sm">{item.id}</td>
-                      <td className="border border-gray-300 px-4 py-3 text-sm font-medium">{item.equipment}</td>
-                      <td className="border border-gray-300 px-4 py-3 text-center">
-                        <input
-                          type="checkbox"
-                          checked={item.availableFunctional}
-                          onChange={(e) => updateEquipment(item.id, 'availableFunctional', e.target.checked)}
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded"
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3 text-center">
-                        <input
-                          type="checkbox"
-                          checked={item.availableNotFunctional}
-                          onChange={(e) => updateEquipment(item.id, 'availableNotFunctional', e.target.checked)}
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded"
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3 text-center">
-                        <input
-                          type="checkbox"
-                          checked={item.notAvailable}
-                          onChange={(e) => updateEquipment(item.id, 'notAvailable', e.target.checked)}
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded"
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.remarks}
-                          onChange={(e) => updateEquipment(item.id, 'remarks', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        );
-      case 5:
-        return renderChecklistSection(section4, updateSection4Item, 'Essential Drugs');
-      case 6:
-        return renderChecklistSection(section5, updateSection5Item, 'Essential Supplies');
-      case 7:
-        return (
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">S.No.</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Service Delivery Indicator</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Actual</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Expected</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Remarks</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {serviceDelivery.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="border border-gray-300 px-4 py-3 text-sm">{item.id}</td>
-                      <td className="border border-gray-300 px-4 py-3 text-sm font-medium">{item.label}</td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.actual}
-                          onChange={(e) => updateServiceDelivery(item.id, 'actual', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.expected}
-                          onChange={(e) => updateServiceDelivery(item.id, 'expected', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.remarks}
-                          onChange={(e) => updateServiceDelivery(item.id, 'remarks', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        );
-      case 8:
-        return (
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">S.No.</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Essential Skill Set</th>
-                    <th className="border border-gray-300 px-4 py-3 text-center font-medium text-gray-900">Knowledge (Y/N)</th>
-                    <th className="border border-gray-300 px-4 py-3 text-center font-medium text-gray-900">Skill (Y/N)</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Remarks</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {essentialSkills.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="border border-gray-300 px-4 py-3 text-sm">{item.id}</td>
-                      <td className="border border-gray-300 px-4 py-3 text-sm font-medium">{item.skill}</td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <select
-                          value={item.knowledge}
-                          onChange={(e) => updateEssentialSkill(item.id, 'knowledge', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        >
-                          <option value="">Select</option>
-                          <option value="Y">Yes</option>
-                          <option value="N">No</option>
-                        </select>
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <select
-                          value={item.skillLevel}
-                          onChange={(e) => updateEssentialSkill(item.id, 'skillLevel', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        >
-                          <option value="">Select</option>
-                          <option value="Y">Yes</option>
-                          <option value="N">No</option>
-                        </select>
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.remarks}
-                          onChange={(e) => updateEssentialSkill(item.id, 'remarks', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        );
-      case 9:
-        return (
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">S.No.</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Record</th>
-                    <th className="border border-gray-300 px-4 py-3 text-center font-medium text-gray-900">Available & Updated</th>
-                    <th className="border border-gray-300 px-4 py-3 text-center font-medium text-gray-900">Available but Not Maintained</th>
-                    <th className="border border-gray-300 px-4 py-3 text-center font-medium text-gray-900">Not Available</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Remarks</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recordMaintenance.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="border border-gray-300 px-4 py-3 text-sm">{item.id}</td>
-                      <td className="border border-gray-300 px-4 py-3 text-sm font-medium">{item.record}</td>
-                      <td className="border border-gray-300 px-4 py-3 text-center">
-                        <input
-                          type="checkbox"
-                          checked={item.availableUpdated}
-                          onChange={(e) => updateRecordMaintenance(item.id, 'availableUpdated', e.target.checked)}
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded"
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3 text-center">
-                        <input
-                          type="checkbox"
-                          checked={item.availableNotMaintained}
-                          onChange={(e) => updateRecordMaintenance(item.id, 'availableNotMaintained', e.target.checked)}
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded"
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3 text-center">
-                        <input
-                          type="checkbox"
-                          checked={item.notAvailable}
-                          onChange={(e) => updateRecordMaintenance(item.id, 'notAvailable', e.target.checked)}
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500 rounded"
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.remarks}
-                          onChange={(e) => updateRecordMaintenance(item.id, 'remarks', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        );
-      case 10:
-        return (
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">S.No.</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Mode of Transport</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Women Transported</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Sick Infants Transported</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Free/Paid</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {referralLinkages.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="border border-gray-300 px-4 py-3 text-sm">{item.id}</td>
-                      <td className="border border-gray-300 px-4 py-3 text-sm font-medium">{item.modeOfTransport}</td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.womenTransported}
-                          onChange={(e) => updateReferralLinkage(item.id, 'womenTransported', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.sickInfantsTransported}
-                          onChange={(e) => updateReferralLinkage(item.id, 'sickInfantsTransported', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <select
-                          value={item.freePaid}
-                          onChange={(e) => updateReferralLinkage(item.id, 'freePaid', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        >
-                          <option value="">Select</option>
-                          <option value="Free">Free</option>
-                          <option value="Paid">Paid</option>
-                        </select>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        );
-      case 11:
-        return (
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">S.No.</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Material</th>
-                    <th className="border border-gray-300 px-4 py-3 text-center font-medium text-gray-900">Yes</th>
-                    <th className="border border-gray-300 px-4 py-3 text-center font-medium text-gray-900">No</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Remarks</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {iecDisplay.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="border border-gray-300 px-4 py-3 text-sm">{item.id}</td>
-                      <td className="border border-gray-300 px-4 py-3 text-sm font-medium">{item.material}</td>
-                      <td className="border border-gray-300 px-4 py-3 text-center">
-                        <input
-                          type="radio"
-                          name={`iec-${item.id}`}
-                          value="true"
-                          checked={item.available === true}
-                          onChange={(e) => updateIecDisplay(item.id, 'available', true)}
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500"
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3 text-center">
-                        <input
-                          type="radio"
-                          name={`iec-${item.id}`}
-                          value="false"
-                          checked={item.available === false}
-                          onChange={(e) => updateIecDisplay(item.id, 'available', false)}
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500"
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.remarks}
-                          onChange={(e) => updateIecDisplay(item.id, 'remarks', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        );
-      case 12:
-        return (
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">S.No.</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Name of Monitoring Supervisor</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Designation</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Signature</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {monitoringSupervisors.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="border border-gray-300 px-4 py-3 text-sm">{item.id}</td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.name}
-                          onChange={(e) => updateMonitoringSupervisor(item.id, 'name', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.designation}
-                          onChange={(e) => updateMonitoringSupervisor(item.id, 'designation', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.sign}
-                          onChange={(e) => updateMonitoringSupervisor(item.id, 'sign', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          placeholder="Signature"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        );
-      case 13:
-        return (
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Key Findings</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Action Taken / Proposed</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Person(s) Responsible</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left font-medium text-gray-900">Timeline</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {keyFindings.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
-                      <td className="border border-gray-300 px-4 py-3">
-                        <textarea
-                          value={item.keyFinding}
-                          onChange={(e) => updateKeyFinding(item.id, 'keyFinding', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
-                          rows={2}
-                          placeholder="Enter key finding..."
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <textarea
-                          value={item.action}
-                          onChange={(e) => updateKeyFinding(item.id, 'action', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
-                          rows={2}
-                          placeholder="Enter action..."
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.responsible}
-                          onChange={(e) => updateKeyFinding(item.id, 'responsible', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          placeholder="Responsible person"
-                        />
-                      </td>
-                      <td className="border border-gray-300 px-4 py-3">
-                        <input
-                          type="text"
-                          value={item.timeline}
-                          onChange={(e) => updateKeyFinding(item.id, 'timeline', e.target.value)}
-                          className="w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          placeholder="Timeline"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">General Comments</label>
-              <textarea
-                value={generalComments}
-                onChange={(e) => setGeneralComments(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                rows={4}
-                placeholder="Enter any additional comments or observations..."
-              />
-            </div>
-          </div>
-        );
-      default:
-        return null;
+          if (data.results && data.results.length > 0) {
+            const address = data.results[0].formatted_address;
+
+            setInspectionData(prev => ({
+              ...prev,
+              latitude: lat,
+              longitude: lng,
+              location_accuracy: accuracy,
+              location_detected: address,
+              location_name: prev.location_name || address
+            }));
+          } else {
+            setInspectionData(prev => ({
+              ...prev,
+              latitude: lat,
+              longitude: lng,
+              location_accuracy: accuracy,
+              location_detected: 'Location detected but address not found'
+            }));
+          }
+        } catch (error) {
+          console.error('Error getting location name:', error);
+          setInspectionData(prev => ({
+            ...prev,
+            latitude: lat,
+            longitude: lng,
+            location_accuracy: accuracy,
+            location_detected: 'Unable to get address'
+          }));
+        }
+
+        setIsGettingLocation(false);
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+        setIsGettingLocation(false);
+        alert('Error getting your location. Please enable GPS and try again.');
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0
+      }
+    );
+  };
+
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    if (files.length + uploadedPhotos.length > 5) {
+      alert('Maximum 5 photos allowed');
+      return;
+    }
+    setUploadedPhotos(prev => [...prev, ...files]);
+  };
+
+  const removePhoto = (index: number) => {
+    setUploadedPhotos(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const uploadPhotosToSupabase = async (inspectionId: string) => {
+    if (uploadedPhotos.length === 0) return;
+
+    setIsUploading(true);
+
+    try {
+      for (let i = 0; i < uploadedPhotos.length; i++) {
+        const file = uploadedPhotos[i];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `Sub Centre Monitoring_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('field-visit-images')
+          .upload(fileName, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('field-visit-images')
+          .getPublicUrl(fileName);
+
+        const { error: dbError } = await supabase
+          .from('fims_inspection_photos')
+          .insert({
+            inspection_id: inspectionId,
+            photo_url: publicUrl,
+            photo_name: file.name,
+            description: `Sub Centre monitoring photo ${i + 1}`,
+            photo_order: i + 1,
+          });
+
+        if (dbError) throw dbError;
+      }
+    } catch (error) {
+      console.error('Error uploading photos:', error);
+      throw error;
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const generateInspectionNumber = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const time = String(now.getTime()).slice(-6);
+    return `SC-${year}${month}${day}-${time}`;
+  };
+
+  const handleSubmit = async (isDraft: boolean = false) => {
+    try {
+      setIsLoading(true);
+
+      const sanitizedInspectionData = {
+        ...inspectionData,
+        planned_date: inspectionData.planned_date || null
+      };
+
+      let inspectionResult;
+
+      if (editingInspection && editingInspection.id) {
+        // Update existing inspection
+        const { data: updateResult, error: updateError } = await supabase
+          .from('fims_inspections')
+          .update({
+            location_name: sanitizedInspectionData.location_name,
+            latitude: sanitizedInspectionData.latitude,
+            longitude: sanitizedInspectionData.longitude,
+            location_accuracy: sanitizedInspectionData.location_accuracy,
+            location_detected: sanitizedInspectionData.location_detected,
+            planned_date: sanitizedInspectionData.planned_date,
+            inspection_date: new Date().toISOString(),
+            status: isDraft ? 'draft' : 'submitted'
+          })
+          .eq('id', editingInspection.id)
+          .select()
+          .single();
+
+        if (updateError) throw updateError;
+        inspectionResult = updateResult;
+
+        // Update sub_centre_monitoring_checklist table - only update fields that can change
+        const { error: formUpdateError } = await supabase
+          .from('sub_centre_monitoring_checklist')
+          .update({
+            gram_panchayat_name: gpName || '',
+            panchayat_samiti: psName || '',
+            general_inspection_date: inspectionDate || new Date().toISOString().split('T')[0],
+            general_inspection_place: inspectionPlace || '',
+            inspection_officer_name: officerName || '',
+            inspection_officer_post: officerPost || '',
+            secretary_name: secretaryName || '',
+            secretary_tenure: secretaryTenure || '',
+            monthly_meetings: monthlyMeetings || '',
+            meeting_agenda_up_to_date: agendaUpToDate || '',
+            receipt_up_to_date: receiptUpToDate || '',
+            reassessment_done: reassessmentDone || '',
+            reassessment_action: reassessmentAction || '',
+            resolution_no: resolutionNo || '',
+            resolution_date: resolutionDate || new Date().toISOString().split('T')[0],
+            updated_at: new Date().toISOString()
+          })
+          .eq('inspection_id', editingInspection.id);
+
+        if (formUpdateError) throw formUpdateError;
+
+      } else {
+        // Create new inspection
+        const inspectionNumber = generateInspectionNumber();
+
+        const { data: createResult, error: createError } = await supabase
+          .from('fims_inspections')
+          .insert({
+            inspection_number: inspectionNumber,
+            category_id: sanitizedInspectionData.category_id,
+            inspector_id: user.id,
+            location_name: sanitizedInspectionData.location_name,
+            latitude: sanitizedInspectionData.latitude,
+            longitude: sanitizedInspectionData.longitude,
+            location_accuracy: sanitizedInspectionData.location_accuracy,
+            location_detected: sanitizedInspectionData.location_detected,
+            planned_date: sanitizedInspectionData.planned_date,
+            inspection_date: new Date().toISOString(),
+            status: isDraft ? 'draft' : 'submitted'
+          })
+          .select()
+          .single();
+
+        if (createError) throw createError;
+        inspectionResult = createResult;
+
+        // Insert into sub_centre_monitoring_checklist table with all required fields
+        const { error: formInsertError } = await supabase
+          .from('sub_centre_monitoring_checklist')
+          .insert({
+            inspection_id: inspectionResult.id,
+            gram_panchayat_name: gpName || '',
+            panchayat_samiti: psName || '',
+            general_inspection_date: inspectionDate || new Date().toISOString().split('T')[0],
+            general_inspection_place: inspectionPlace || '',
+            inspection_officer_name: officerName || '',
+            inspection_officer_post: officerPost || '',
+            secretary_name: secretaryName || '',
+            secretary_tenure: secretaryTenure || '',
+            monthly_meetings: monthlyMeetings || '',
+            meeting_agenda_up_to_date: agendaUpToDate || '',
+            receipt_up_to_date: receiptUpToDate || '',
+            reassessment_done: reassessmentDone || '',
+            reassessment_action: reassessmentAction || '',
+            resolution_no: resolutionNo || '',
+            resolution_date: resolutionDate || new Date().toISOString().split('T')[0],
+            previous_year_house_tax_arrears: 0,
+            previous_year_water_tax_arrears: 0,
+            current_year_house_tax_demand: 0,
+            current_year_water_tax_demand: 0,
+            total_house_tax_demand: 0,
+            total_water_tax_demand: 0,
+            total_house_tax_collection: 0,
+            total_water_tax_collection: 0,
+            balance_house_tax_collection: 0,
+            balance_water_tax_collection: 0,
+            house_tax_percentage: 0,
+            water_tax_percentage: 0,
+            remarks: '',
+            gram_panchayat_total_income: 0,
+            fifteen_percent_amount: 0,
+            previous_balance: 0,
+            total_expense: 0,
+            expense_till_inspection_date: 0,
+            balance_expense: 0,
+            budget_provision: '',
+            tenders_called: '',
+            entries_made: '',
+            form1: '', form2: '', form3: '', form4: '', form5: '', form6: '', form7: '', form8: '',
+            copy1: '', copy2: '', copy3: '',
+            copy_to_ceo: '', copy_to_bdo: '', copy_to_secretary: '',
+            sr_no_gram_nidhi: '', gram_nidhi_register_balance: '', gram_nidhi_bank_balance: '',
+            gram_nidhi_post_balance: '', gram_nidhi_hand_balance: '', gram_nidhi_check: '',
+            sr_no_water_supply: '', water_supply_register_balance: '', water_supply_bank_balance: '',
+            water_supply_post_balance: '', water_supply_hand_balance: '', water_supply_check: '',
+            sr_no_14th_finance_commission: '', _14th_finance_commission_register_balance: '',
+            _14th_finance_commission_bank_balance: '', _14th_finance_commission_post_balance: '',
+            _14th_finance_commission_hand_balance: '', _14th_finance_commission_check: '',
+            sr_no_eng_gha_yo: '', eng_gha_yo_register_balance: '', eng_gha_yo_bank_balance: '',
+            eng_gha_yo_post_balance: '', eng_gha_yo_hand_balance: '', eng_gha_yo_check: '',
+            sr_no_sc_development: '', sc_development_register_balance: '', sc_development_bank_balance: '',
+            sc_development_post_balance: '', sc_development_hand_balance: '', sc_development_check: '',
+            sr_no_labor_department: '', labor_department_register_balance: '', labor_department_bank_balance: '',
+            labor_department_post_balance: '', labor_department_hand_balance: '', labor_department_check: '',
+            sr_no_thakkar_bappa: '', thakkar_bappa_register_balance: '', thakkar_bappa_bank_balance: '',
+            thakkar_bappa_post_balance: '', thakkar_bappa_hand_balance: '', thakkar_bappa_check: '',
+            sr_no_gram_kosh_money: '', gram_kosh_money_register_balance: '', gram_kosh_money_bank_balance: '',
+            gram_kosh_money_post_balance: '', gram_kosh_money_hand_balance: '', gram_kosh_money_check: '',
+            sr_no_civic_facilities: '', civic_facilities_register_balance: '', civic_facilities_bank_balance: '',
+            civic_facilities_post_balance: '', civic_facilities_hand_balance: '', civic_facilities_check: '',
+            sr_no_dalit_basti_development: '', dalit_basti_development_register_balance: '',
+            dalit_basti_development_bank_balance: '', dalit_basti_development_post_balance: '',
+            dalit_basti_development_hand_balance: '', dalit_basti_development_check: '',
+            sr_no_tanta_mukt_yojana: '', tanta_mukt_yojana_register_balance: '', tanta_mukt_yojana_bank_balance: '',
+            tanta_mukt_yojana_post_balance: '', tanta_mukt_yojana_hand_balance: '', tanta_mukt_yojana_check: '',
+            sr_no_jan_suvidha: '', jan_suvidha_register_balance: '', jan_suvidha_bank_balance: '',
+            jan_suvidha_post_balance: '', jan_suvidha_hand_balance: '', jan_suvidha_check: '',
+            sr_no_payka: '', payka_register_balance: '', payka_bank_balance: '',
+            payka_post_balance: '', payka_hand_balance: '', payka_check: '',
+            sr_no_panchayat_samiti_yojana: '', panchayat_samiti_yojana_register_balance: '',
+            panchayat_samiti_yojana_bank_balance: '', panchayat_samiti_yojana_post_balance: '',
+            panchayat_samiti_yojana_hand_balance: '', panchayat_samiti_yojana_check: '',
+            sr_no_sbm: '', sbm_register_balance: '', sbm_bank_balance: '',
+            sbm_post_balance: '', sbm_hand_balance: '', sbm_check: '',
+            sr_no_tirthakshetra_development_fund: '', tirthakshetra_development_fund_register_balance: '',
+            tirthakshetra_development_fund_bank_balance: '', tirthakshetra_development_fund_post_balance: '',
+            tirthakshetra_development_fund_hand_balance: '', tirthakshetra_development_fund_check: '',
+            sr_no_minority_development_fund: '', minority_development_fund_register_balance: '',
+            minority_development_fund_bank_balance: '', minority_development_fund_post_balance: '',
+            minority_development_fund_hand_balance: '', minority_development_fund_check: '',
+            sr_no_egavika: '', egavika_objectives: '', egavika_status: '', egavika_remarks: '',
+            sr_no_biogas: '', biogas_objectives: '', biogas_status: '', biogas_remarks: '',
+            sr_no_smokeless_chul: '', smokeless_chul_objectives: '', smokeless_chul_status: '', smokeless_chul_remarks: '',
+            sr_no_family_welfare: '', family_welfare_objectives: '', family_welfare_status: '', family_welfare_remarks: '',
+            sr_no_alpavachnat: '', alpavachnat_objectives: '', alpavachnat_status: '', alpavachnat_remarks: '',
+            sr_no_6: '', sr_no_6_objectives: '', sr_no_6_status: '', sr_no_6_remarks: '',
+            sr_no_7: '', sr_no_7_objectives: '', sr_no_7_status: '', sr_no_7_remarks: '',
+            sr_no_14_finance_scheme_1: '', _14_finance_scheme_1_type: '',
+            _14_finance_scheme_1_estimate_amount: 0, _14_finance_scheme_1_grant_received: 0, _14_finance_scheme_1_expense: 0,
+            sr_no_14_finance_scheme_2: '', _14_finance_scheme_2_type: '',
+            _14_finance_scheme_2_estimate_amount: 0, _14_finance_scheme_2_grant_received: 0, _14_finance_scheme_2_expense: 0,
+            sr_no_14_finance_scheme_3: '', _14_finance_scheme_3_type: '',
+            _14_finance_scheme_3_estimate_amount: 0, _14_finance_scheme_3_grant_received: 0, _14_finance_scheme_3_expense: 0,
+            sr_no_14_finance_scheme_4: '', _14_finance_scheme_4_type: '',
+            _14_finance_scheme_4_estimate_amount: 0, _14_finance_scheme_4_grant_received: 0, _14_finance_scheme_4_expense: 0,
+            sr_no_14_finance_scheme_5: '', _14_finance_scheme_5_type: '',
+            _14_finance_scheme_5_estimate_amount: 0, _14_finance_scheme_5_grant_received: 0, _14_finance_scheme_5_expense: 0,
+            sr_no_14_finance_scheme_6: '', _14_finance_scheme_6_type: '',
+            _14_finance_scheme_6_estimate_amount: 0, _14_finance_scheme_6_grant_received: 0, _14_finance_scheme_6_expense: 0,
+            sr_no_14_finance_scheme_7: '', _14_finance_scheme_7_type: '',
+            _14_finance_scheme_7_estimate_amount: 0, _14_finance_scheme_7_grant_received: 0, _14_finance_scheme_7_expense: 0,
+            sr_no_14_finance_scheme_8: '', _14_finance_scheme_8_type: '',
+            _14_finance_scheme_8_estimate_amount: 0, _14_finance_scheme_8_grant_received: 0, _14_finance_scheme_8_expense: 0,
+            sr_no_14_finance_scheme_9: '', _14_finance_scheme_9_type: '',
+            _14_finance_scheme_9_estimate_amount: 0, _14_finance_scheme_9_grant_received: 0, _14_finance_scheme_9_expense: 0,
+            sr_no_14_finance_scheme_10: '', _14_finance_scheme_10_type: '',
+            _14_finance_scheme_10_estimate_amount: 0, _14_finance_scheme_10_grant_received: 0, _14_finance_scheme_10_expense: 0,
+            sr_no_14_finance_scheme_11: '', _14_finance_scheme_11_type: '',
+            _14_finance_scheme_11_estimate_amount: 0, _14_finance_scheme_11_grant_received: 0, _14_finance_scheme_11_expense: 0,
+            work_start_date_1: new Date().toISOString().split('T')[0],
+            work_completion_date_1: new Date().toISOString().split('T')[0],
+            progress_status_1: '', certificate_received_1: '', remarks_1: '',
+            inspection_officer_opinion_1: '', inspection_officer_opinion_2: '', inspection_officer_opinion_3: '',
+            inspection_officer_opinion_4: '', inspection_officer_opinion_5: '', inspection_officer_opinion_6: '',
+            inspection_officer_opinion_7: '', inspection_officer_opinion_8: ''
+          });
+
+        if (formInsertError) throw formInsertError;
+      }
+
+      if (uploadedPhotos.length > 0) {
+        await uploadPhotosToSupabase(inspectionResult.id);
+      }
+
+      const isUpdate = editingInspection && editingInspection.id;
+      const message = isDraft
+        ? (isUpdate ? 'Inspection updated as draft' : 'Inspection saved as draft')
+        : (isUpdate ? 'Inspection updated successfully' : 'Inspection submitted successfully');
+
+      alert(message);
+      onInspectionCreated();
+      onBack();
+
+    } catch (error: any) {
+      console.error('Error saving inspection:', error);
+      alert('Error saving inspection: ' + error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <header className="mb-8">
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Sub Centre Monitoring Checklist</h1>
-                <p className="text-gray-600 mt-2">Comprehensive assessment and monitoring tool for healthcare facilities</p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-500">Date: {date}</p>
-                <p className="text-sm text-gray-500">District: {district}</p>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <div className="flex gap-8">
-          <div className="w-80 flex-shrink-0">
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 sticky top-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Sections</h3>
-              <nav className="space-y-2">
-                {sections.map((section) => {
-                  const IconComponent = section.icon;
-                  return (
-                    <button
-                      key={section.id}
-                      onClick={() => setCurrentSection(section.id)}
-                      className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                        currentSection === section.id
-                          ? 'bg-blue-100 text-blue-700 border-l-4 border-blue-500'
-                          : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                      }`}
-                    >
-                      <IconComponent className="mr-3 h-5 w-5" />
-                      <span className="text-left">{section.title}</span>
-                    </button>
-                  );
-                })}
-              </nav>
-
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-gray-600">Progress</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {currentSection}/{sections.length}
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${(currentSection / sections.length) * 100}%` }}
-                  ></div>
-                </div>
-              </div>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-4 md:p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 md:p-8 mb-6">
+          <div className="flex items-center justify-between mb-6">
+            <button
+              onClick={onBack}
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors duration-200 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              <span className="font-medium">Back</span>
+            </button>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 text-center flex-1">
+              ग्राम पंचायत तपासणी
+            </h1>
+            <div className="w-24"></div>
           </div>
 
-          <div className="flex-1">
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-semibold text-gray-900">
-                  Section {currentSection}: {sections.find(s => s.id === currentSection)?.title}
-                </h2>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setCurrentSection(Math.max(1, currentSection - 1))}
-                    disabled={currentSection === 1}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Previous
-                  </button>
-                  <button
-                    onClick={() => setCurrentSection(Math.min(sections.length, currentSection + 1))}
-                    disabled={currentSection === sections.length}
-                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
+          <p className="text-base md:text-lg text-gray-600 text-center font-medium">
+            ग्राम पंचायत निरीक्षण प्रपत्र भरा
+          </p>
+        </div>
+
+        {/* Form Content */}
+        <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
+          <div style={{ fontFamily: 'Arial, sans-serif', direction: 'ltr' }}>
+            <h1 style={{ textAlign: 'center', color: '#1f2937', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>परिशिष्ट-चार</h1>
+            <p style={{ textAlign: 'center', fontWeight: 'bold', color: '#374151' }}>(नियम 80 पहा)</p>
+            <p style={{ textAlign: 'center', fontWeight: 'bold', color: '#374151', marginBottom: '2rem' }}>(ख)ग्राम पंचायतांची सर्वसाधारण तपासणीचा नमुना</p>
+
+            {/* Basic Information Section */}
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg mb-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <FileText className="w-6 h-6 text-blue-600" />
+                मूळ माहिती
+              </h2>
+
+              <ol style={{ marginLeft: '20px', lineHeight: '2.5' }}>
+                <li className="mb-4">
+                  <label className="font-semibold text-gray-700">ग्राम पंचायतिचे नांव:</label>
+                  <input
+                    type="text"
+                    value={gpName}
+                    onChange={(e) => setGpName(e.target.value)}
+                    className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
+                    placeholder="ग्राम पंचायतिचे नांव"
+                  />
+                  <label className="ml-4 font-semibold text-gray-700">पंचायत समिती:</label>
+                  <input
+                    type="text"
+                    value={psName}
+                    onChange={(e) => setPsName(e.target.value)}
+                    className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
+                    placeholder="पंचायत समिती"
+                  />
+                </li>
+                <li className="mb-4">
+                  <label className="font-semibold text-gray-700">(क) सर्वसाधारण तपासणीची तारीख:</label>
+                  <input
+                    type="date"
+                    value={inspectionDate}
+                    onChange={(e) => setInspectionDate(e.target.value)}
+                    className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </li>
+                <li className="mb-4">
+                  <label className="font-semibold text-gray-700">(ख) सर्वसाधारण तपासणीचे ठिकाण:</label>
+                  <input
+                    type="text"
+                    value={inspectionPlace}
+                    onChange={(e) => setInspectionPlace(e.target.value)}
+                    className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-80"
+                    placeholder="तपासणीचे ठिकाण"
+                  />
+                </li>
+                <li className="mb-4">
+                  <label className="font-semibold text-gray-700">तपासणी अधिकारीाचे नांव व हुद्दा:</label>
+                  <input
+                    type="text"
+                    value={officerName}
+                    onChange={(e) => setOfficerName(e.target.value)}
+                    className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-56"
+                    placeholder="अधिकारीाचे नांव"
+                  />
+                  <span className="mx-2 text-gray-500">/</span>
+                  <input
+                    type="text"
+                    value={officerPost}
+                    onChange={(e) => setOfficerPost(e.target.value)}
+                    className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-56"
+                    placeholder="हुद्दा"
+                  />
+                </li>
+                <li className="mb-4">
+                  <label className="font-semibold text-gray-700">सचिवाचे नांव व तो सदस्य पंचायतीत केलेला पासून काम करीत आहे:</label>
+                  <input
+                    type="text"
+                    value={secretaryName}
+                    onChange={(e) => setSecretaryName(e.target.value)}
+                    className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-56"
+                    placeholder="सचिवाचे नांव"
+                  />
+                  <span className="mx-2 text-gray-500">/</span>
+                  <input
+                    type="text"
+                    value={secretaryTenure}
+                    onChange={(e) => setSecretaryTenure(e.target.value)}
+                    className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-56"
+                    placeholder="कार्यकाळ"
+                  />
+                </li>
+              </ol>
             </div>
 
-            <form onSubmit={handleSubmit}>
-              {renderCurrentSection()}
+            {/* Location Section - Added After Basic Information */}
+            <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-lg mb-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <MapPin className="w-6 h-6 text-green-600" />
+                स्थान माहिती
+              </h2>
 
-              {currentSection === sections.length && (
-                <div className="mt-8 flex justify-center">
-                  <button
-                    type="submit"
-                    className="px-8 py-3 text-lg font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-                  >
-                    Generate Report & Export JSON
-                  </button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    स्थानाचे नाव
+                  </label>
+                  <input
+                    type="text"
+                    value={inspectionData.location_name || gpName}
+                    onChange={(e) => setInspectionData(prev => ({...prev, location_name: e.target.value}))}
+                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="स्थानाचे नाव"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    तारीख
+                  </label>
+                  <input
+                    type="date"
+                    value={inspectionData.planned_date || ''}
+                    onChange={(e) => setInspectionData(prev => ({...prev, planned_date: e.target.value}))}
+                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={getCurrentLocation}
+                disabled={isGettingLocation}
+                className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white py-4 px-6 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 flex items-center justify-center gap-3 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-lg mb-4"
+              >
+                <MapPin className="w-6 h-6" />
+                {isGettingLocation ? 'स्थान मिळवत आहे...' : 'GPS स्थान मिळवा'}
+              </button>
+
+              {inspectionData.latitude && (
+                <div className="p-4 bg-white border-2 border-green-300 rounded-lg shadow-sm">
+                  <p className="text-sm text-green-800">
+                    <strong className="text-lg">स्थान कॅप्चर केले:</strong><br />
+                    <span className="inline-block mt-2">
+                      <strong>अक्षांश:</strong> {inspectionData.latitude.toFixed(6)}<br />
+                      <strong>रेखांश:</strong> {inspectionData.longitude?.toFixed(6)}<br />
+                      <strong>अचूकता:</strong> {inspectionData.location_accuracy ? Math.round(inspectionData.location_accuracy) + 'm' : 'N/A'}
+                    </span>
+                  </p>
                 </div>
               )}
-            </form>
+            </div>
+
+            {/* Meeting Information */}
+            <div className="bg-purple-50 border-l-4 border-purple-500 p-6 rounded-lg mb-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <Users className="w-6 h-6 text-purple-600" />
+                सभा माहिती
+              </h2>
+
+              <ol start={6} style={{ marginLeft: '20px', lineHeight: '2.5' }}>
+                <li className="mb-4">
+                  <label className="font-semibold text-gray-700">मासिक सभा नियमांनुसार नियमितपणे होतात काय ?</label>
+                  <div className="ml-6 mt-2 space-x-6">
+                    <label className="inline-flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="monthlyMeetings"
+                        value="होय"
+                        checked={monthlyMeetings === 'होय'}
+                        onChange={(e) => setMonthlyMeetings(e.target.value)}
+                        className="w-5 h-5 text-purple-600 focus:ring-purple-500"
+                      />
+                      <span className="ml-2 text-gray-800 font-medium">होय</span>
+                    </label>
+                    <label className="inline-flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="monthlyMeetings"
+                        value="नाही"
+                        checked={monthlyMeetings === 'नाही'}
+                        onChange={(e) => setMonthlyMeetings(e.target.value)}
+                        className="w-5 h-5 text-purple-600 focus:ring-purple-500"
+                      />
+                      <span className="ml-2 text-gray-800 font-medium">नाही</span>
+                    </label>
+                  </div>
+                </li>
+                <ul style={{ marginLeft: '20px' }}>
+                  <li className="mb-4">
+                    <label className="font-semibold text-gray-700">सभेची कार्यसूची व सभेची नोंदवही ईत्यादी अद्यावत आहे काय ?</label>
+                    <div className="ml-6 mt-2 space-x-6">
+                      <label className="inline-flex items-center cursor-pointer">
+                        <input
+                          type="radio"
+                          name="agendaUpToDate"
+                          value="होय"
+                          checked={agendaUpToDate === 'होय'}
+                          onChange={(e) => setAgendaUpToDate(e.target.value)}
+                          className="w-5 h-5 text-purple-600 focus:ring-purple-500"
+                        />
+                        <span className="ml-2 text-gray-800 font-medium">होय</span>
+                      </label>
+                      <label className="inline-flex items-center cursor-pointer">
+                        <input
+                          type="radio"
+                          name="agendaUpToDate"
+                          value="नाही"
+                          checked={agendaUpToDate === 'नाही'}
+                          onChange={(e) => setAgendaUpToDate(e.target.value)}
+                          className="w-5 h-5 text-purple-600 focus:ring-purple-500"
+                        />
+                        <span className="ml-2 text-gray-800 font-medium">नाही</span>
+                      </label>
+                    </div>
+                  </li>
+                </ul>
+              </ol>
+            </div>
+
+            <div className="overflow-x-auto mb-6">
+              <table className="w-full border-collapse bg-white shadow-md rounded-lg overflow-hidden">
+                <thead>
+                  <tr className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                    <th className="px-4 py-3 text-center border border-blue-500">अ.क्र.</th>
+                    <th className="px-4 py-3 text-center border border-blue-500">नोंदवहीचे नाव</th>
+                    <th className="px-4 py-3 text-center border border-blue-500">तपासणीच्या तारखेला शिल्लक</th>
+                    <th className="px-4 py-3 text-center border border-blue-500">बँकेतिल शिल्लक</th>
+                    <th className="px-4 py-3 text-center border border-blue-500">पोस्टातिल शिल्लक</th>
+                    <th className="px-4 py-3 text-center border border-blue-500">हाती असलेली शिल्लक</th>
+                    <th className="px-4 py-3 text-center border border-blue-500">चेक</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">1</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">ग्रामनिधी</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">2</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">पाणी पुरवठा</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="overflow-x-auto mb-6">
+              <table className="w-full border-collapse bg-white shadow-md rounded-lg overflow-hidden">
+                <thead>
+                  <tr className="bg-gradient-to-r from-teal-600 to-teal-700 text-white">
+                    <th colSpan={7} className="px-4 py-3 text-center border border-teal-500 text-lg font-bold">(7) रोकड वहीचा तपशील</th>
+                  </tr>
+                  <tr className="bg-teal-100">
+                    <th className="px-4 py-3 text-center border border-gray-300">अ.क्र.</th>
+                    <th className="px-4 py-3 text-center border border-gray-300">नोंदवहीचे नाव</th>
+                    <th className="px-4 py-3 text-center border border-gray-300">तपासणीच्या तारीखेला शिल्लक</th>
+                    <th className="px-4 py-3 text-center border border-gray-300">बँकेतिल शिल्लक</th>
+                    <th className="px-4 py-3 text-center border border-gray-300">पोस्टातिल शिल्लक</th>
+                    <th className="px-4 py-3 text-center border border-gray-300">हाती असलेली शिल्लक</th>
+                    <th className="px-4 py-3 text-center border border-gray-300">चेक</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ["1", "ग्रामनिधी"],
+                    ["2", "पाणी पुरवठा"],
+                    ["3", "14 वा वित्त आयोग"],
+                    ["4", "इं.गा.यो."],
+                    ["5", "अ.जा.विकास"],
+                    ["6", "मजगारोहयो"],
+                    ["7", "ठक्कर बाप्पा"],
+                    ["8", "ग्रामकोष पैसा"],
+                    ["9", "नागरी सुविधा"],
+                    ["10", "दलित वस्ती विकास"],
+                    ["11", "तंटा मुक्त योजना"],
+                    ["12", "जनसुविधा"],
+                    ["13", "पायका"],
+                    ["14", "प.सं.योजना"],
+                    ["15", "SBM"],
+                    ["16", "तीर्थक्षेत्र विकास निधी"],
+                    ["17", "अल्पसंख्यांक विकास निधी"]
+                  ].map((row, index) => (
+                    <tr key={index} className={index % 2 === 0 ? 'bg-gray-50 hover:bg-gray-100' : 'bg-white hover:bg-gray-50'}>
+                      <td className="px-4 py-3 text-center border border-gray-300">{row[0]}</td>
+                      <td className="px-4 py-3 border border-gray-300 font-medium">{row[1]}</td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg mb-6">
+              <h3 className="text-lg font-bold text-gray-800 mb-4">(8)(क) कर आकारणी नोंदवही(नमुना 8) :- नाही</h3>
+              <p className="mb-3 text-gray-700">1.कराच्या मागणीचे नोंदणी पुस्तक (नमुना 9):-</p>
+              <p className="mb-4 text-gray-700">
+                2.कराची पावती (नमुना 10):-हे अद्यावत आहे काय ?
+                <span className="ml-6 space-x-6">
+                  <label className="inline-flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="receiptUpToDate"
+                      value="होय"
+                      checked={receiptUpToDate === 'होय'}
+                      onChange={(e) => setReceiptUpToDate(e.target.value)}
+                      className="w-5 h-5 text-yellow-600 focus:ring-yellow-500"
+                    />
+                    <span className="ml-2 text-gray-800 font-medium">होय</span>
+                  </label>
+                  <label className="inline-flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="receiptUpToDate"
+                      value="नाही"
+                      checked={receiptUpToDate === 'नाही'}
+                      onChange={(e) => setReceiptUpToDate(e.target.value)}
+                      className="w-5 h-5 text-yellow-600 focus:ring-yellow-500"
+                    />
+                    <span className="ml-2 text-gray-800 font-medium">नाही</span>
+                  </label>
+                </span>
+              </p>
+              <p className="mb-3 text-gray-700">(ख) मागील फेर आकारणी केलेली झाली ? दिनांक
+                <input type="date" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+                / / ठराव क्रमांक -
+                <input
+                  type="text"
+                  value={resolutionNo}
+                  onChange={(e) => setResolutionNo(e.target.value)}
+                  className="ml-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 w-40"
+                />
+              </p>
+              <p className="mb-3 text-gray-700">नाही</p>
+              <p className="mb-3 text-gray-700">(ग) चार वर्षे पूर्ण झालेली असल्यास ,नटल्याने फेर आकारणी करण्यासाठी कार्यवाही चालू आहे किंवा नाही ?</p>
+              <div className="ml-6 space-x-6">
+                <label className="inline-flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="reassessmentAction"
+                    value="होय"
+                    checked={reassessmentAction === 'होय'}
+                    onChange={(e) => setReassessmentAction(e.target.value)}
+                    className="w-5 h-5 text-yellow-600 focus:ring-yellow-500"
+                  />
+                  <span className="ml-2 text-gray-800 font-medium">होय</span>
+                </label>
+                <label className="inline-flex items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    name="reassessmentAction"
+                    value="नाही"
+                    checked={reassessmentAction === 'नाही'}
+                    onChange={(e) => setReassessmentAction(e.target.value)}
+                    className="w-5 h-5 text-yellow-600 focus:ring-yellow-500"
+                  />
+                  <span className="ml-2 text-gray-800 font-medium">नाही</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="bg-pink-50 border-l-4 border-pink-500 p-6 rounded-lg mb-6">
+              <h3 className="text-lg font-bold text-gray-800 mb-4">(9) तपासणी तारखेस कर वसुलीची प्रगती खालीलप्रमाणे आहे :-</h3>
+              <ul style={{ marginLeft: '20px', lineHeight: '2.5' }}>
+                <li className="mb-3">
+                  <label className="font-semibold text-gray-700">(1) मागील येणे रक्कम :- </label>
+                  गृहकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                  पाणीकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                </li>
+                <li className="mb-3">
+                  <label className="font-semibold text-gray-700">(2) चालू वर्षात मागणी :- </label>
+                  गृहकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                  पाणीकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                </li>
+                <li className="mb-3">
+                  <label className="font-semibold text-gray-700">(3) एकुण मागणी :- </label>
+                  गृहकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                  पाणीकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                </li>
+                <li className="mb-3">
+                  <label className="font-semibold text-gray-700">(4) एकुण वसूली :- </label>
+                  गृहकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                  पाणीकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                </li>
+                <li className="mb-3">
+                  <label className="font-semibold text-gray-700">(5) शिल्लक वसूली :- </label>
+                  गृहकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                  पाणीकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                </li>
+                <li className="mb-3">
+                  <label className="font-semibold text-gray-700">(6) टक्केवारी :- </label>
+                  गृहकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                  पाणीकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                </li>
+                <li className="mb-3">
+                  <label className="font-semibold text-gray-700">(7) शेरा :- </label>
+                  <input type="text" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-96" />
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-indigo-50 border-l-4 border-indigo-500 p-6 rounded-lg mb-6">
+              <h3 className="text-lg font-bold text-gray-800 mb-4">(10) मागास वर्गीयाकरीता राखून ठेवलेल्या 15% निधीच्या खर्चाचा तपशील:-</h3>
+              <ul style={{ marginLeft: '20px', lineHeight: '2.5' }}>
+                <li className="mb-3">
+                  <label className="font-semibold text-gray-700">(1) ग्राम पंचायतीचे एकुण उत्पन्न :- </label>
+                  <input type="number" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" />
+                </li>
+                <li className="mb-3">
+                  <label className="font-semibold text-gray-700">(2) 15% रक्कम :- </label>
+                  <input type="number" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" />
+                </li>
+                <li className="mb-3">
+                  <label className="font-semibold text-gray-700">(3) मागील अनुशेष </label>
+                  <input type="number" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" />
+                </li>
+                <li className="mb-3">
+                  <label className="font-semibold text-gray-700">(4) करावयाचा एकुण खर्च </label>
+                  <input type="number" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" />
+                </li>
+                <li className="mb-3">
+                  <label className="font-semibold text-gray-700">(5) तपासणीत्या दिनांक पर्यंत झालेला खर्च: </label>
+                  <input type="number" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" />
+                </li>
+                <li className="mb-3">
+                  <label className="font-semibold text-gray-700">(6) शिल्लक खर्च </label>
+                  <input type="number" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" />
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-orange-50 border-l-4 border-orange-500 p-6 rounded-lg mb-6">
+              <h3 className="text-lg font-bold text-gray-800 mb-3">(7) सूचना-</h3>
+              <h3 className="text-lg font-bold text-gray-800 mb-4">(11) आर्थिक व्यवहारात निर्देशानुसार आलेल्या नियमबाह्यता -</h3>
+              <p className="mb-4 text-gray-700">
+                (क) कोणत्याही चालू खरेदी करणाऱ्यापूर्वी अंदाजपत्रकात योग्य तरतूद केली आहे काय ?
+                <span className="ml-6 space-x-6">
+                  <label className="inline-flex items-center cursor-pointer">
+                    <input type="radio" name="budgetProvision" value="होय" className="w-5 h-5 text-orange-600 focus:ring-orange-500" />
+                    <span className="ml-2 text-gray-800 font-medium">होय</span>
+                  </label>
+                  <label className="inline-flex items-center cursor-pointer">
+                    <input type="radio" name="budgetProvision" value="नाही" className="w-5 h-5 text-orange-600 focus:ring-orange-500" />
+                    <span className="ml-2 text-gray-800 font-medium">नाही</span>
+                  </label>
+                </span>
+              </p>
+              <p className="mb-4 text-gray-700">(ख) ग्राम पंचायत खरेदीसाठी मान्यता दिली आहे काय ? ठराव क्र.
+                <input type="text" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 w-32" />
+                दि.
+                <input type="date" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" />
+                /
+              </p>
+              <p className="mb-4 text-gray-700">(ग) खरेदी करण्यासाठी नियमप्रमाणे दरपत्रके मागविली होती काय ?
+                <span className="ml-6 space-x-6">
+                  <label className="inline-flex items-center cursor-pointer">
+                    <input type="radio" name="tendersCalled" value="होय" className="w-5 h-5 text-orange-600 focus:ring-orange-500" />
+                    <span className="ml-2 text-gray-800 font-medium">होय</span>
+                  </label>
+                  <label className="inline-flex items-center cursor-pointer">
+                    <input type="radio" name="tendersCalled" value="नाही" className="w-5 h-5 text-orange-600 focus:ring-orange-500" />
+                    <span className="ml-2 text-gray-800 font-medium">नाही</span>
+                  </label>
+                </span>
+              </p>
+              <p className="mb-4 text-gray-700">(घ) खरेदी केलेल्या साहित्याचा नमुना 9,15 व 16 मधील नोंदवहीत नोंदी घेण्यात आल्या आहेत काय ?</p>
+              <div className="ml-6 space-x-6">
+                <label className="inline-flex items-center cursor-pointer">
+                  <input type="radio" name="entriesMade" value="होय" className="w-5 h-5 text-orange-600 focus:ring-orange-500" />
+                  <span className="ml-2 text-gray-800 font-medium">होय</span>
+                </label>
+                <label className="inline-flex items-center cursor-pointer">
+                  <input type="radio" name="entriesMade" value="नाही" className="w-5 h-5 text-orange-600 focus:ring-orange-500" />
+                  <span className="ml-2 text-gray-800 font-medium">नाही</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="bg-gray-50 border-l-4 border-gray-500 p-6 rounded-lg mb-6">
+              <p className="text-gray-700 font-semibold mb-4">(12) ग्राम पंचायताने स्वतःच्या निधीतून किंवा शासकीय/जिल्हा परिषद योजनेंतर्गत हात घेतलेल्या कामांचा तपशील-</p>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse bg-white shadow-md rounded-lg overflow-hidden mb-4">
+                  <thead>
+                    <tr className="bg-gradient-to-r from-gray-600 to-gray-700 text-white">
+                      <th className="px-4 py-3 text-center border border-gray-500">अ.क्र.</th>
+                      <th className="px-4 py-3 text-center border border-gray-500">योजनेचे नांव</th>
+                      <th className="px-4 py-3 text-center border border-gray-500">कामाचा प्रकार</th>
+                      <th className="px-4 py-3 text-center border border-gray-500">अंदाजित रक्कम</th>
+                      <th className="px-4 py-3 text-center border border-gray-500">मिळालेले अनुदान</th>
+                      <th className="px-4 py-3 text-center border border-gray-500">झालेला खर्च</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-center border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:outline-none text-center" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:outline-none" /></td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <table className="w-full border-collapse bg-white shadow-md rounded-lg overflow-hidden">
+                  <thead>
+                    <tr className="bg-gradient-to-r from-gray-600 to-gray-700 text-white">
+                      <th className="px-4 py-3 text-center border border-gray-500">काम सुरु झाल्याची तारीख</th>
+                      <th className="px-4 py-3 text-center border border-gray-500">काम पूर्ण झाल्याची तारीख</th>
+                      <th className="px-4 py-3 text-center border border-gray-500">प्रगतीवर असलेल्या कामाची सद्य:स्थिती</th>
+                      <th className="px-4 py-3 text-center border border-gray-500">पूर्णत्वाचे प्रमाणपत्र प्राप्त केले किंवा नाही</th>
+                      <th className="px-4 py-3 text-center border border-gray-500">शेरा</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-4 py-3 border border-gray-300"><input type="date" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="date" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300">
+                        <div className="space-x-4">
+                          <label className="inline-flex items-center"><input type="radio" name="certificate1" value="होय" className="w-4 h-4 text-gray-600" /> <span className="ml-1">होय</span></label>
+                          <label className="inline-flex items-center"><input type="radio" name="certificate1" value="नाही" className="w-4 h-4 text-gray-600" /> <span className="ml-1">नाही</span></label>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:outline-none" /></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="bg-cyan-50 border-l-4 border-cyan-500 p-6 rounded-lg mb-6">
+              <p className="text-gray-700 font-semibold mb-4">(13) ग्राम पंचायतांनी इतर योजनामध्ये केलेली प्रगती</p>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse bg-white shadow-md rounded-lg overflow-hidden">
+                  <thead>
+                    <tr className="bg-gradient-to-r from-cyan-600 to-cyan-700 text-white">
+                      <th className="px-4 py-3 text-center border border-cyan-500">अ.क्र.</th>
+                      <th className="px-4 py-3 text-center border border-cyan-500">योजनेचे नाव</th>
+                      <th className="px-4 py-3 text-center border border-cyan-500">दिलेली उद्दिष्टे</th>
+                      <th className="px-4 py-3 text-center border border-cyan-500">तपासणीच्या दिनांकास</th>
+                      <th className="px-4 py-3 text-center border border-cyan-500">शेरा</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-center border border-gray-300">1</td>
+                      <td className="px-4 py-3 border border-gray-300 font-medium">एगाविका.</td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                    </tr>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-center border border-gray-300">2</td>
+                      <td className="px-4 py-3 border border-gray-300 font-medium">बॉयोगॅस</td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                    </tr>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-center border border-gray-300">3</td>
+                      <td className="px-4 py-3 border border-gray-300 font-medium">निर्धूर चुल</td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                    </tr>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-center border border-gray-300">4</td>
+                      <td className="px-4 py-3 border border-gray-300 font-medium">कुंटुंब कल्याण</td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                    </tr>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-center border border-gray-300">5</td>
+                      <td className="px-4 py-3 border border-gray-300 font-medium">अल्पवचत</td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                    </tr>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-center border border-gray-300">6</td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                    </tr>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-center border border-gray-300">7</td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none" /></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto mb-6">
+              <table className="w-full border-collapse bg-white shadow-md rounded-lg overflow-hidden">
+                <thead>
+                  <tr className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white">
+                    <th colSpan={6} className="px-4 py-3 text-center border border-emerald-500 text-lg font-bold">(14) 14 वा वित्त आयोगामधून हाती घेतलेली कामे व त्याची प्रगती .</th>
+                  </tr>
+                  <tr className="bg-emerald-100">
+                    <th className="px-4 py-3 text-center border border-gray-300">अ. क्र.</th>
+                    <th className="px-4 py-3 text-center border border-gray-300">योजनेचे नाव</th>
+                    <th className="px-4 py-3 text-center border border-gray-300">कामाचा प्रकार</th>
+                    <th className="px-4 py-3 text-center border border-gray-300">अंदाजित रक्कम</th>
+                    <th className="px-4 py-3 text-center border border-gray-300">मिळालेले अनुदान</th>
+                    <th className="px-4 py-3 text-center border border-gray-300">झालेला खर्च</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">1</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">14 वा वित्त आयोग</td>
+                    <td className="px-4 py-3 border border-gray-300">एल.ई.डी.लाईट खरेदी</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">2</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">कचरा कुंडी</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">3</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">फर्निचर</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">4</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">टि.व्हि.संच खरेदी</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">5</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">आपले सरकार सेवा केंद्र खर्च</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">6</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">वाटर मिटर</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">7</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">सीसीरोड</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">8</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">आपले सरकार सेवा केंद्र खर्च</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">9</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">फॉगिंग मशीन</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">10</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">ग्रांपभवन</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">11</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">कंप्युटर</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="number" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" /></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg mb-6">
+              <h1 className="text-xl font-bold text-gray-900 mb-4 text-center">तपासणी अधिकार्‍याचा अभिप्राय</h1>
+              <div className="space-y-3">
+                <p className="text-gray-700">1) नमुना - - - - -  अपूर्ण आहेत. <input type="text" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-96" /></p>
+                <p className="text-gray-700">2) - ----- . <input type="text" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-96" /></p>
+                <br />
+                <p className="text-gray-700">3) --- . <input type="text" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-96" /></p>
+                <p className="text-gray-700">4) --- . <input type="text" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-96" /></p>
+                <p className="text-gray-700">5) --- . <input type="text" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-96" /></p>
+                <p className="text-gray-700">6) --- . <input type="text" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-96" /></p>
+                <p className="text-gray-700">7) --- . <input type="text" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-96" /></p>
+                <p className="text-gray-700">8) --- . <input type="text" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 w-96" /></p>
+              </div>
+            </div>
+
+            {/* Photo Upload Section */}
+            <div className="bg-violet-50 border-l-4 border-violet-500 p-6 rounded-lg mb-6">
+              <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <Camera className="w-6 h-6 text-violet-600" />
+                फोटो अपलोड
+              </h3>
+
+              <div>
+                <label className="block mb-3">
+                  <span className="sr-only">Choose photos</span>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    className="block w-full text-sm text-gray-500
+                      file:mr-4 file:py-3 file:px-6
+                      file:rounded-lg file:border-0
+                      file:text-sm file:font-semibold
+                      file:bg-violet-600 file:text-white
+                      hover:file:bg-violet-700
+                      file:cursor-pointer cursor-pointer
+                      file:transition-colors"
+                  />
+                </label>
+
+                {uploadedPhotos.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
+                    {uploadedPhotos.map((file, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`Preview ${index + 1}`}
+                          className="w-full h-40 object-cover rounded-lg shadow-md"
+                        />
+                        <button
+                          onClick={() => removePhoto(index)}
+                          className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow-lg transition-colors"
+                        >
+                          ×
+                        </button>
+                        <p className="text-xs text-gray-600 truncate mt-2 px-1">{file.name}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* प्रतिलिपी Section */}
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg mb-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">प्रतिलिपी:-</h3>
+              <div className="space-y-2 text-gray-700">
+                <p>1) मा.मुख्य कार्यकारी अधिकारी जिल्हा परिषद,चंद्रपूर यांना माहितीस सविनय सादर.</p>
+                <p>2) गट विकास अधिकारी,पंचायत समिती---------------------यांना माहितीस सादर.</p>
+                <p>3) सचिव ग्रामपंचायत---------------------यांना माहितीस व उचित कार्यवाहीस अवगत.</p>
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* Submit Buttons */}
+        {!isViewMode && (
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 pb-8">
+            <button
+              onClick={() => handleSubmit(true)}
+              disabled={isLoading || isUploading}
+              className="px-10 py-4 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-lg flex items-center justify-center gap-2"
+            >
+              <Save className="w-5 h-5" />
+              {isLoading ? 'सेव्ह करत आहे...' : 'मसुदा सेव्ह करा'}
+            </button>
+
+            <button
+              onClick={() => handleSubmit(false)}
+              disabled={isLoading || isUploading}
+              className="px-10 py-4 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-lg flex items-center justify-center gap-2"
+            >
+              <Send className="w-5 h-5" />
+              {isLoading ? 'सबमिट करत आहे...' : 'तपासणी सबमिट करा'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
 };
-
-export default SubCenterMonitoringChecklist;

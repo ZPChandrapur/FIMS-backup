@@ -14,7 +14,7 @@ import { MumbaiNyayalayTapasaniForm } from './MumbaiNyayalayTapasaniForm';
 import { PahuvaidhakiyaTapasaniForm } from './PahuvaidhakiyaTapasaniForm.tsx';
 import { GrampanchayatInspectionForm } from './GrampanchayatInspectionForm';
 import { HealthInspectionForm } from './HealthInspectionForm';
-import SubCenterMonitoringChecklist from './SubCenterMonitoringChecklist';
+import { SubCenterMonitoringChecklist } from './SubCenterMonitoringChecklist';
 
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
@@ -221,7 +221,13 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
 
     if (selectedInspectionType === 'Sub Centre Monitoring') {
       return (
-        <SubCenterMonitoringChecklist />
+        <SubCenterMonitoringChecklist
+          user={user}
+          onBack={handleBackToSelection}
+          categories={categories}
+          onInspectionCreated={onInspectionCreated}
+          editingInspection={editingInspection}
+        />
       );
     }
 
