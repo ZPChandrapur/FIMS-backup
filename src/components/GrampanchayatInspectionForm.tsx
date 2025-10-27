@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
   Camera,
@@ -8,8 +9,28 @@ import {
   FileText,
   Users
 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
-export const GrampanchayatInspectionForm: React.FC = () => {
+interface GrampanchayatFormProps {
+  user: SupabaseUser;
+  onBack: () => void;
+  categories: any[];
+  onInspectionCreated: () => void;
+  editingInspection?: any;
+}
+
+export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
+  user,
+  onBack,
+  categories,
+  onInspectionCreated,
+  editingInspection
+}) => {
+  const { t } = useTranslation();
+
+  const isViewMode = editingInspection?.mode === 'view';
+  const isEditMode = editingInspection?.mode === 'edit';
   const [monthlyMeetings, setMonthlyMeetings] = useState('');
   const [agendaUpToDate, setAgendaUpToDate] = useState('');
   const [receiptUpToDate, setReceiptUpToDate] = useState('');
@@ -43,6 +64,50 @@ export const GrampanchayatInspectionForm: React.FC = () => {
     location_detected: ''
   });
 
+  const grampanchayatCategory = categories.find(cat => cat.form_type === 'grampanchayat' || cat.form_type === 'gram_panchayat');
+
+  useEffect(() => {
+    if (grampanchayatCategory) {
+      setInspectionData(prev => ({
+        ...prev,
+        category_id: grampanchayatCategory.id
+      }));
+    }
+  }, [grampanchayatCategory]);
+
+  useEffect(() => {
+    if (editingInspection && editingInspection.id) {
+      setInspectionData({
+        category_id: editingInspection.category_id || '',
+        location_name: editingInspection.location_name || '',
+        planned_date: editingInspection.planned_date ? editingInspection.planned_date.split('T')[0] : '',
+        latitude: editingInspection.latitude,
+        longitude: editingInspection.longitude,
+        location_accuracy: editingInspection.location_accuracy,
+        location_detected: editingInspection.location_detected || ''
+      });
+
+      const formData = editingInspection.form_data;
+      if (formData) {
+        setMonthlyMeetings(formData.monthlyMeetings || '');
+        setAgendaUpToDate(formData.agendaUpToDate || '');
+        setReceiptUpToDate(formData.receiptUpToDate || '');
+        setReassessmentDone(formData.reassessmentDone || '');
+        setReassessmentAction(formData.reassessmentAction || '');
+        setGpName(formData.gpName || '');
+        setPsName(formData.psName || '');
+        setInspectionDate(formData.inspectionDate || '');
+        setInspectionPlace(formData.inspectionPlace || '');
+        setOfficerName(formData.officerName || '');
+        setOfficerPost(formData.officerPost || '');
+        setSecretaryName(formData.secretaryName || '');
+        setSecretaryTenure(formData.secretaryTenure || '');
+        setResolutionNo(formData.resolutionNo || '');
+        setResolutionDate(formData.resolutionDate || '');
+      }
+    }
+  }, [editingInspection]);
+
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
       alert('Geolocation is not supported by your browser');
@@ -51,25 +116,54 @@ export const GrampanchayatInspectionForm: React.FC = () => {
 
     setIsGettingLocation(true);
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
         const accuracy = position.coords.accuracy;
 
-        setInspectionData(prev => ({
-          ...prev,
-          latitude: lat,
-          longitude: lng,
-          location_accuracy: accuracy,
-          location_detected: `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`
-        }));
+        try {
+          const response = await fetch(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${import.meta.env.VITE_GOOGLE_API_KEY}`
+          );
+          const data = await response.json();
+
+          if (data.results && data.results.length > 0) {
+            const address = data.results[0].formatted_address;
+
+            setInspectionData(prev => ({
+              ...prev,
+              latitude: lat,
+              longitude: lng,
+              location_accuracy: accuracy,
+              location_detected: address,
+              location_name: prev.location_name || address
+            }));
+          } else {
+            setInspectionData(prev => ({
+              ...prev,
+              latitude: lat,
+              longitude: lng,
+              location_accuracy: accuracy,
+              location_detected: 'Location detected but address not found'
+            }));
+          }
+        } catch (error) {
+          console.error('Error getting location name:', error);
+          setInspectionData(prev => ({
+            ...prev,
+            latitude: lat,
+            longitude: lng,
+            location_accuracy: accuracy,
+            location_detected: 'Unable to get address'
+          }));
+        }
 
         setIsGettingLocation(false);
       },
       (error) => {
         console.error('Error getting location:', error);
         setIsGettingLocation(false);
-        alert('Error getting location. Please try again.');
+        alert('Error getting your location. Please enable GPS and try again.');
       },
       {
         enableHighAccuracy: true,
@@ -92,19 +186,147 @@ export const GrampanchayatInspectionForm: React.FC = () => {
     setUploadedPhotos(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (isDraft: boolean = false) => {
-    if (!gpName.trim()) {
-      alert('ग्राम पंचायतिचे नांव आवश्यक आहे');
-      return;
-    }
+  const uploadPhotosToSupabase = async (inspectionId: string) => {
+    if (uploadedPhotos.length === 0) return;
+
+    setIsUploading(true);
 
     try {
+      for (let i = 0; i < uploadedPhotos.length; i++) {
+        const file = uploadedPhotos[i];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `grampanchayat_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('field-visit-images')
+          .upload(fileName, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('field-visit-images')
+          .getPublicUrl(fileName);
+
+        const { error: dbError } = await supabase
+          .from('fims_inspection_photos')
+          .insert({
+            inspection_id: inspectionId,
+            photo_url: publicUrl,
+            photo_name: file.name,
+            description: `Grampanchayat inspection photo ${i + 1}`,
+            photo_order: i + 1,
+          });
+
+        if (dbError) throw dbError;
+      }
+    } catch (error) {
+      console.error('Error uploading photos:', error);
+      throw error;
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const generateInspectionNumber = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const time = String(now.getTime()).slice(-6);
+    return `GP-${year}${month}${day}-${time}`;
+  };
+
+  const handleSubmit = async (isDraft: boolean = false) => {
+    try {
       setIsLoading(true);
-      const message = isDraft ? 'मसुदा सेव्ह झाला' : 'तपासणी सबमिट झाली';
+
+      const formData = {
+        monthlyMeetings,
+        agendaUpToDate,
+        receiptUpToDate,
+        reassessmentDone,
+        reassessmentAction,
+        gpName,
+        psName,
+        inspectionDate,
+        inspectionPlace,
+        officerName,
+        officerPost,
+        secretaryName,
+        secretaryTenure,
+        resolutionNo,
+        resolutionDate
+      };
+
+      const sanitizedInspectionData = {
+        ...inspectionData,
+        planned_date: inspectionData.planned_date || null
+      };
+
+      let inspectionResult;
+
+      if (editingInspection && editingInspection.id) {
+        const { data: updateResult, error: updateError } = await supabase
+          .from('fims_inspections')
+          .update({
+            location_name: sanitizedInspectionData.location_name,
+            latitude: sanitizedInspectionData.latitude,
+            longitude: sanitizedInspectionData.longitude,
+            location_accuracy: sanitizedInspectionData.location_accuracy,
+            location_detected: sanitizedInspectionData.location_detected,
+            planned_date: sanitizedInspectionData.planned_date,
+            inspection_date: new Date().toISOString(),
+            status: isDraft ? 'draft' : 'submitted',
+            form_data: formData
+          })
+          .eq('id', editingInspection.id)
+          .select()
+          .single();
+
+        if (updateError) throw updateError;
+        inspectionResult = updateResult;
+      } else {
+        const inspectionNumber = generateInspectionNumber();
+
+        const { data: createResult, error: createError } = await supabase
+          .from('fims_inspections')
+          .insert({
+            inspection_number: inspectionNumber,
+            category_id: sanitizedInspectionData.category_id,
+            inspector_id: user.id,
+            location_name: sanitizedInspectionData.location_name,
+            latitude: sanitizedInspectionData.latitude,
+            longitude: sanitizedInspectionData.longitude,
+            location_accuracy: sanitizedInspectionData.location_accuracy,
+            location_detected: sanitizedInspectionData.location_detected,
+            planned_date: sanitizedInspectionData.planned_date,
+            inspection_date: new Date().toISOString(),
+            status: isDraft ? 'draft' : 'submitted',
+            form_data: formData
+          })
+          .select()
+          .single();
+
+        if (createError) throw createError;
+        inspectionResult = createResult;
+      }
+
+      if (uploadedPhotos.length > 0) {
+        await uploadPhotosToSupabase(inspectionResult.id);
+      }
+
+      const isUpdate = editingInspection && editingInspection.id;
+      const message = isDraft
+        ? (isUpdate ? 'Inspection updated as draft' : 'Inspection saved as draft')
+        : (isUpdate ? 'Inspection updated successfully' : 'Inspection submitted successfully');
+
       alert(message);
+      onInspectionCreated();
+      onBack();
+
     } catch (error: any) {
       console.error('Error saving inspection:', error);
-      alert('तपासणी सेव्ह करताना त्रुटी: ' + (error.message || 'अज्ञात त्रुटी'));
+      alert('Error saving inspection: ' + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -117,6 +339,7 @@ export const GrampanchayatInspectionForm: React.FC = () => {
         <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 md:p-8 mb-6">
           <div className="flex items-center justify-between mb-6">
             <button
+              onClick={onBack}
               className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors duration-200 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg"
             >
               <ArrowLeft className="h-5 w-5" />
@@ -912,29 +1135,41 @@ export const GrampanchayatInspectionForm: React.FC = () => {
                 )}
               </div>
             </div>
+
+            {/* प्रतिलिपी Section */}
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg mb-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">प्रतिलिपी:-</h3>
+              <div className="space-y-2 text-gray-700">
+                <p>1) मा.मुख्य कार्यकारी अधिकारी जिल्हा परिषद,चंद्रपूर यांना माहितीस सविनय सादर.</p>
+                <p>2) गट विकास अधिकारी,पंचायत समिती---------------------यांना माहितीस सादर.</p>
+                <p>3) सचिव ग्रामपंचायत---------------------यांना माहितीस व उचित कार्यवाहीस अवगत.</p>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Submit Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 pb-8">
-          <button
-            onClick={() => handleSubmit(true)}
-            disabled={isLoading}
-            className="px-10 py-4 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-lg flex items-center justify-center gap-2"
-          >
-            <Save className="w-5 h-5" />
-            {isLoading ? 'सेव्ह करत आहे...' : 'मसुदा सेव्ह करा'}
-          </button>
+        {!isViewMode && (
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 pb-8">
+            <button
+              onClick={() => handleSubmit(true)}
+              disabled={isLoading || isUploading}
+              className="px-10 py-4 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-lg flex items-center justify-center gap-2"
+            >
+              <Save className="w-5 h-5" />
+              {isLoading ? 'सेव्ह करत आहे...' : 'मसुदा सेव्ह करा'}
+            </button>
 
-          <button
-            onClick={() => handleSubmit(false)}
-            disabled={isLoading}
-            className="px-10 py-4 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-lg flex items-center justify-center gap-2"
-          >
-            <Send className="w-5 h-5" />
-            {isLoading ? 'सबमिट करत आहे...' : 'तपासणी सबमिट करा'}
-          </button>
-        </div>
+            <button
+              onClick={() => handleSubmit(false)}
+              disabled={isLoading || isUploading}
+              className="px-10 py-4 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-lg flex items-center justify-center gap-2"
+            >
+              <Send className="w-5 h-5" />
+              {isLoading ? 'सबमिट करत आहे...' : 'तपासणी सबमिट करा'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
