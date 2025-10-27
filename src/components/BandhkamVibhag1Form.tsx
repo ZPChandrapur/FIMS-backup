@@ -219,7 +219,7 @@ export const BandhkamVibhag1Form: React.FC<BandhkamVibhag1FormProps> = ({
       for (let i = 0; i < uploadedPhotos.length; i++) {
         const file = uploadedPhotos[i];
         const fileExt = file.name.split('.').pop();
-        const fileName = `bandhkam_vibhag1_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
+        const fileName = `Zilla Parishad Construction Progress Report Form_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
 
         // Upload to Supabase Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
