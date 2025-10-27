@@ -157,7 +157,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
       );
     }
 
-    if (selectedInspectionType === 'mahatma_gandhi_rojgar_hami') {
+    if (selectedInspectionType === 'Mahatma Gandhi National Rural Employment Guarantee Scheme Inspection') {
       return (
         <MahatmaGandhiRojgarHamiForm
           user={user}
@@ -357,7 +357,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
             { key: 'Zilla Parishad Construction Inspection Format', title: 'बांधकाम विभाग प्रपत्र-2', subtitle: 'Construction Department Form-2', color: 'teal', active: true },
             { key: 'zp_dar_mahinyala', title: 'दर महिन्याला सादर करावयाचे प्रपत्र', subtitle: 'ZP Monthly Report Form', color: 'indigo', active: true },
             { key: 'rajya_gunwatta_nirikshak', title: 'राज्य गुणवत्ता निरीक्षक तपासणी', subtitle: 'State Quality Inspector Inspection', color: 'emerald', active: true },
-            { key: 'mahatma_gandhi_rojgar_hami', title: 'महात्मा गांधी रोजगार हमी योजना', subtitle: 'MGNREGA Work Inspection Form', color: 'green', active: true },
+            { key: 'Mahatma Gandhi National Rural Employment Guarantee Scheme Inspection', title: 'महात्मा गांधी रोजगार हमी योजना', subtitle: 'MGNREGA Work Inspection Form', color: 'green', active: true },
             { key: 'mumbai_nyayalay', title: 'मुंबई न्यायालय तपासणी प्रपत्र', subtitle: 'Mumbai High Court School Inspection Form', color: 'red', active: true },
             { key: 'pashutapasani', title: 'पशुवैद्यकीय संस्थांचे तांत्रिक निरीक्षण', subtitle: 'Veterinary Institution Technical Inspection Form', color: 'red', active: true },
             { key: 'grampanchayat', title: 'ग्राम पंचायत सर्वसाधारण तपासणी', subtitle: 'Gram Panchayat General Inspection Form', color: 'cyan', active: true },
@@ -415,7 +415,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
                     <p>• कामाचे नाव</p>
                     <p>• काम तपासणीवेळी छायाचित्रे</p>
                   </>
-                ) : form.key === 'mahatma_gandhi_rojgar_hami' ? (
+                ) : form.key === 'Mahatma Gandhi National Rural Employment Guarantee Scheme Inspection' ? (
                   <>
                     <p>• NREGA Soft नोंदी तपासणी</p>
                     <p>• मजूर हजेरी आणि सुविधा</p>
