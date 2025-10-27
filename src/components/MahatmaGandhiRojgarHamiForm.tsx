@@ -225,7 +225,7 @@ export const MahatmaGandhiRojgarHamiForm: React.FC<MahatmaGandhiRojgarHamiFormPr
   });
 
   // Get mahatma gandhi category
-  const mahatmaGandhiCategory = categories.find(cat => cat.form_type === 'mahatma_gandhi_rojgar_hami');
+  const mahatmaGandhiCategory = categories.find(cat => cat.form_type === 'Mahatma Gandhi National Rural Employment Guarantee Scheme Inspection');
 
   useEffect(() => {
     if (mahatmaGandhiCategory) {
@@ -328,7 +328,7 @@ export const MahatmaGandhiRojgarHamiForm: React.FC<MahatmaGandhiRojgarHamiFormPr
       for (let i = 0; i < uploadedPhotos.length; i++) {
         const file = uploadedPhotos[i];
         const fileExt = file.name.split('.').pop();
-        const fileName = `mahatma_gandhi_rojgar_hami_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
+        const fileName = `Mahatma Gandhi National Rural Employment Guarantee Scheme Inspection_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
 
         // Upload to Supabase Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
