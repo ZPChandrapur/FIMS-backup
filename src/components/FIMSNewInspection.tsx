@@ -181,7 +181,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
       );
     }
 
-    if (selectedInspectionType === 'pashutapasani') {
+    if (selectedInspectionType === 'Veterinary Institution Inspection') {
       return (
         <PahuvaidhakiyaTapasaniForm
           user={user}
@@ -359,7 +359,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
             { key: 'rajya_gunwatta_nirikshak', title: 'राज्य गुणवत्ता निरीक्षक तपासणी', subtitle: 'State Quality Inspector Inspection', color: 'emerald', active: true },
             { key: 'Mahatma Gandhi National Rural Employment Guarantee Scheme Inspection', title: 'महात्मा गांधी रोजगार हमी योजना', subtitle: 'MGNREGA Work Inspection Form', color: 'green', active: true },
             { key: 'High Court Order Inspection Form', title: 'मुंबई न्यायालय तपासणी प्रपत्र', subtitle: 'Mumbai High Court School Inspection Form', color: 'red', active: true },
-            { key: 'pashutapasani', title: 'पशुवैद्यकीय संस्थांचे तांत्रिक निरीक्षण', subtitle: 'Veterinary Institution Technical Inspection Form', color: 'red', active: true },
+            { key: 'Veterinary Institution Inspection', title: 'पशुवैद्यकीय संस्थांचे तांत्रिक निरीक्षण', subtitle: 'Veterinary Institution Technical Inspection Form', color: 'red', active: true },
             { key: 'grampanchayat', title: 'ग्राम पंचायत सर्वसाधारण तपासणी', subtitle: 'Gram Panchayat General Inspection Form', color: 'cyan', active: true },
          //   { key: 'form_11', title: 'Form 11 Title', subtitle: 'Form 11 Description', color: 'violet' },
          //   { key: 'form_12', title: 'Form 12 Title', subtitle: 'Form 12 Description', color: 'lime' },
@@ -429,7 +429,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
                     <p>• भौतिक सुविधा मूल्यांकन</p>
                     <p>• स्वच्छता आणि सुरक्षा तपासणी</p>
                   </>
-                ) : form.key === 'pashutapasani' ? (
+                ) : form.key === 'Veterinary Institution Inspection' ? (
                   <>
                     <p>• संस्थेची मूलभूत माहिती व तांत्रिक आढावा</p>
                     <p>• रुग्ण आकडेवारी व शस्त्रक्रिया तपशील</p>
