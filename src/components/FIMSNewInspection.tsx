@@ -109,7 +109,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
       );
     }
 
-    if (selectedInspectionType === 'bandhkam_vibhag2') {
+    if (selectedInspectionType === 'Zilla Parishad Construction Inspection Format') {
       return (
         <BandhkamVibhag2Form
           user={user}
@@ -354,7 +354,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
           {/* Placeholder cards for the remaining 12 forms */}
           {[
             { key: 'Zilla Parishad Construction Progress Report Form', title: 'बांधकाम विभाग प्रपत्र-1', subtitle: 'Construction Department Form-1', color: 'orange', active: true },
-            { key: 'bandhkam_vibhag2', title: 'बांधकाम विभाग प्रपत्र-2', subtitle: 'Construction Department Form-2', color: 'teal', active: true },
+            { key: 'Zilla Parishad Construction Inspection Format', title: 'बांधकाम विभाग प्रपत्र-2', subtitle: 'Construction Department Form-2', color: 'teal', active: true },
             { key: 'zp_dar_mahinyala', title: 'दर महिन्याला सादर करावयाचे प्रपत्र', subtitle: 'ZP Monthly Report Form', color: 'indigo', active: true },
             { key: 'rajya_gunwatta_nirikshak', title: 'राज्य गुणवत्ता निरीक्षक तपासणी', subtitle: 'State Quality Inspector Inspection', color: 'emerald', active: true },
             { key: 'mahatma_gandhi_rojgar_hami', title: 'महात्मा गांधी रोजगार हमी योजना', subtitle: 'MGNREGA Work Inspection Form', color: 'green', active: true },
@@ -394,7 +394,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
                     <p>• कामाची सद्यस्थिती व प्रगती</p>
                     <p>• देयक व मोजमाप तपशील</p>
                   </>
-                ) : form.key === 'bandhkam_vibhag2' ? (
+                ) : form.key === 'Zilla Parishad Construction Inspection Format'' ? (
                   <>
                     <p>• तपासणी दिनांक व उपस्थित अधिकारी</p>
                     <p>• कामाची सद्यस्थिती व दर्जा</p>
