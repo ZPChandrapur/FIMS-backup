@@ -145,7 +145,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
       );
     }
 
-    if (selectedInspectionType === 'rajya_gunwatta_nirikshak') {
+    if (selectedInspectionType === 'State Level Quality Inspection Form') {
       return (
         <RajyaGunwattaNirikshakTapasaniForm
           user={user}
@@ -356,7 +356,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
             { key: 'Zilla Parishad Construction Progress Report Form', title: 'बांधकाम विभाग प्रपत्र-1', subtitle: 'Construction Department Form-1', color: 'orange', active: true },
             { key: 'Zilla Parishad Construction Inspection Format', title: 'बांधकाम विभाग प्रपत्र-2', subtitle: 'Construction Department Form-2', color: 'teal', active: true },
             { key: 'zp_dar_mahinyala', title: 'दर महिन्याला सादर करावयाचे प्रपत्र', subtitle: 'ZP Monthly Report Form', color: 'indigo', active: true },
-            { key: 'rajya_gunwatta_nirikshak', title: 'राज्य गुणवत्ता निरीक्षक तपासणी', subtitle: 'State Quality Inspector Inspection', color: 'emerald', active: true },
+            { key: 'State Level Quality Inspection Form', title: 'राज्य गुणवत्ता निरीक्षक तपासणी', subtitle: 'State Quality Inspector Inspection', color: 'emerald', active: true },
             { key: 'Mahatma Gandhi National Rural Employment Guarantee Scheme Inspection', title: 'महात्मा गांधी रोजगार हमी योजना', subtitle: 'MGNREGA Work Inspection Form', color: 'green', active: true },
             { key: 'High Court Order Inspection Form', title: 'मुंबई न्यायालय तपासणी प्रपत्र', subtitle: 'Mumbai High Court School Inspection Form', color: 'red', active: true },
             { key: 'Veterinary Institution Inspection', title: 'पशुवैद्यकीय संस्थांचे तांत्रिक निरीक्षण', subtitle: 'Veterinary Institution Technical Inspection Form', color: 'red', active: true },
@@ -408,7 +408,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
                     <p>• पर्यवेक्षकांचे उद्दिष्ट साध्यीकरण</p>
                     <p>• प्रकल्प भेट तपशील</p>
                   </>
-                ) : form.key === 'rajya_gunwatta_nirikshak' ? (
+                ) : form.key === 'State Level Quality Inspection Form' ? (
                   <>
                     <p>• राज्य गुणवत्ता निरीक्षक माहिती</p>
                     <p>• कामा तपासणी दिनांक</p>
