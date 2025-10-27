@@ -374,6 +374,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
             { key: 'High Court Order Inspection Form', title: 'मुंबई न्यायालय तपासणी प्रपत्र', subtitle: 'Mumbai High Court School Inspection Form', color: 'red', active: true },
             { key: 'Veterinary Institution Inspection', title: 'पशुवैद्यकीय संस्थांचे तांत्रिक निरीक्षण', subtitle: 'Veterinary Institution Technical Inspection Form', color: 'red', active: true },
             { key: 'Grampanchayat Inspection', title: 'ग्राम पंचायत सर्वसाधारण तपासणी', subtitle: 'Gram Panchayat General Inspection Form', color: 'cyan', active: true },
+            { key: 'Health Inspection', title: 'आरोग्य केंद्र तपासणी प्रपत्र', subtitle: 'Zilhastariya-Adhikari-Tapasani-Suchi-Forms', color: 'pink', active: true },
          //   { key: 'form_11', title: 'Form 11 Title', subtitle: 'Form 11 Description', color: 'violet' },
          //   { key: 'form_12', title: 'Form 12 Title', subtitle: 'Form 12 Description', color: 'lime' },
          //   { key: 'form_13', title: 'Form 13 Title', subtitle: 'Form 13 Description', color: 'amber' },
@@ -456,6 +457,13 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
                     <p>• मासिक सभा व नोंदवही तपासणी</p>
                     <p>• कर आकारणी व वसुली तपशील</p>
                     <p>• बांधकाम कामे व निधी खर्च</p>
+                    </>
+                ) : form.key === 'Health Inspection' ? (
+                  <>
+                    <p>• ओपीडी सुविधा व उपकरणे तपासणी</p>
+                    <p>• गरोदर माता सेवा व लसीकरण</p>
+                    <p>• राष्ट्रीय कार्यक्रम प्रगती मूल्यांकन</p>
+                    <p>• क्षयरोग, कुष्ठरोग व एनसीडी कार्यक्रम</p>
                     </>
                 ) : (
                   <></>
