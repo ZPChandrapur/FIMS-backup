@@ -13,6 +13,7 @@ import { MahatmaGandhiRojgarHamiForm } from './MahatmaGandhiRojgarHamiForm';
 import { MumbaiNyayalayTapasaniForm } from './MumbaiNyayalayTapasaniForm';
 import { PahuvaidhakiyaTapasaniForm } from './PahuvaidhakiyaTapasaniForm.tsx';
 import { GrampanchayatInspectionForm } from './GrampanchayatInspectionForm';
+import { HealthInspectionForm } from './HealthInspectionForm';
 
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
@@ -196,6 +197,18 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
     if (selectedInspectionType === 'g' || selectedInspectionType === 'Grampanchayat Inspection') {
       return (
         <GrampanchayatInspectionForm
+          user={user}
+          onBack={handleBackToSelection}
+          categories={categories}
+          onInspectionCreated={onInspectionCreated}
+          editingInspection={editingInspection}
+        />
+      );
+    }
+
+    if (selectedInspectionType === 'health' || selectedInspectionType === 'Health Inspection' || selectedInspectionType === 'Zilhastariya-Adhikari-Tapasani-Suchi') {
+      return (
+        <HealthInspectionForm
           user={user}
           onBack={handleBackToSelection}
           categories={categories}
