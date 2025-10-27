@@ -97,7 +97,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
       );
     }
 
-    if (selectedInspectionType === 'bandhkam_vibhag1') {
+    if (selectedInspectionType === 'Zilla Parishad Construction Progress Report Form') {
       return (
         <BandhkamVibhag1Form
           user={user}
