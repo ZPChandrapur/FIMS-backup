@@ -206,7 +206,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
       );
     }
 
-    if (selectedInspectionType === 'health' || selectedInspectionType === 'Health Inspection' || selectedInspectionType === 'Zilhastariya-Adhikari-Tapasani-Suchi') {
+    if (selectedInspectionType === 'Health Inspection' || selectedInspectionType === 'Health Inspection' || selectedInspectionType === 'Health Inspection') {
       return (
         <HealthInspectionForm
           user={user}
