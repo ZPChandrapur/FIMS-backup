@@ -250,7 +250,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
   });
 
   // Get mumbai nyayalay category
-  const mumbaiNyayalayCategory = categories.find(cat => cat.form_type === 'mumbai_nyayalay');
+  const mumbaiNyayalayCategory = categories.find(cat => cat.form_type === 'High Court Order Inspection Form');
 
   useEffect(() => {
     if (mumbaiNyayalayCategory) {
@@ -371,7 +371,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
       for (let i = 0; i < uploadedPhotos.length; i++) {
         const file = uploadedPhotos[i];
         const fileExt = file.name.split('.').pop();
-        const fileName = `mumbai_nyayalay_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
+        const fileName = `High Court Order Inspection Form_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
 
         // Upload to Supabase Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
