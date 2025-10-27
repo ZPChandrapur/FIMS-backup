@@ -64,7 +64,7 @@ const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
     location_detected: ''
   });
 
-  const grampanchayatCategory = categories.find(cat => cat.form_type === 'grampanchayat' || cat.form_type === 'gram_panchayat');
+  const grampanchayatCategory = categories.find(cat => cat.form_type === 'Grampanchayat Inspection' || cat.form_type === 'Grampanchayat Inspection');
 
   useEffect(() => {
     if (grampanchayatCategory) {
@@ -195,7 +195,7 @@ const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
       for (let i = 0; i < uploadedPhotos.length; i++) {
         const file = uploadedPhotos[i];
         const fileExt = file.name.split('.').pop();
-        const fileName = `grampanchayat_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
+        const fileName = `Grampanchayat Inspection${inspectionId}_${Date.now()}_${i}.${fileExt}`;
 
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('field-visit-images')
