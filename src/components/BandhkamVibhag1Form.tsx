@@ -116,7 +116,7 @@ export const BandhkamVibhag1Form: React.FC<BandhkamVibhag1FormProps> = ({
   });
 
   // Get bandhkam category
-  const bandhkamCategory = categories.find(cat => cat.form_type === 'bandhkam_vibhag1');
+  const bandhkamCategory = categories.find(cat => cat.form_type === 'Zilla Parishad Construction Progress Report Form');
 
   useEffect(() => {
     if (bandhkamCategory) {
