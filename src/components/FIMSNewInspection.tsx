@@ -394,7 +394,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
                     <p>• कामाची सद्यस्थिती व प्रगती</p>
                     <p>• देयक व मोजमाप तपशील</p>
                   </>
-                ) : form.key === 'Zilla Parishad Construction Inspection Format'' ? (
+                ) : form.key === 'Zilla Parishad Construction Inspection Format' ? (
                   <>
                     <p>• तपासणी दिनांक व उपस्थित अधिकारी</p>
                     <p>• कामाची सद्यस्थिती व दर्जा</p>
