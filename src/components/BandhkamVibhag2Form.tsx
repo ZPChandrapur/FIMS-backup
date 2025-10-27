@@ -103,7 +103,7 @@ export const BandhkamVibhag2Form: React.FC<BandhkamVibhag2FormProps> = ({
   });
 
   // Get bandhkam vibhag 2 category
-  const bandhkamVibhag2Category = categories.find(cat => cat.form_type === 'bandhkam_vibhag2');
+  const bandhkamVibhag2Category = categories.find(cat => cat.form_type === 'Zilla Parishad Construction Inspection Format');
 
   useEffect(() => {
     if (bandhkamVibhag2Category) {
@@ -206,7 +206,7 @@ export const BandhkamVibhag2Form: React.FC<BandhkamVibhag2FormProps> = ({
       for (let i = 0; i < uploadedPhotos.length; i++) {
         const file = uploadedPhotos[i];
         const fileExt = file.name.split('.').pop();
-        const fileName = `bandhkam_vibhag2_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
+        const fileName = `Zilla Parishad Construction Inspection Format_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
 
         // Upload to Supabase Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
