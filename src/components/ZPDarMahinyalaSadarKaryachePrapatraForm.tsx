@@ -122,7 +122,7 @@ export const ZPDarMahinyalaSadarKaryachePrapatraForm: React.FC<ZPDarMahinyalaFor
   });
 
   // Get ZP Dar Mahinyala category
-  const zpDarMahinyalaCategory = categories.find(cat => cat.form_type === 'zp_dar_mahinyala');
+  const zpDarMahinyalaCategory = categories.find(cat => cat.form_type === 'Monthly Report Submission Form');
 
   useEffect(() => {
     if (zpDarMahinyalaCategory) {
@@ -225,7 +225,7 @@ export const ZPDarMahinyalaSadarKaryachePrapatraForm: React.FC<ZPDarMahinyalaFor
       for (let i = 0; i < uploadedPhotos.length; i++) {
         const file = uploadedPhotos[i];
         const fileExt = file.name.split('.').pop();
-        const fileName = `zp_dar_mahinyala_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
+        const fileName = `Monthly Report Submission Form_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
 
         // Upload to Supabase Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
