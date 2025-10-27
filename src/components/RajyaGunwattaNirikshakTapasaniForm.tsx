@@ -200,7 +200,7 @@ export const RajyaGunwattaNirikshakTapasaniForm: React.FC<RajyaGunwattaNirikshak
       for (let i = 0; i < uploadedPhotos.length; i++) {
         const file = uploadedPhotos[i];
         const fileExt = file.name.split('.').pop();
-        const fileName = `rajya_gunwatta_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
+        const fileName = `State Level Quality Inspection Form_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
 
         // Upload to Supabase Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
