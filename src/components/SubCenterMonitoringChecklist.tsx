@@ -32,22 +32,33 @@ export const SubCenterMonitoringChecklist: React.FC<SubCenterFormProps> = ({
 
   const isViewMode = editingInspection?.mode === 'view';
   const isEditMode = editingInspection?.mode === 'edit';
-  const [monthlyMeetings, setMonthlyMeetings] = useState('');
-  const [agendaUpToDate, setAgendaUpToDate] = useState('');
-  const [receiptUpToDate, setReceiptUpToDate] = useState('');
-  const [reassessmentDone, setReassessmentDone] = useState('');
-  const [reassessmentAction, setReassessmentAction] = useState('');
 
-  const [gpName, setGpName] = useState('');
-  const [psName, setPsName] = useState('');
-  const [inspectionDate, setInspectionDate] = useState('');
-  const [inspectionPlace, setInspectionPlace] = useState('');
-  const [officerName, setOfficerName] = useState('');
-  const [officerPost, setOfficerPost] = useState('');
-  const [secretaryName, setSecretaryName] = useState('');
-  const [secretaryTenure, setSecretaryTenure] = useState('');
-  const [resolutionNo, setResolutionNo] = useState('');
-  const [resolutionDate, setResolutionDate] = useState('');
+  const [district, setDistrict] = useState('');
+  const [blockName, setBlockName] = useState('');
+  const [scName, setScName] = useState('');
+  const [facilityName, setFacilityName] = useState('');
+  const [catchmentPopulation, setCatchmentPopulation] = useState('');
+  const [totalVillages, setTotalVillages] = useState('');
+  const [distanceFromPHC, setDistanceFromPHC] = useState('');
+  const [lastVisit, setLastVisit] = useState('');
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [monitorName, setMonitorName] = useState('');
+  const [staffAvailable, setStaffAvailable] = useState('');
+  const [staffNotAvailable, setStaffNotAvailable] = useState('');
+  const [generalComments, setGeneralComments] = useState('');
+
+  const [section1, setSection1] = useState<any[]>([]);
+  const [humanResources, setHumanResources] = useState<any[]>([]);
+  const [equipment, setEquipment] = useState<any[]>([]);
+  const [section4, setSection4] = useState<any[]>([]);
+  const [section5, setSection5] = useState<any[]>([]);
+  const [serviceDelivery, setServiceDelivery] = useState<any[]>([]);
+  const [essentialSkills, setEssentialSkills] = useState<any[]>([]);
+  const [recordMaintenance, setRecordMaintenance] = useState<any[]>([]);
+  const [referralLinkages, setReferralLinkages] = useState<any[]>([]);
+  const [iecDisplay, setIecDisplay] = useState<any[]>([]);
+  const [monitoringSupervisors, setMonitoringSupervisors] = useState<any[]>([]);
+  const [keyFindings, setKeyFindings] = useState<any[]>([]);
 
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedPhotos, setUploadedPhotos] = useState<File[]>([]);
@@ -102,21 +113,32 @@ export const SubCenterMonitoringChecklist: React.FC<SubCenterFormProps> = ({
         }
 
         if (formData) {
-          setGpName(formData.gram_panchayat_name || '');
-          setPsName(formData.panchayat_samiti || '');
-          setInspectionDate(formData.general_inspection_date || '');
-          setInspectionPlace(formData.general_inspection_place || '');
-          setOfficerName(formData.inspection_officer_name || '');
-          setOfficerPost(formData.inspection_officer_post || '');
-          setSecretaryName(formData.secretary_name || '');
-          setSecretaryTenure(formData.secretary_tenure || '');
-          setMonthlyMeetings(formData.monthly_meetings || '');
-          setAgendaUpToDate(formData.meeting_agenda_up_to_date || '');
-          setReceiptUpToDate(formData.receipt_up_to_date || '');
-          setReassessmentDone(formData.reassessment_done || '');
-          setReassessmentAction(formData.reassessment_action || '');
-          setResolutionNo(formData.resolution_no || '');
-          setResolutionDate(formData.resolution_date || '');
+          setDistrict(formData.district || '');
+          setBlockName(formData.block_name || '');
+          setScName(formData.sc_name || '');
+          setFacilityName(formData.facility_name || '');
+          setCatchmentPopulation(formData.catchment_population || '');
+          setTotalVillages(formData.total_villages || '');
+          setDistanceFromPHC(formData.distance_from_phc || '');
+          setLastVisit(formData.last_visit || '');
+          setDate(formData.date || '');
+          setMonitorName(formData.monitor_name || '');
+          setStaffAvailable(formData.staff_available || '');
+          setStaffNotAvailable(formData.staff_not_available || '');
+          setGeneralComments(formData.general_comments || '');
+
+          if (formData.infrastructure) setSection1(formData.infrastructure);
+          if (formData.human_resources) setHumanResources(formData.human_resources);
+          if (formData.equipment) setEquipment(formData.equipment);
+          if (formData.essential_drugs) setSection4(formData.essential_drugs);
+          if (formData.essential_supplies) setSection5(formData.essential_supplies);
+          if (formData.service_delivery) setServiceDelivery(formData.service_delivery);
+          if (formData.essential_skills) setEssentialSkills(formData.essential_skills);
+          if (formData.record_maintenance) setRecordMaintenance(formData.record_maintenance);
+          if (formData.referral_linkages) setReferralLinkages(formData.referral_linkages);
+          if (formData.iec_display) setIecDisplay(formData.iec_display);
+          if (formData.monitoring_supervisors) setMonitoringSupervisors(formData.monitoring_supervisors);
+          if (formData.key_findings) setKeyFindings(formData.key_findings);
         }
       }
     };
@@ -284,28 +306,38 @@ export const SubCenterMonitoringChecklist: React.FC<SubCenterFormProps> = ({
         if (updateError) throw updateError;
         inspectionResult = updateResult;
 
-        // Update sub_centre_monitoring_checklist table - only update fields that can change
+        // Update sub_centre_monitoring_checklist table
         const { error: formUpdateError } = await supabase
           .from('sub_centre_monitoring_checklist')
           .update({
-            gram_panchayat_name: gpName || '',
-            panchayat_samiti: psName || '',
-            general_inspection_date: inspectionDate || new Date().toISOString().split('T')[0],
-            general_inspection_place: inspectionPlace || '',
-            inspection_officer_name: officerName || '',
-            inspection_officer_post: officerPost || '',
-            secretary_name: secretaryName || '',
-            secretary_tenure: secretaryTenure || '',
-            monthly_meetings: monthlyMeetings || '',
-            meeting_agenda_up_to_date: agendaUpToDate || '',
-            receipt_up_to_date: receiptUpToDate || '',
-            reassessment_done: reassessmentDone || '',
-            reassessment_action: reassessmentAction || '',
-            resolution_no: resolutionNo || '',
-            resolution_date: resolutionDate || new Date().toISOString().split('T')[0],
+            district,
+            block_name: blockName,
+            sc_name: scName,
+            facility_name: facilityName,
+            catchment_population: catchmentPopulation,
+            total_villages: totalVillages,
+            distance_from_phc: distanceFromPHC,
+            last_visit: lastVisit || null,
+            date: date || new Date().toISOString().split('T')[0],
+            monitor_name: monitorName,
+            staff_available: staffAvailable,
+            staff_not_available: staffNotAvailable,
+            infrastructure: section1,
+            human_resources: humanResources,
+            equipment,
+            essential_drugs: section4,
+            essential_supplies: section5,
+            service_delivery: serviceDelivery,
+            essential_skills: essentialSkills,
+            record_maintenance: recordMaintenance,
+            referral_linkages: referralLinkages,
+            iec_display: iecDisplay,
+            monitoring_supervisors: monitoringSupervisors,
+            key_findings: keyFindings,
+            general_comments: generalComments,
             updated_at: new Date().toISOString()
           })
-          .eq('inspection_id', editingInspection.id);
+          .eq('id', editingInspection.id);
 
         if (formUpdateError) throw formUpdateError;
 
@@ -334,126 +366,40 @@ export const SubCenterMonitoringChecklist: React.FC<SubCenterFormProps> = ({
         if (createError) throw createError;
         inspectionResult = createResult;
 
-        // Insert into sub_centre_monitoring_checklist table with all required fields
+        // Insert into sub_centre_monitoring_checklist table
         const { error: formInsertError } = await supabase
           .from('sub_centre_monitoring_checklist')
           .insert({
-            inspection_id: inspectionResult.id,
-            gram_panchayat_name: gpName || '',
-            panchayat_samiti: psName || '',
-            general_inspection_date: inspectionDate || new Date().toISOString().split('T')[0],
-            general_inspection_place: inspectionPlace || '',
-            inspection_officer_name: officerName || '',
-            inspection_officer_post: officerPost || '',
-            secretary_name: secretaryName || '',
-            secretary_tenure: secretaryTenure || '',
-            monthly_meetings: monthlyMeetings || '',
-            meeting_agenda_up_to_date: agendaUpToDate || '',
-            receipt_up_to_date: receiptUpToDate || '',
-            reassessment_done: reassessmentDone || '',
-            reassessment_action: reassessmentAction || '',
-            resolution_no: resolutionNo || '',
-            resolution_date: resolutionDate || new Date().toISOString().split('T')[0],
-            previous_year_house_tax_arrears: 0,
-            previous_year_water_tax_arrears: 0,
-            current_year_house_tax_demand: 0,
-            current_year_water_tax_demand: 0,
-            total_house_tax_demand: 0,
-            total_water_tax_demand: 0,
-            total_house_tax_collection: 0,
-            total_water_tax_collection: 0,
-            balance_house_tax_collection: 0,
-            balance_water_tax_collection: 0,
-            house_tax_percentage: 0,
-            water_tax_percentage: 0,
-            remarks: '',
-            gram_panchayat_total_income: 0,
-            fifteen_percent_amount: 0,
-            previous_balance: 0,
-            total_expense: 0,
-            expense_till_inspection_date: 0,
-            balance_expense: 0,
-            budget_provision: '',
-            tenders_called: '',
-            entries_made: '',
-            form1: '', form2: '', form3: '', form4: '', form5: '', form6: '', form7: '', form8: '',
-            copy1: '', copy2: '', copy3: '',
-            copy_to_ceo: '', copy_to_bdo: '', copy_to_secretary: '',
-            sr_no_gram_nidhi: '', gram_nidhi_register_balance: '', gram_nidhi_bank_balance: '',
-            gram_nidhi_post_balance: '', gram_nidhi_hand_balance: '', gram_nidhi_check: '',
-            sr_no_water_supply: '', water_supply_register_balance: '', water_supply_bank_balance: '',
-            water_supply_post_balance: '', water_supply_hand_balance: '', water_supply_check: '',
-            sr_no_14th_finance_commission: '', _14th_finance_commission_register_balance: '',
-            _14th_finance_commission_bank_balance: '', _14th_finance_commission_post_balance: '',
-            _14th_finance_commission_hand_balance: '', _14th_finance_commission_check: '',
-            sr_no_eng_gha_yo: '', eng_gha_yo_register_balance: '', eng_gha_yo_bank_balance: '',
-            eng_gha_yo_post_balance: '', eng_gha_yo_hand_balance: '', eng_gha_yo_check: '',
-            sr_no_sc_development: '', sc_development_register_balance: '', sc_development_bank_balance: '',
-            sc_development_post_balance: '', sc_development_hand_balance: '', sc_development_check: '',
-            sr_no_labor_department: '', labor_department_register_balance: '', labor_department_bank_balance: '',
-            labor_department_post_balance: '', labor_department_hand_balance: '', labor_department_check: '',
-            sr_no_thakkar_bappa: '', thakkar_bappa_register_balance: '', thakkar_bappa_bank_balance: '',
-            thakkar_bappa_post_balance: '', thakkar_bappa_hand_balance: '', thakkar_bappa_check: '',
-            sr_no_gram_kosh_money: '', gram_kosh_money_register_balance: '', gram_kosh_money_bank_balance: '',
-            gram_kosh_money_post_balance: '', gram_kosh_money_hand_balance: '', gram_kosh_money_check: '',
-            sr_no_civic_facilities: '', civic_facilities_register_balance: '', civic_facilities_bank_balance: '',
-            civic_facilities_post_balance: '', civic_facilities_hand_balance: '', civic_facilities_check: '',
-            sr_no_dalit_basti_development: '', dalit_basti_development_register_balance: '',
-            dalit_basti_development_bank_balance: '', dalit_basti_development_post_balance: '',
-            dalit_basti_development_hand_balance: '', dalit_basti_development_check: '',
-            sr_no_tanta_mukt_yojana: '', tanta_mukt_yojana_register_balance: '', tanta_mukt_yojana_bank_balance: '',
-            tanta_mukt_yojana_post_balance: '', tanta_mukt_yojana_hand_balance: '', tanta_mukt_yojana_check: '',
-            sr_no_jan_suvidha: '', jan_suvidha_register_balance: '', jan_suvidha_bank_balance: '',
-            jan_suvidha_post_balance: '', jan_suvidha_hand_balance: '', jan_suvidha_check: '',
-            sr_no_payka: '', payka_register_balance: '', payka_bank_balance: '',
-            payka_post_balance: '', payka_hand_balance: '', payka_check: '',
-            sr_no_panchayat_samiti_yojana: '', panchayat_samiti_yojana_register_balance: '',
-            panchayat_samiti_yojana_bank_balance: '', panchayat_samiti_yojana_post_balance: '',
-            panchayat_samiti_yojana_hand_balance: '', panchayat_samiti_yojana_check: '',
-            sr_no_sbm: '', sbm_register_balance: '', sbm_bank_balance: '',
-            sbm_post_balance: '', sbm_hand_balance: '', sbm_check: '',
-            sr_no_tirthakshetra_development_fund: '', tirthakshetra_development_fund_register_balance: '',
-            tirthakshetra_development_fund_bank_balance: '', tirthakshetra_development_fund_post_balance: '',
-            tirthakshetra_development_fund_hand_balance: '', tirthakshetra_development_fund_check: '',
-            sr_no_minority_development_fund: '', minority_development_fund_register_balance: '',
-            minority_development_fund_bank_balance: '', minority_development_fund_post_balance: '',
-            minority_development_fund_hand_balance: '', minority_development_fund_check: '',
-            sr_no_egavika: '', egavika_objectives: '', egavika_status: '', egavika_remarks: '',
-            sr_no_biogas: '', biogas_objectives: '', biogas_status: '', biogas_remarks: '',
-            sr_no_smokeless_chul: '', smokeless_chul_objectives: '', smokeless_chul_status: '', smokeless_chul_remarks: '',
-            sr_no_family_welfare: '', family_welfare_objectives: '', family_welfare_status: '', family_welfare_remarks: '',
-            sr_no_alpavachnat: '', alpavachnat_objectives: '', alpavachnat_status: '', alpavachnat_remarks: '',
-            sr_no_6: '', sr_no_6_objectives: '', sr_no_6_status: '', sr_no_6_remarks: '',
-            sr_no_7: '', sr_no_7_objectives: '', sr_no_7_status: '', sr_no_7_remarks: '',
-            sr_no_14_finance_scheme_1: '', _14_finance_scheme_1_type: '',
-            _14_finance_scheme_1_estimate_amount: 0, _14_finance_scheme_1_grant_received: 0, _14_finance_scheme_1_expense: 0,
-            sr_no_14_finance_scheme_2: '', _14_finance_scheme_2_type: '',
-            _14_finance_scheme_2_estimate_amount: 0, _14_finance_scheme_2_grant_received: 0, _14_finance_scheme_2_expense: 0,
-            sr_no_14_finance_scheme_3: '', _14_finance_scheme_3_type: '',
-            _14_finance_scheme_3_estimate_amount: 0, _14_finance_scheme_3_grant_received: 0, _14_finance_scheme_3_expense: 0,
-            sr_no_14_finance_scheme_4: '', _14_finance_scheme_4_type: '',
-            _14_finance_scheme_4_estimate_amount: 0, _14_finance_scheme_4_grant_received: 0, _14_finance_scheme_4_expense: 0,
-            sr_no_14_finance_scheme_5: '', _14_finance_scheme_5_type: '',
-            _14_finance_scheme_5_estimate_amount: 0, _14_finance_scheme_5_grant_received: 0, _14_finance_scheme_5_expense: 0,
-            sr_no_14_finance_scheme_6: '', _14_finance_scheme_6_type: '',
-            _14_finance_scheme_6_estimate_amount: 0, _14_finance_scheme_6_grant_received: 0, _14_finance_scheme_6_expense: 0,
-            sr_no_14_finance_scheme_7: '', _14_finance_scheme_7_type: '',
-            _14_finance_scheme_7_estimate_amount: 0, _14_finance_scheme_7_grant_received: 0, _14_finance_scheme_7_expense: 0,
-            sr_no_14_finance_scheme_8: '', _14_finance_scheme_8_type: '',
-            _14_finance_scheme_8_estimate_amount: 0, _14_finance_scheme_8_grant_received: 0, _14_finance_scheme_8_expense: 0,
-            sr_no_14_finance_scheme_9: '', _14_finance_scheme_9_type: '',
-            _14_finance_scheme_9_estimate_amount: 0, _14_finance_scheme_9_grant_received: 0, _14_finance_scheme_9_expense: 0,
-            sr_no_14_finance_scheme_10: '', _14_finance_scheme_10_type: '',
-            _14_finance_scheme_10_estimate_amount: 0, _14_finance_scheme_10_grant_received: 0, _14_finance_scheme_10_expense: 0,
-            sr_no_14_finance_scheme_11: '', _14_finance_scheme_11_type: '',
-            _14_finance_scheme_11_estimate_amount: 0, _14_finance_scheme_11_grant_received: 0, _14_finance_scheme_11_expense: 0,
-            work_start_date_1: new Date().toISOString().split('T')[0],
-            work_completion_date_1: new Date().toISOString().split('T')[0],
-            progress_status_1: '', certificate_received_1: '', remarks_1: '',
-            inspection_officer_opinion_1: '', inspection_officer_opinion_2: '', inspection_officer_opinion_3: '',
-            inspection_officer_opinion_4: '', inspection_officer_opinion_5: '', inspection_officer_opinion_6: '',
-            inspection_officer_opinion_7: '', inspection_officer_opinion_8: ''
+            category_id: sanitizedInspectionData.category_id,
+            user_id: user.id,
+            district,
+            block_name: blockName,
+            sc_name: scName,
+            facility_name: facilityName,
+            catchment_population: catchmentPopulation,
+            total_villages: totalVillages,
+            distance_from_phc: distanceFromPHC,
+            last_visit: lastVisit || null,
+            date: date || new Date().toISOString().split('T')[0],
+            monitor_name: monitorName,
+            staff_available: staffAvailable,
+            staff_not_available: staffNotAvailable,
+            infrastructure: section1,
+            human_resources: humanResources,
+            equipment,
+            essential_drugs: section4,
+            essential_supplies: section5,
+            service_delivery: serviceDelivery,
+            essential_skills: essentialSkills,
+            record_maintenance: recordMaintenance,
+            referral_linkages: referralLinkages,
+            iec_display: iecDisplay,
+            monitoring_supervisors: monitoringSupervisors,
+            key_findings: keyFindings,
+            general_comments: generalComments
           });
+
+        if (formInsertError) throw formInsertError;
 
         if (formInsertError) throw formInsertError;
       }
