@@ -387,7 +387,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
               </div>
               
               <div className="space-y-2 text-sm text-gray-600">
-                {form.key === 'bandhkam_vibhag1' ? (
+                {form.key === 'Zilla Parishad Construction Progress Report Form' ? (
                   <>
                     <p>• प्रशासकीय व तांत्रिक मान्यता तपशील</p>
                     <p>• कारनामा व ठेकेदार माहिती</p>
