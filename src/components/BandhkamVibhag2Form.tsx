@@ -365,7 +365,7 @@ export const BandhkamVibhag2Form: React.FC<BandhkamVibhag2FormProps> = ({
         ].filter(officer => officer !== null);
 
         const { error: formError } = await supabase
-          .from('Zilla Parishad Construction Inspection Format')
+          .from('bandhakam_vibhag2')
           .insert({
             inspection_id: inspectionResult.id,
             inspection_date: bandhkamVibhag2FormData.inspection_date,
