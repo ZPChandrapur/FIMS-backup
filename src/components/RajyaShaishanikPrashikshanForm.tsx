@@ -198,7 +198,7 @@ export const RajyaShaishanikPrashikshanForm: React.FC<RajyaShaishanikPrashikshan
   });
 
   // Get school inspection category
-  const schoolCategory = categories.find(cat => cat.form_type === 'rajya_shaishanik');
+  const schoolCategory = categories.find(cat => cat.form_type === 'Rajya Shaishanik Prashikshan Inspection Form');
 
   useEffect(() => {
     if (schoolCategory) {
@@ -590,7 +590,7 @@ export const RajyaShaishanikPrashikshanForm: React.FC<RajyaShaishanikPrashikshan
       for (let i = 0; i < uploadedPhotos.length; i++) {
         const file = uploadedPhotos[i];
         const fileExt = file.name.split('.').pop();
-        const fileName = `rajya_shaishanik_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
+        const fileName = `Rajya Shaishanik Prashikshan Inspection Form_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
 
         // Upload to field-visit-images bucket in Supabase Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
