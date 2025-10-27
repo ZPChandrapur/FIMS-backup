@@ -73,7 +73,7 @@ export const RajyaGunwattaNirikshakTapasaniForm: React.FC<RajyaGunwattaNirikshak
   });
 
   // Get rajya gunwatta category
-  const rajyaGunwattaCategory = categories.find(cat => cat.form_type === 'rajya_gunwatta_nirikshak');
+  const rajyaGunwattaCategory = categories.find(cat => cat.form_type === 'State Level Quality Inspection Form');
 
   useEffect(() => {
     if (rajyaGunwattaCategory) {
