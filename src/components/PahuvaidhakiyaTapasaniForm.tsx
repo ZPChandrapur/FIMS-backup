@@ -377,7 +377,7 @@ export const PahuvaidhakiyaTapasaniForm: React.FC<PahuvaidhakiyaTapasaniFormProp
   });
 
   // Get veterinary category
-  const veterinaryCategory = categories.find(cat => cat.form_type === 'pashutapasani');
+  const veterinaryCategory = categories.find(cat => cat.form_type === 'Veterinary Institution Inspection');
 
   useEffect(() => {
     if (veterinaryCategory) {
