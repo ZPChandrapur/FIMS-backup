@@ -360,7 +360,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
             { key: 'Mahatma Gandhi National Rural Employment Guarantee Scheme Inspection', title: 'महात्मा गांधी रोजगार हमी योजना', subtitle: 'MGNREGA Work Inspection Form', color: 'green', active: true },
             { key: 'High Court Order Inspection Form', title: 'मुंबई न्यायालय तपासणी प्रपत्र', subtitle: 'Mumbai High Court School Inspection Form', color: 'red', active: true },
             { key: 'Veterinary Institution Inspection', title: 'पशुवैद्यकीय संस्थांचे तांत्रिक निरीक्षण', subtitle: 'Veterinary Institution Technical Inspection Form', color: 'red', active: true },
-            { key: 'grampanchayat', title: 'ग्राम पंचायत सर्वसाधारण तपासणी', subtitle: 'Gram Panchayat General Inspection Form', color: 'cyan', active: true },
+            { key: 'Grampanchayat Inspection', title: 'ग्राम पंचायत सर्वसाधारण तपासणी', subtitle: 'Gram Panchayat General Inspection Form', color: 'cyan', active: true },
          //   { key: 'form_11', title: 'Form 11 Title', subtitle: 'Form 11 Description', color: 'violet' },
          //   { key: 'form_12', title: 'Form 12 Title', subtitle: 'Form 12 Description', color: 'lime' },
          //   { key: 'form_13', title: 'Form 13 Title', subtitle: 'Form 13 Description', color: 'amber' },
@@ -437,7 +437,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
                     <p>• रोग माहिती व लसीकरण कार्यक्रम</p>
                     <p>• योजना प्रगती व तांत्रिक मूल्यांकन</p>
                     </>
-                ) : form.key === 'grampanchayat' ? (
+                ) : form.key === 'Grampanchayat Inspection' ? (
                   <>
                     <p>• ग्राम पंचायत मूळ माहिती</p>
                     <p>• मासिक सभा व नोंदवही तपासणी</p>
