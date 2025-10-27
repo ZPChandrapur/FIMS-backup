@@ -166,9 +166,9 @@ export const HealthInspectionForm: React.FC<HealthInspectionFormProps> = ({
   });
 
   const healthCategory = categories.find(cat =>
-    cat.form_type === 'health' ||
     cat.form_type === 'Health Inspection' ||
-    cat.form_type === 'Zilhastariya-Adhikari-Tapasani-Suchi'
+    cat.form_type === 'Health Inspection' ||
+    cat.form_type === 'Health Inspection'
   );
 
   useEffect(() => {
@@ -350,7 +350,7 @@ export const HealthInspectionForm: React.FC<HealthInspectionFormProps> = ({
       for (let i = 0; i < uploadedPhotos.length; i++) {
         const file = uploadedPhotos[i];
         const fileExt = file.name.split('.').pop();
-        const fileName = `health_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
+        const fileName = `Health Inspection_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
 
         const { error: uploadError } = await supabase.storage
           .from('field-visit-images')
