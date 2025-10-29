@@ -866,8 +866,8 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
                           type="radio"
                           name="agendaUpToDate"
                           value="होय"
-                          checked={agendaUpToDate === 'होय'}
-                          onChange={(e) => setAgendaUpToDate(e.target.value)}
+                          checked={formData.agendaUpToDate === 'होय'}
+                          onChange={(e) => updateFormData('agendaUpToDate', e.target.value)}
                           className="w-5 h-5 text-purple-600 focus:ring-purple-500"
                         />
                         <span className="ml-2 text-gray-800 font-medium">होय</span>
@@ -877,8 +877,8 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
                           type="radio"
                           name="agendaUpToDate"
                           value="नाही"
-                          checked={agendaUpToDate === 'नाही'}
-                          onChange={(e) => setAgendaUpToDate(e.target.value)}
+                          checked={formData.agendaUpToDate === 'नाही'}
+                          onChange={(e) => updateFormData('agendaUpToDate', e.target.value)}
                           className="w-5 h-5 text-purple-600 focus:ring-purple-500"
                         />
                         <span className="ml-2 text-gray-800 font-medium">नाही</span>
@@ -986,8 +986,8 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
                       type="radio"
                       name="receiptUpToDate"
                       value="होय"
-                      checked={receiptUpToDate === 'होय'}
-                      onChange={(e) => setReceiptUpToDate(e.target.value)}
+                      checked={formData.receiptUpToDate === 'होय'}
+                      onChange={(e) => updateFormData('receiptUpToDate', e.target.value)}
                       className="w-5 h-5 text-yellow-600 focus:ring-yellow-500"
                     />
                     <span className="ml-2 text-gray-800 font-medium">होय</span>
@@ -997,8 +997,8 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
                       type="radio"
                       name="receiptUpToDate"
                       value="नाही"
-                      checked={receiptUpToDate === 'नाही'}
-                      onChange={(e) => setReceiptUpToDate(e.target.value)}
+                      checked={formData.receiptUpToDate === 'नाही'}
+                      onChange={(e) => updateFormData('receiptUpToDate', e.target.value)}
                       className="w-5 h-5 text-yellow-600 focus:ring-yellow-500"
                     />
                     <span className="ml-2 text-gray-800 font-medium">नाही</span>
@@ -1023,8 +1023,8 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
                     type="radio"
                     name="reassessmentAction"
                     value="होय"
-                    checked={reassessmentAction === 'होय'}
-                    onChange={(e) => setReassessmentAction(e.target.value)}
+                    checked={formData.reassessmentAction === 'होय'}
+                    onChange={(e) => updateFormData('reassessmentAction', e.target.value)}
                     className="w-5 h-5 text-yellow-600 focus:ring-yellow-500"
                   />
                   <span className="ml-2 text-gray-800 font-medium">होय</span>
@@ -1034,8 +1034,8 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
                     type="radio"
                     name="reassessmentAction"
                     value="नाही"
-                    checked={reassessmentAction === 'नाही'}
-                    onChange={(e) => setReassessmentAction(e.target.value)}
+                    checked={formData.reassessmentAction === 'नाही'}
+                    onChange={(e) => updateFormData('reassessmentAction', e.target.value)}
                     className="w-5 h-5 text-yellow-600 focus:ring-yellow-500"
                   />
                   <span className="ml-2 text-gray-800 font-medium">नाही</span>
