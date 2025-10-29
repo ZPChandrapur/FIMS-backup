@@ -76,6 +76,110 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
   const [tendersCalled, setTendersCalled] = useState('');
   const [entriesMade, setEntriesMade] = useState('');
 
+  // Register balance table fields (Section 7) - First table
+  const [gramNidhiRegisterBalance, setGramNidhiRegisterBalance] = useState('');
+  const [gramNidhiBankBalance, setGramNidhiBankBalance] = useState('');
+  const [gramNidhiPostBalance, setGramNidhiPostBalance] = useState('');
+  const [gramNidhiHandBalance, setGramNidhiHandBalance] = useState('');
+  const [gramNidhiCheck, setGramNidhiCheck] = useState('');
+
+  const [waterSupplyRegisterBalance, setWaterSupplyRegisterBalance] = useState('');
+  const [waterSupplyBankBalance, setWaterSupplyBankBalance] = useState('');
+  const [waterSupplyPostBalance, setWaterSupplyPostBalance] = useState('');
+  const [waterSupplyHandBalance, setWaterSupplyHandBalance] = useState('');
+  const [waterSupplyCheck, setWaterSupplyCheck] = useState('');
+
+  // Register balance table fields (Section 7) - Second table (17 funds)
+  const [_14thFinanceRegisterBalance, set14thFinanceRegisterBalance] = useState('');
+  const [_14thFinanceBankBalance, set14thFinanceBankBalance] = useState('');
+  const [_14thFinancePostBalance, set14thFinancePostBalance] = useState('');
+  const [_14thFinanceHandBalance, set14thFinanceHandBalance] = useState('');
+  const [_14thFinanceCheck, set14thFinanceCheck] = useState('');
+
+  const [engGhaYoRegisterBalance, setEngGhaYoRegisterBalance] = useState('');
+  const [engGhaYoBankBalance, setEngGhaYoBankBalance] = useState('');
+  const [engGhaYoPostBalance, setEngGhaYoPostBalance] = useState('');
+  const [engGhaYoHandBalance, setEngGhaYoHandBalance] = useState('');
+  const [engGhaYoCheck, setEngGhaYoCheck] = useState('');
+
+  const [scDevelopmentRegisterBalance, setScDevelopmentRegisterBalance] = useState('');
+  const [scDevelopmentBankBalance, setScDevelopmentBankBalance] = useState('');
+  const [scDevelopmentPostBalance, setScDevelopmentPostBalance] = useState('');
+  const [scDevelopmentHandBalance, setScDevelopmentHandBalance] = useState('');
+  const [scDevelopmentCheck, setScDevelopmentCheck] = useState('');
+
+  const [laborDeptRegisterBalance, setLaborDeptRegisterBalance] = useState('');
+  const [laborDeptBankBalance, setLaborDeptBankBalance] = useState('');
+  const [laborDeptPostBalance, setLaborDeptPostBalance] = useState('');
+  const [laborDeptHandBalance, setLaborDeptHandBalance] = useState('');
+  const [laborDeptCheck, setLaborDeptCheck] = useState('');
+
+  const [thakkarBappaRegisterBalance, setThakkarBappaRegisterBalance] = useState('');
+  const [thakkarBappaBankBalance, setThakkarBappaBankBalance] = useState('');
+  const [thakkarBappaPostBalance, setThakkarBappaPostBalance] = useState('');
+  const [thakkarBappaHandBalance, setThakkarBappaHandBalance] = useState('');
+  const [thakkarBappaCheck, setThakkarBappaCheck] = useState('');
+
+  const [gramKoshMoneyRegisterBalance, setGramKoshMoneyRegisterBalance] = useState('');
+  const [gramKoshMoneyBankBalance, setGramKoshMoneyBankBalance] = useState('');
+  const [gramKoshMoneyPostBalance, setGramKoshMoneyPostBalance] = useState('');
+  const [gramKoshMoneyHandBalance, setGramKoshMoneyHandBalance] = useState('');
+  const [gramKoshMoneyCheck, setGramKoshMoneyCheck] = useState('');
+
+  const [civicFacilitiesRegisterBalance, setCivicFacilitiesRegisterBalance] = useState('');
+  const [civicFacilitiesBankBalance, setCivicFacilitiesBankBalance] = useState('');
+  const [civicFacilitiesPostBalance, setCivicFacilitiesPostBalance] = useState('');
+  const [civicFacilitiesHandBalance, setCivicFacilitiesHandBalance] = useState('');
+  const [civicFacilitiesCheck, setCivicFacilitiesCheck] = useState('');
+
+  const [dalitBastiRegisterBalance, setDalitBastiRegisterBalance] = useState('');
+  const [dalitBastiBankBalance, setDalitBastiBankBalance] = useState('');
+  const [dalitBastiPostBalance, setDalitBastiPostBalance] = useState('');
+  const [dalitBastiHandBalance, setDalitBastiHandBalance] = useState('');
+  const [dalitBastiCheck, setDalitBastiCheck] = useState('');
+
+  const [tantaMuktRegisterBalance, setTantaMuktRegisterBalance] = useState('');
+  const [tantaMuktBankBalance, setTantaMuktBankBalance] = useState('');
+  const [tantaMuktPostBalance, setTantaMuktPostBalance] = useState('');
+  const [tantaMuktHandBalance, setTantaMuktHandBalance] = useState('');
+  const [tantaMuktCheck, setTantaMuktCheck] = useState('');
+
+  const [janSuvidhaRegisterBalance, setJanSuvidhaRegisterBalance] = useState('');
+  const [janSuvidhaBankBalance, setJanSuvidhaBankBalance] = useState('');
+  const [janSuvidhaPostBalance, setJanSuvidhaPostBalance] = useState('');
+  const [janSuvidhaHandBalance, setJanSuvidhaHandBalance] = useState('');
+  const [janSuvidhaCheck, setJanSuvidhaCheck] = useState('');
+
+  const [paykaRegisterBalance, setPaykaRegisterBalance] = useState('');
+  const [paykaBankBalance, setPaykaBankBalance] = useState('');
+  const [paykaPostBalance, setPaykaPostBalance] = useState('');
+  const [paykaHandBalance, setPaykaHandBalance] = useState('');
+  const [paykaCheck, setPaykaCheck] = useState('');
+
+  const [panchayatSamitiRegisterBalance, setPanchayatSamitiRegisterBalance] = useState('');
+  const [panchayatSamitiBankBalance, setPanchayatSamitiBankBalance] = useState('');
+  const [panchayatSamitiPostBalance, setPanchayatSamitiPostBalance] = useState('');
+  const [panchayatSamitiHandBalance, setPanchayatSamitiHandBalance] = useState('');
+  const [panchayatSamitiCheck, setPanchayatSamitiCheck] = useState('');
+
+  const [sbmRegisterBalance, setSbmRegisterBalance] = useState('');
+  const [sbmBankBalance, setSbmBankBalance] = useState('');
+  const [sbmPostBalance, setSbmPostBalance] = useState('');
+  const [sbmHandBalance, setSbmHandBalance] = useState('');
+  const [sbmCheck, setSbmCheck] = useState('');
+
+  const [tirthakshetraRegisterBalance, setTirthakshetraRegisterBalance] = useState('');
+  const [tirthakshetraBankBalance, setTirthakshetraBankBalance] = useState('');
+  const [tirthakshetraPostBalance, setTirthakshetraPostBalance] = useState('');
+  const [tirthakshetraHandBalance, setTirthakshetraHandBalance] = useState('');
+  const [tirthakshetraCheck, setTirthakshetraCheck] = useState('');
+
+  const [minorityFundRegisterBalance, setMinorityFundRegisterBalance] = useState('');
+  const [minorityFundBankBalance, setMinorityFundBankBalance] = useState('');
+  const [minorityFundPostBalance, setMinorityFundPostBalance] = useState('');
+  const [minorityFundHandBalance, setMinorityFundHandBalance] = useState('');
+  const [minorityFundCheck, setMinorityFundCheck] = useState('');
+
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedPhotos, setUploadedPhotos] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -172,6 +276,110 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
           setBudgetProvision(formData.budget_provision || '');
           setTendersCalled(formData.tenders_called || '');
           setEntriesMade(formData.entries_made || '');
+
+          // Load register balance fields - First table
+          setGramNidhiRegisterBalance(formData.gram_nidhi_register_balance || '');
+          setGramNidhiBankBalance(formData.gram_nidhi_bank_balance || '');
+          setGramNidhiPostBalance(formData.gram_nidhi_post_balance || '');
+          setGramNidhiHandBalance(formData.gram_nidhi_hand_balance || '');
+          setGramNidhiCheck(formData.gram_nidhi_check || '');
+
+          setWaterSupplyRegisterBalance(formData.water_supply_register_balance || '');
+          setWaterSupplyBankBalance(formData.water_supply_bank_balance || '');
+          setWaterSupplyPostBalance(formData.water_supply_post_balance || '');
+          setWaterSupplyHandBalance(formData.water_supply_hand_balance || '');
+          setWaterSupplyCheck(formData.water_supply_check || '');
+
+          // Load register balance fields - Second table (17 funds)
+          set14thFinanceRegisterBalance(formData._14th_finance_commission_register_balance || '');
+          set14thFinanceBankBalance(formData._14th_finance_commission_bank_balance || '');
+          set14thFinancePostBalance(formData._14th_finance_commission_post_balance || '');
+          set14thFinanceHandBalance(formData._14th_finance_commission_hand_balance || '');
+          set14thFinanceCheck(formData._14th_finance_commission_check || '');
+
+          setEngGhaYoRegisterBalance(formData.eng_gha_yo_register_balance || '');
+          setEngGhaYoBankBalance(formData.eng_gha_yo_bank_balance || '');
+          setEngGhaYoPostBalance(formData.eng_gha_yo_post_balance || '');
+          setEngGhaYoHandBalance(formData.eng_gha_yo_hand_balance || '');
+          setEngGhaYoCheck(formData.eng_gha_yo_check || '');
+
+          setScDevelopmentRegisterBalance(formData.sc_development_register_balance || '');
+          setScDevelopmentBankBalance(formData.sc_development_bank_balance || '');
+          setScDevelopmentPostBalance(formData.sc_development_post_balance || '');
+          setScDevelopmentHandBalance(formData.sc_development_hand_balance || '');
+          setScDevelopmentCheck(formData.sc_development_check || '');
+
+          setLaborDeptRegisterBalance(formData.labor_department_register_balance || '');
+          setLaborDeptBankBalance(formData.labor_department_bank_balance || '');
+          setLaborDeptPostBalance(formData.labor_department_post_balance || '');
+          setLaborDeptHandBalance(formData.labor_department_hand_balance || '');
+          setLaborDeptCheck(formData.labor_department_check || '');
+
+          setThakkarBappaRegisterBalance(formData.thakkar_bappa_register_balance || '');
+          setThakkarBappaBankBalance(formData.thakkar_bappa_bank_balance || '');
+          setThakkarBappaPostBalance(formData.thakkar_bappa_post_balance || '');
+          setThakkarBappaHandBalance(formData.thakkar_bappa_hand_balance || '');
+          setThakkarBappaCheck(formData.thakkar_bappa_check || '');
+
+          setGramKoshMoneyRegisterBalance(formData.gram_kosh_money_register_balance || '');
+          setGramKoshMoneyBankBalance(formData.gram_kosh_money_bank_balance || '');
+          setGramKoshMoneyPostBalance(formData.gram_kosh_money_post_balance || '');
+          setGramKoshMoneyHandBalance(formData.gram_kosh_money_hand_balance || '');
+          setGramKoshMoneyCheck(formData.gram_kosh_money_check || '');
+
+          setCivicFacilitiesRegisterBalance(formData.civic_facilities_register_balance || '');
+          setCivicFacilitiesBankBalance(formData.civic_facilities_bank_balance || '');
+          setCivicFacilitiesPostBalance(formData.civic_facilities_post_balance || '');
+          setCivicFacilitiesHandBalance(formData.civic_facilities_hand_balance || '');
+          setCivicFacilitiesCheck(formData.civic_facilities_check || '');
+
+          setDalitBastiRegisterBalance(formData.dalit_basti_development_register_balance || '');
+          setDalitBastiBankBalance(formData.dalit_basti_development_bank_balance || '');
+          setDalitBastiPostBalance(formData.dalit_basti_development_post_balance || '');
+          setDalitBastiHandBalance(formData.dalit_basti_development_hand_balance || '');
+          setDalitBastiCheck(formData.dalit_basti_development_check || '');
+
+          setTantaMuktRegisterBalance(formData.tanta_mukt_yojana_register_balance || '');
+          setTantaMuktBankBalance(formData.tanta_mukt_yojana_bank_balance || '');
+          setTantaMuktPostBalance(formData.tanta_mukt_yojana_post_balance || '');
+          setTantaMuktHandBalance(formData.tanta_mukt_yojana_hand_balance || '');
+          setTantaMuktCheck(formData.tanta_mukt_yojana_check || '');
+
+          setJanSuvidhaRegisterBalance(formData.jan_suvidha_register_balance || '');
+          setJanSuvidhaBankBalance(formData.jan_suvidha_bank_balance || '');
+          setJanSuvidhaPostBalance(formData.jan_suvidha_post_balance || '');
+          setJanSuvidhaHandBalance(formData.jan_suvidha_hand_balance || '');
+          setJanSuvidhaCheck(formData.jan_suvidha_check || '');
+
+          setPaykaRegisterBalance(formData.payka_register_balance || '');
+          setPaykaBankBalance(formData.payka_bank_balance || '');
+          setPaykaPostBalance(formData.payka_post_balance || '');
+          setPaykaHandBalance(formData.payka_hand_balance || '');
+          setPaykaCheck(formData.payka_check || '');
+
+          setPanchayatSamitiRegisterBalance(formData.panchayat_samiti_yojana_register_balance || '');
+          setPanchayatSamitiBankBalance(formData.panchayat_samiti_yojana_bank_balance || '');
+          setPanchayatSamitiPostBalance(formData.panchayat_samiti_yojana_post_balance || '');
+          setPanchayatSamitiHandBalance(formData.panchayat_samiti_yojana_hand_balance || '');
+          setPanchayatSamitiCheck(formData.panchayat_samiti_yojana_check || '');
+
+          setSbmRegisterBalance(formData.sbm_register_balance || '');
+          setSbmBankBalance(formData.sbm_bank_balance || '');
+          setSbmPostBalance(formData.sbm_post_balance || '');
+          setSbmHandBalance(formData.sbm_hand_balance || '');
+          setSbmCheck(formData.sbm_check || '');
+
+          setTirthakshetraRegisterBalance(formData.tirthakshetra_development_fund_register_balance || '');
+          setTirthakshetraBankBalance(formData.tirthakshetra_development_fund_bank_balance || '');
+          setTirthakshetraPostBalance(formData.tirthakshetra_development_fund_post_balance || '');
+          setTirthakshetraHandBalance(formData.tirthakshetra_development_fund_hand_balance || '');
+          setTirthakshetraCheck(formData.tirthakshetra_development_fund_check || '');
+
+          setMinorityFundRegisterBalance(formData.minority_development_fund_register_balance || '');
+          setMinorityFundBankBalance(formData.minority_development_fund_bank_balance || '');
+          setMinorityFundPostBalance(formData.minority_development_fund_post_balance || '');
+          setMinorityFundHandBalance(formData.minority_development_fund_hand_balance || '');
+          setMinorityFundCheck(formData.minority_development_fund_check || '');
         }
       }
     };
@@ -380,6 +588,91 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
             budget_provision: budgetProvision || '',
             tenders_called: tendersCalled || '',
             entries_made: entriesMade || '',
+            gram_nidhi_register_balance: gramNidhiRegisterBalance || '',
+            gram_nidhi_bank_balance: gramNidhiBankBalance || '',
+            gram_nidhi_post_balance: gramNidhiPostBalance || '',
+            gram_nidhi_hand_balance: gramNidhiHandBalance || '',
+            gram_nidhi_check: gramNidhiCheck || '',
+            water_supply_register_balance: waterSupplyRegisterBalance || '',
+            water_supply_bank_balance: waterSupplyBankBalance || '',
+            water_supply_post_balance: waterSupplyPostBalance || '',
+            water_supply_hand_balance: waterSupplyHandBalance || '',
+            water_supply_check: waterSupplyCheck || '',
+            _14th_finance_commission_register_balance: _14thFinanceRegisterBalance || '',
+            _14th_finance_commission_bank_balance: _14thFinanceBankBalance || '',
+            _14th_finance_commission_post_balance: _14thFinancePostBalance || '',
+            _14th_finance_commission_hand_balance: _14thFinanceHandBalance || '',
+            _14th_finance_commission_check: _14thFinanceCheck || '',
+            eng_gha_yo_register_balance: engGhaYoRegisterBalance || '',
+            eng_gha_yo_bank_balance: engGhaYoBankBalance || '',
+            eng_gha_yo_post_balance: engGhaYoPostBalance || '',
+            eng_gha_yo_hand_balance: engGhaYoHandBalance || '',
+            eng_gha_yo_check: engGhaYoCheck || '',
+            sc_development_register_balance: scDevelopmentRegisterBalance || '',
+            sc_development_bank_balance: scDevelopmentBankBalance || '',
+            sc_development_post_balance: scDevelopmentPostBalance || '',
+            sc_development_hand_balance: scDevelopmentHandBalance || '',
+            sc_development_check: scDevelopmentCheck || '',
+            labor_department_register_balance: laborDeptRegisterBalance || '',
+            labor_department_bank_balance: laborDeptBankBalance || '',
+            labor_department_post_balance: laborDeptPostBalance || '',
+            labor_department_hand_balance: laborDeptHandBalance || '',
+            labor_department_check: laborDeptCheck || '',
+            thakkar_bappa_register_balance: thakkarBappaRegisterBalance || '',
+            thakkar_bappa_bank_balance: thakkarBappaBankBalance || '',
+            thakkar_bappa_post_balance: thakkarBappaPostBalance || '',
+            thakkar_bappa_hand_balance: thakkarBappaHandBalance || '',
+            thakkar_bappa_check: thakkarBappaCheck || '',
+            gram_kosh_money_register_balance: gramKoshMoneyRegisterBalance || '',
+            gram_kosh_money_bank_balance: gramKoshMoneyBankBalance || '',
+            gram_kosh_money_post_balance: gramKoshMoneyPostBalance || '',
+            gram_kosh_money_hand_balance: gramKoshMoneyHandBalance || '',
+            gram_kosh_money_check: gramKoshMoneyCheck || '',
+            civic_facilities_register_balance: civicFacilitiesRegisterBalance || '',
+            civic_facilities_bank_balance: civicFacilitiesBankBalance || '',
+            civic_facilities_post_balance: civicFacilitiesPostBalance || '',
+            civic_facilities_hand_balance: civicFacilitiesHandBalance || '',
+            civic_facilities_check: civicFacilitiesCheck || '',
+            dalit_basti_development_register_balance: dalitBastiRegisterBalance || '',
+            dalit_basti_development_bank_balance: dalitBastiBankBalance || '',
+            dalit_basti_development_post_balance: dalitBastiPostBalance || '',
+            dalit_basti_development_hand_balance: dalitBastiHandBalance || '',
+            dalit_basti_development_check: dalitBastiCheck || '',
+            tanta_mukt_yojana_register_balance: tantaMuktRegisterBalance || '',
+            tanta_mukt_yojana_bank_balance: tantaMuktBankBalance || '',
+            tanta_mukt_yojana_post_balance: tantaMuktPostBalance || '',
+            tanta_mukt_yojana_hand_balance: tantaMuktHandBalance || '',
+            tanta_mukt_yojana_check: tantaMuktCheck || '',
+            jan_suvidha_register_balance: janSuvidhaRegisterBalance || '',
+            jan_suvidha_bank_balance: janSuvidhaBankBalance || '',
+            jan_suvidha_post_balance: janSuvidhaPostBalance || '',
+            jan_suvidha_hand_balance: janSuvidhaHandBalance || '',
+            jan_suvidha_check: janSuvidhaCheck || '',
+            payka_register_balance: paykaRegisterBalance || '',
+            payka_bank_balance: paykaBankBalance || '',
+            payka_post_balance: paykaPostBalance || '',
+            payka_hand_balance: paykaHandBalance || '',
+            payka_check: paykaCheck || '',
+            panchayat_samiti_yojana_register_balance: panchayatSamitiRegisterBalance || '',
+            panchayat_samiti_yojana_bank_balance: panchayatSamitiBankBalance || '',
+            panchayat_samiti_yojana_post_balance: panchayatSamitiPostBalance || '',
+            panchayat_samiti_yojana_hand_balance: panchayatSamitiHandBalance || '',
+            panchayat_samiti_yojana_check: panchayatSamitiCheck || '',
+            sbm_register_balance: sbmRegisterBalance || '',
+            sbm_bank_balance: sbmBankBalance || '',
+            sbm_post_balance: sbmPostBalance || '',
+            sbm_hand_balance: sbmHandBalance || '',
+            sbm_check: sbmCheck || '',
+            tirthakshetra_development_fund_register_balance: tirthakshetraRegisterBalance || '',
+            tirthakshetra_development_fund_bank_balance: tirthakshetraBankBalance || '',
+            tirthakshetra_development_fund_post_balance: tirthakshetraPostBalance || '',
+            tirthakshetra_development_fund_hand_balance: tirthakshetraHandBalance || '',
+            tirthakshetra_development_fund_check: tirthakshetraCheck || '',
+            minority_development_fund_register_balance: minorityFundRegisterBalance || '',
+            minority_development_fund_bank_balance: minorityFundBankBalance || '',
+            minority_development_fund_post_balance: minorityFundPostBalance || '',
+            minority_development_fund_hand_balance: minorityFundHandBalance || '',
+            minority_development_fund_check: minorityFundCheck || '',
             updated_at: new Date().toISOString()
           })
           .eq('inspection_id', editingInspection.id);
@@ -452,7 +745,92 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
             balance_expense: balanceExpense || null,
             budget_provision: budgetProvision || '',
             tenders_called: tendersCalled || '',
-            entries_made: entriesMade || ''
+            entries_made: entriesMade || '',
+            gram_nidhi_register_balance: gramNidhiRegisterBalance || '',
+            gram_nidhi_bank_balance: gramNidhiBankBalance || '',
+            gram_nidhi_post_balance: gramNidhiPostBalance || '',
+            gram_nidhi_hand_balance: gramNidhiHandBalance || '',
+            gram_nidhi_check: gramNidhiCheck || '',
+            water_supply_register_balance: waterSupplyRegisterBalance || '',
+            water_supply_bank_balance: waterSupplyBankBalance || '',
+            water_supply_post_balance: waterSupplyPostBalance || '',
+            water_supply_hand_balance: waterSupplyHandBalance || '',
+            water_supply_check: waterSupplyCheck || '',
+            _14th_finance_commission_register_balance: _14thFinanceRegisterBalance || '',
+            _14th_finance_commission_bank_balance: _14thFinanceBankBalance || '',
+            _14th_finance_commission_post_balance: _14thFinancePostBalance || '',
+            _14th_finance_commission_hand_balance: _14thFinanceHandBalance || '',
+            _14th_finance_commission_check: _14thFinanceCheck || '',
+            eng_gha_yo_register_balance: engGhaYoRegisterBalance || '',
+            eng_gha_yo_bank_balance: engGhaYoBankBalance || '',
+            eng_gha_yo_post_balance: engGhaYoPostBalance || '',
+            eng_gha_yo_hand_balance: engGhaYoHandBalance || '',
+            eng_gha_yo_check: engGhaYoCheck || '',
+            sc_development_register_balance: scDevelopmentRegisterBalance || '',
+            sc_development_bank_balance: scDevelopmentBankBalance || '',
+            sc_development_post_balance: scDevelopmentPostBalance || '',
+            sc_development_hand_balance: scDevelopmentHandBalance || '',
+            sc_development_check: scDevelopmentCheck || '',
+            labor_department_register_balance: laborDeptRegisterBalance || '',
+            labor_department_bank_balance: laborDeptBankBalance || '',
+            labor_department_post_balance: laborDeptPostBalance || '',
+            labor_department_hand_balance: laborDeptHandBalance || '',
+            labor_department_check: laborDeptCheck || '',
+            thakkar_bappa_register_balance: thakkarBappaRegisterBalance || '',
+            thakkar_bappa_bank_balance: thakkarBappaBankBalance || '',
+            thakkar_bappa_post_balance: thakkarBappaPostBalance || '',
+            thakkar_bappa_hand_balance: thakkarBappaHandBalance || '',
+            thakkar_bappa_check: thakkarBappaCheck || '',
+            gram_kosh_money_register_balance: gramKoshMoneyRegisterBalance || '',
+            gram_kosh_money_bank_balance: gramKoshMoneyBankBalance || '',
+            gram_kosh_money_post_balance: gramKoshMoneyPostBalance || '',
+            gram_kosh_money_hand_balance: gramKoshMoneyHandBalance || '',
+            gram_kosh_money_check: gramKoshMoneyCheck || '',
+            civic_facilities_register_balance: civicFacilitiesRegisterBalance || '',
+            civic_facilities_bank_balance: civicFacilitiesBankBalance || '',
+            civic_facilities_post_balance: civicFacilitiesPostBalance || '',
+            civic_facilities_hand_balance: civicFacilitiesHandBalance || '',
+            civic_facilities_check: civicFacilitiesCheck || '',
+            dalit_basti_development_register_balance: dalitBastiRegisterBalance || '',
+            dalit_basti_development_bank_balance: dalitBastiBankBalance || '',
+            dalit_basti_development_post_balance: dalitBastiPostBalance || '',
+            dalit_basti_development_hand_balance: dalitBastiHandBalance || '',
+            dalit_basti_development_check: dalitBastiCheck || '',
+            tanta_mukt_yojana_register_balance: tantaMuktRegisterBalance || '',
+            tanta_mukt_yojana_bank_balance: tantaMuktBankBalance || '',
+            tanta_mukt_yojana_post_balance: tantaMuktPostBalance || '',
+            tanta_mukt_yojana_hand_balance: tantaMuktHandBalance || '',
+            tanta_mukt_yojana_check: tantaMuktCheck || '',
+            jan_suvidha_register_balance: janSuvidhaRegisterBalance || '',
+            jan_suvidha_bank_balance: janSuvidhaBankBalance || '',
+            jan_suvidha_post_balance: janSuvidhaPostBalance || '',
+            jan_suvidha_hand_balance: janSuvidhaHandBalance || '',
+            jan_suvidha_check: janSuvidhaCheck || '',
+            payka_register_balance: paykaRegisterBalance || '',
+            payka_bank_balance: paykaBankBalance || '',
+            payka_post_balance: paykaPostBalance || '',
+            payka_hand_balance: paykaHandBalance || '',
+            payka_check: paykaCheck || '',
+            panchayat_samiti_yojana_register_balance: panchayatSamitiRegisterBalance || '',
+            panchayat_samiti_yojana_bank_balance: panchayatSamitiBankBalance || '',
+            panchayat_samiti_yojana_post_balance: panchayatSamitiPostBalance || '',
+            panchayat_samiti_yojana_hand_balance: panchayatSamitiHandBalance || '',
+            panchayat_samiti_yojana_check: panchayatSamitiCheck || '',
+            sbm_register_balance: sbmRegisterBalance || '',
+            sbm_bank_balance: sbmBankBalance || '',
+            sbm_post_balance: sbmPostBalance || '',
+            sbm_hand_balance: sbmHandBalance || '',
+            sbm_check: sbmCheck || '',
+            tirthakshetra_development_fund_register_balance: tirthakshetraRegisterBalance || '',
+            tirthakshetra_development_fund_bank_balance: tirthakshetraBankBalance || '',
+            tirthakshetra_development_fund_post_balance: tirthakshetraPostBalance || '',
+            tirthakshetra_development_fund_hand_balance: tirthakshetraHandBalance || '',
+            tirthakshetra_development_fund_check: tirthakshetraCheck || '',
+            minority_development_fund_register_balance: minorityFundRegisterBalance || '',
+            minority_development_fund_bank_balance: minorityFundBankBalance || '',
+            minority_development_fund_post_balance: minorityFundPostBalance || '',
+            minority_development_fund_hand_balance: minorityFundHandBalance || '',
+            minority_development_fund_check: minorityFundCheck || ''
           });
 
         if (formInsertError) throw formInsertError;
@@ -735,20 +1113,20 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
                   <tr className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-center border border-gray-300">1</td>
                     <td className="px-4 py-3 border border-gray-300 font-medium">ग्रामनिधी</td>
-                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
-                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
-                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
-                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
-                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={gramNidhiRegisterBalance} onChange={(e) => setGramNidhiRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={gramNidhiBankBalance} onChange={(e) => setGramNidhiBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={gramNidhiPostBalance} onChange={(e) => setGramNidhiPostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={gramNidhiHandBalance} onChange={(e) => setGramNidhiHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={gramNidhiCheck} onChange={(e) => setGramNidhiCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
                   </tr>
                   <tr className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-center border border-gray-300">2</td>
                     <td className="px-4 py-3 border border-gray-300 font-medium">पाणी पुरवठा</td>
-                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
-                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
-                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
-                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
-                    <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={waterSupplyRegisterBalance} onChange={(e) => setWaterSupplyRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={waterSupplyBankBalance} onChange={(e) => setWaterSupplyBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={waterSupplyPostBalance} onChange={(e) => setWaterSupplyPostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={waterSupplyHandBalance} onChange={(e) => setWaterSupplyHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={waterSupplyCheck} onChange={(e) => setWaterSupplyCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none" /></td>
                   </tr>
                 </tbody>
               </table>
@@ -771,35 +1149,159 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    ["1", "ग्रामनिधी"],
-                    ["2", "पाणी पुरवठा"],
-                    ["3", "14 वा वित्त आयोग"],
-                    ["4", "इं.गा.यो."],
-                    ["5", "अ.जा.विकास"],
-                    ["6", "मजगारोहयो"],
-                    ["7", "ठक्कर बाप्पा"],
-                    ["8", "ग्रामकोष पैसा"],
-                    ["9", "नागरी सुविधा"],
-                    ["10", "दलित वस्ती विकास"],
-                    ["11", "तंटा मुक्त योजना"],
-                    ["12", "जनसुविधा"],
-                    ["13", "पायका"],
-                    ["14", "प.सं.योजना"],
-                    ["15", "SBM"],
-                    ["16", "तीर्थक्षेत्र विकास निधी"],
-                    ["17", "अल्पसंख्यांक विकास निधी"]
-                  ].map((row, index) => (
-                    <tr key={index} className={index % 2 === 0 ? 'bg-gray-50 hover:bg-gray-100' : 'bg-white hover:bg-gray-50'}>
-                      <td className="px-4 py-3 text-center border border-gray-300">{row[0]}</td>
-                      <td className="px-4 py-3 border border-gray-300 font-medium">{row[1]}</td>
-                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
-                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
-                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
-                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
-                      <td className="px-4 py-3 border border-gray-300"><input type="text" className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
-                    </tr>
-                  ))}
+                  <tr className="bg-gray-50 hover:bg-gray-100">
+                    <td className="px-4 py-3 text-center border border-gray-300">1</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">ग्रामनिधी</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={gramNidhiRegisterBalance} onChange={(e) => setGramNidhiRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={gramNidhiBankBalance} onChange={(e) => setGramNidhiBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={gramNidhiPostBalance} onChange={(e) => setGramNidhiPostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={gramNidhiHandBalance} onChange={(e) => setGramNidhiHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={gramNidhiCheck} onChange={(e) => setGramNidhiCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="bg-white hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">2</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">पाणी पुरवठा</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={waterSupplyRegisterBalance} onChange={(e) => setWaterSupplyRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={waterSupplyBankBalance} onChange={(e) => setWaterSupplyBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={waterSupplyPostBalance} onChange={(e) => setWaterSupplyPostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={waterSupplyHandBalance} onChange={(e) => setWaterSupplyHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={waterSupplyCheck} onChange={(e) => setWaterSupplyCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="bg-gray-50 hover:bg-gray-100">
+                    <td className="px-4 py-3 text-center border border-gray-300">3</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">14 वा वित्त आयोग</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={_14thFinanceRegisterBalance} onChange={(e) => set14thFinanceRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={_14thFinanceBankBalance} onChange={(e) => set14thFinanceBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={_14thFinancePostBalance} onChange={(e) => set14thFinancePostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={_14thFinanceHandBalance} onChange={(e) => set14thFinanceHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={_14thFinanceCheck} onChange={(e) => set14thFinanceCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="bg-white hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">4</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">इं.गा.यो.</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={engGhaYoRegisterBalance} onChange={(e) => setEngGhaYoRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={engGhaYoBankBalance} onChange={(e) => setEngGhaYoBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={engGhaYoPostBalance} onChange={(e) => setEngGhaYoPostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={engGhaYoHandBalance} onChange={(e) => setEngGhaYoHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={engGhaYoCheck} onChange={(e) => setEngGhaYoCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="bg-gray-50 hover:bg-gray-100">
+                    <td className="px-4 py-3 text-center border border-gray-300">5</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">अ.जा.विकास</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={scDevelopmentRegisterBalance} onChange={(e) => setScDevelopmentRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={scDevelopmentBankBalance} onChange={(e) => setScDevelopmentBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={scDevelopmentPostBalance} onChange={(e) => setScDevelopmentPostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={scDevelopmentHandBalance} onChange={(e) => setScDevelopmentHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={scDevelopmentCheck} onChange={(e) => setScDevelopmentCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="bg-white hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">6</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">मजगारोहयो</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={laborDeptRegisterBalance} onChange={(e) => setLaborDeptRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={laborDeptBankBalance} onChange={(e) => setLaborDeptBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={laborDeptPostBalance} onChange={(e) => setLaborDeptPostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={laborDeptHandBalance} onChange={(e) => setLaborDeptHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={laborDeptCheck} onChange={(e) => setLaborDeptCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="bg-gray-50 hover:bg-gray-100">
+                    <td className="px-4 py-3 text-center border border-gray-300">7</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">ठक्कर बाप्पा</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={thakkarBappaRegisterBalance} onChange={(e) => setThakkarBappaRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={thakkarBappaBankBalance} onChange={(e) => setThakkarBappaBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={thakkarBappaPostBalance} onChange={(e) => setThakkarBappaPostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={thakkarBappaHandBalance} onChange={(e) => setThakkarBappaHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={thakkarBappaCheck} onChange={(e) => setThakkarBappaCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="bg-white hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">8</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">ग्रामकोष पैसा</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={gramKoshMoneyRegisterBalance} onChange={(e) => setGramKoshMoneyRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={gramKoshMoneyBankBalance} onChange={(e) => setGramKoshMoneyBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={gramKoshMoneyPostBalance} onChange={(e) => setGramKoshMoneyPostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={gramKoshMoneyHandBalance} onChange={(e) => setGramKoshMoneyHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={gramKoshMoneyCheck} onChange={(e) => setGramKoshMoneyCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="bg-gray-50 hover:bg-gray-100">
+                    <td className="px-4 py-3 text-center border border-gray-300">9</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">नागरी सुविधा</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={civicFacilitiesRegisterBalance} onChange={(e) => setCivicFacilitiesRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={civicFacilitiesBankBalance} onChange={(e) => setCivicFacilitiesBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={civicFacilitiesPostBalance} onChange={(e) => setCivicFacilitiesPostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={civicFacilitiesHandBalance} onChange={(e) => setCivicFacilitiesHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={civicFacilitiesCheck} onChange={(e) => setCivicFacilitiesCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="bg-white hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">10</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">दलित वस्ती विकास</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={dalitBastiRegisterBalance} onChange={(e) => setDalitBastiRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={dalitBastiBankBalance} onChange={(e) => setDalitBastiBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={dalitBastiPostBalance} onChange={(e) => setDalitBastiPostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={dalitBastiHandBalance} onChange={(e) => setDalitBastiHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={dalitBastiCheck} onChange={(e) => setDalitBastiCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="bg-gray-50 hover:bg-gray-100">
+                    <td className="px-4 py-3 text-center border border-gray-300">11</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">तंटा मुक्त योजना</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={tantaMuktRegisterBalance} onChange={(e) => setTantaMuktRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={tantaMuktBankBalance} onChange={(e) => setTantaMuktBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={tantaMuktPostBalance} onChange={(e) => setTantaMuktPostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={tantaMuktHandBalance} onChange={(e) => setTantaMuktHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={tantaMuktCheck} onChange={(e) => setTantaMuktCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="bg-white hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">12</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">जनसुविधा</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={janSuvidhaRegisterBalance} onChange={(e) => setJanSuvidhaRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={janSuvidhaBankBalance} onChange={(e) => setJanSuvidhaBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={janSuvidhaPostBalance} onChange={(e) => setJanSuvidhaPostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={janSuvidhaHandBalance} onChange={(e) => setJanSuvidhaHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={janSuvidhaCheck} onChange={(e) => setJanSuvidhaCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="bg-gray-50 hover:bg-gray-100">
+                    <td className="px-4 py-3 text-center border border-gray-300">13</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">पायका</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={paykaRegisterBalance} onChange={(e) => setPaykaRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={paykaBankBalance} onChange={(e) => setPaykaBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={paykaPostBalance} onChange={(e) => setPaykaPostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={paykaHandBalance} onChange={(e) => setPaykaHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={paykaCheck} onChange={(e) => setPaykaCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="bg-white hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">14</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">प.सं.योजना</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={panchayatSamitiRegisterBalance} onChange={(e) => setPanchayatSamitiRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={panchayatSamitiBankBalance} onChange={(e) => setPanchayatSamitiBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={panchayatSamitiPostBalance} onChange={(e) => setPanchayatSamitiPostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={panchayatSamitiHandBalance} onChange={(e) => setPanchayatSamitiHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={panchayatSamitiCheck} onChange={(e) => setPanchayatSamitiCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="bg-gray-50 hover:bg-gray-100">
+                    <td className="px-4 py-3 text-center border border-gray-300">15</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">SBM</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={sbmRegisterBalance} onChange={(e) => setSbmRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={sbmBankBalance} onChange={(e) => setSbmBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={sbmPostBalance} onChange={(e) => setSbmPostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={sbmHandBalance} onChange={(e) => setSbmHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={sbmCheck} onChange={(e) => setSbmCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="bg-white hover:bg-gray-50">
+                    <td className="px-4 py-3 text-center border border-gray-300">16</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">तीर्थक्षेत्र विकास निधी</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={tirthakshetraRegisterBalance} onChange={(e) => setTirthakshetraRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={tirthakshetraBankBalance} onChange={(e) => setTirthakshetraBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={tirthakshetraPostBalance} onChange={(e) => setTirthakshetraPostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={tirthakshetraHandBalance} onChange={(e) => setTirthakshetraHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={tirthakshetraCheck} onChange={(e) => setTirthakshetraCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                  </tr>
+                  <tr className="bg-gray-50 hover:bg-gray-100">
+                    <td className="px-4 py-3 text-center border border-gray-300">17</td>
+                    <td className="px-4 py-3 border border-gray-300 font-medium">अल्पसंख्यांक विकास निधी</td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={minorityFundRegisterBalance} onChange={(e) => setMinorityFundRegisterBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={minorityFundBankBalance} onChange={(e) => setMinorityFundBankBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={minorityFundPostBalance} onChange={(e) => setMinorityFundPostBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={minorityFundHandBalance} onChange={(e) => setMinorityFundHandBalance(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                    <td className="px-4 py-3 border border-gray-300"><input type="text" value={minorityFundCheck} onChange={(e) => setMinorityFundCheck(e.target.value)} disabled={isViewMode} className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-teal-500 focus:outline-none" /></td>
+                  </tr>
                 </tbody>
               </table>
             </div>
