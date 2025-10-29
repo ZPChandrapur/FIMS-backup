@@ -891,7 +891,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
           <table className="w-full bg-gradient-to-br from-blue-50 to-cyan-50 divide-y divide-blue-200">
             <thead className="bg-gray-50 sticky top-0 z-10">
               <tr className="bg-gradient-to-r from-blue-200 via-blue-100 to-cyan-100 border-b-2 border-blue-300">
-                <th className="px-6 py-4 text-left text-xs font-bold text-blue-900 uppercase tracking-wider bg-gradient-to-r from-blue-300 to-blue-200 shadow-sm">
+                <th className="px-6 py-4 text-left text-xs font-bold text-blue-900 uppercase tracking-wider bg-gradient-to-r from-blue-300 to-blue-200 shadow-sm w-[11%]">
                   <div>{t('fims.inspectionNumber')}</div>
                   <input
                     type="text"
@@ -902,7 +902,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={(e) => e.stopPropagation()}
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-[11%]">
                   <div>{t('fims.location')}</div>
                   <input
                     type="text"
@@ -913,7 +913,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={(e) => e.stopPropagation()}
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-[11%]">
                   <div>{t('fims.category')}</div>
                   <input
                     type="text"
@@ -924,7 +924,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={(e) => e.stopPropagation()}
                   />
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-blue-900 uppercase tracking-wider bg-gradient-to-r from-blue-300 to-blue-200 shadow-sm">
+                <th className="px-6 py-4 text-left text-xs font-bold text-blue-900 uppercase tracking-wider bg-gradient-to-r from-blue-300 to-blue-200 shadow-sm w-[11%]">
                   <div>{t('fims.status')}</div>
                   <input
                     type="text"
@@ -935,7 +935,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={(e) => e.stopPropagation()}
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-[11%]">
                   <div>{t('fims.date')}</div>
                   <input
                     type="text"
@@ -946,12 +946,12 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={(e) => e.stopPropagation()}
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">{t('fims.locationAccuracy')}</th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-blue-900 uppercase tracking-wider bg-gradient-to-r from-blue-300 to-blue-200 shadow-sm">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-[11%]">{t('fims.locationAccuracy')}</th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-blue-900 uppercase tracking-wider bg-gradient-to-r from-blue-300 to-blue-200 shadow-sm w-[11%]">
                   {t('fims.actions')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Photos</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Complete/Revisit</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-[11%]">Photos</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-[12%]">Complete/Revisit</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -974,13 +974,13 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                         border-l-4 border-transparent hover:border-blue-400
                       `}
                     >
-                      <td className="px-6 py-4 text-blue-800 hover:text-blue-600 transition-colors duration-200">
-                        <div className="text-sm text-blue-500 hover:text-blue-400 truncate max-w-xs transition-colors duration-200">
+                      <td className="px-6 py-4 text-blue-800 hover:text-blue-600 transition-colors duration-200 w-[11%]">
+                        <div className="text-sm text-blue-500 hover:text-blue-400 truncate transition-colors duration-200">
                           {inspection.inspection_number}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm font-bold text-blue-900 hover:text-blue-700 transition-colors duration-200">
-                        <div className="max-w-xs">
+                      <td className="px-6 py-4 text-sm font-bold text-blue-900 hover:text-blue-700 transition-colors duration-200 w-[11%]">
+                        <div>
                           <div className="font-medium truncate" title={inspection.location_name}>
                             {inspection.location_name}
                           </div>
@@ -991,10 +991,10 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-800 hover:text-blue-600 transition-colors duration-200">
+                      <td className="px-6 py-4 text-sm text-blue-800 hover:text-blue-600 transition-colors duration-200 w-[11%] truncate">
                         {category ? t(`categories.${category.form_type}`, category.name) : '-'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4 w-[11%]">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           inspection.status === 'approved' ? 'bg-green-100 text-green-800' :
                           inspection.status === 'submitted' ? 'bg-blue-100 text-blue-800' :
@@ -1008,14 +1008,14 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                           {getStatusText(inspection.status)}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {inspection.inspection_date ? new Date(inspection.inspection_date).toLocaleDateString() : 
+                      <td className="px-6 py-4 text-sm text-gray-900 w-[11%] truncate">
+                        {inspection.inspection_date ? new Date(inspection.inspection_date).toLocaleDateString() :
                          inspection.planned_date ? new Date(inspection.planned_date).toLocaleDateString() : '-'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 text-sm text-gray-900 w-[11%] truncate">
                         {inspection.location_accuracy ? `${Math.round(inspection.location_accuracy)}m` : '-'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-700 hover:text-blue-500 transition-colors duration-200">
+                      <td className="px-6 py-4 text-sm text-blue-700 hover:text-blue-500 transition-colors duration-200 w-[11%]">
                         <div className="flex items-center space-x-2">
                           <button
                             onClick={() => {
@@ -1070,7 +1070,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                           </button>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <td className="px-6 py-4 text-sm font-medium w-[11%]">
                         <button
                           onClick={() => handleViewInspectionPhotos(inspection)}
                           className="text-purple-600 hover:text-purple-900 p-1 rounded"
@@ -1079,7 +1079,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                           <Camera className="h-4 w-4" />
                         </button>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <td className="px-6 py-4 text-sm font-medium w-[12%]">
                         <div className="flex items-center space-x-2">
                           <button
                             onClick={() => handleCompleteInspection(inspection.id)}
