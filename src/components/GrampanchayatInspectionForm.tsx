@@ -48,6 +48,34 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
   const [resolutionNo, setResolutionNo] = useState('');
   const [resolutionDate, setResolutionDate] = useState('');
 
+  // Tax collection progress fields (Section 9)
+  const [previousYearHouseTaxArrears, setPreviousYearHouseTaxArrears] = useState('');
+  const [previousYearWaterTaxArrears, setPreviousYearWaterTaxArrears] = useState('');
+  const [currentYearHouseTaxDemand, setCurrentYearHouseTaxDemand] = useState('');
+  const [currentYearWaterTaxDemand, setCurrentYearWaterTaxDemand] = useState('');
+  const [totalHouseTaxDemand, setTotalHouseTaxDemand] = useState('');
+  const [totalWaterTaxDemand, setTotalWaterTaxDemand] = useState('');
+  const [totalHouseTaxCollection, setTotalHouseTaxCollection] = useState('');
+  const [totalWaterTaxCollection, setTotalWaterTaxCollection] = useState('');
+  const [balanceHouseTaxCollection, setBalanceHouseTaxCollection] = useState('');
+  const [balanceWaterTaxCollection, setBalanceWaterTaxCollection] = useState('');
+  const [houseTaxPercentage, setHouseTaxPercentage] = useState('');
+  const [waterTaxPercentage, setWaterTaxPercentage] = useState('');
+  const [remarks, setRemarks] = useState('');
+
+  // 15% fund expenditure fields (Section 10)
+  const [gramPanchayatTotalIncome, setGramPanchayatTotalIncome] = useState('');
+  const [fifteenPercentAmount, setFifteenPercentAmount] = useState('');
+  const [previousBalance, setPreviousBalance] = useState('');
+  const [totalExpense, setTotalExpense] = useState('');
+  const [expenseTillInspectionDate, setExpenseTillInspectionDate] = useState('');
+  const [balanceExpense, setBalanceExpense] = useState('');
+
+  // Financial transaction fields (Section 11)
+  const [budgetProvision, setBudgetProvision] = useState('');
+  const [tendersCalled, setTendersCalled] = useState('');
+  const [entriesMade, setEntriesMade] = useState('');
+
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedPhotos, setUploadedPhotos] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -116,6 +144,34 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
           setReassessmentAction(formData.reassessment_action || '');
           setResolutionNo(formData.resolution_no || '');
           setResolutionDate(formData.resolution_date || '');
+
+          // Load tax collection fields
+          setPreviousYearHouseTaxArrears(formData.previous_year_house_tax_arrears || '');
+          setPreviousYearWaterTaxArrears(formData.previous_year_water_tax_arrears || '');
+          setCurrentYearHouseTaxDemand(formData.current_year_house_tax_demand || '');
+          setCurrentYearWaterTaxDemand(formData.current_year_water_tax_demand || '');
+          setTotalHouseTaxDemand(formData.total_house_tax_demand || '');
+          setTotalWaterTaxDemand(formData.total_water_tax_demand || '');
+          setTotalHouseTaxCollection(formData.total_house_tax_collection || '');
+          setTotalWaterTaxCollection(formData.total_water_tax_collection || '');
+          setBalanceHouseTaxCollection(formData.balance_house_tax_collection || '');
+          setBalanceWaterTaxCollection(formData.balance_water_tax_collection || '');
+          setHouseTaxPercentage(formData.house_tax_percentage || '');
+          setWaterTaxPercentage(formData.water_tax_percentage || '');
+          setRemarks(formData.remarks || '');
+
+          // Load 15% fund expenditure fields
+          setGramPanchayatTotalIncome(formData.gram_panchayat_total_income || '');
+          setFifteenPercentAmount(formData.fifteen_percent_amount || '');
+          setPreviousBalance(formData.previous_balance || '');
+          setTotalExpense(formData.total_expense || '');
+          setExpenseTillInspectionDate(formData.expense_till_inspection_date || '');
+          setBalanceExpense(formData.balance_expense || '');
+
+          // Load financial transaction fields
+          setBudgetProvision(formData.budget_provision || '');
+          setTendersCalled(formData.tenders_called || '');
+          setEntriesMade(formData.entries_made || '');
         }
       }
     };
@@ -302,6 +358,28 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
             reassessment_action: reassessmentAction || '',
             resolution_no: resolutionNo || '',
             resolution_date: resolutionDate || new Date().toISOString().split('T')[0],
+            previous_year_house_tax_arrears: previousYearHouseTaxArrears || null,
+            previous_year_water_tax_arrears: previousYearWaterTaxArrears || null,
+            current_year_house_tax_demand: currentYearHouseTaxDemand || null,
+            current_year_water_tax_demand: currentYearWaterTaxDemand || null,
+            total_house_tax_demand: totalHouseTaxDemand || null,
+            total_water_tax_demand: totalWaterTaxDemand || null,
+            total_house_tax_collection: totalHouseTaxCollection || null,
+            total_water_tax_collection: totalWaterTaxCollection || null,
+            balance_house_tax_collection: balanceHouseTaxCollection || null,
+            balance_water_tax_collection: balanceWaterTaxCollection || null,
+            house_tax_percentage: houseTaxPercentage || null,
+            water_tax_percentage: waterTaxPercentage || null,
+            remarks: remarks || '',
+            gram_panchayat_total_income: gramPanchayatTotalIncome || null,
+            fifteen_percent_amount: fifteenPercentAmount || null,
+            previous_balance: previousBalance || null,
+            total_expense: totalExpense || null,
+            expense_till_inspection_date: expenseTillInspectionDate || null,
+            balance_expense: balanceExpense || null,
+            budget_provision: budgetProvision || '',
+            tenders_called: tendersCalled || '',
+            entries_made: entriesMade || '',
             updated_at: new Date().toISOString()
           })
           .eq('inspection_id', editingInspection.id);
@@ -352,7 +430,29 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
             reassessment_done: reassessmentDone || '',
             reassessment_action: reassessmentAction || '',
             resolution_no: resolutionNo || '',
-            resolution_date: resolutionDate || new Date().toISOString().split('T')[0]
+            resolution_date: resolutionDate || new Date().toISOString().split('T')[0],
+            previous_year_house_tax_arrears: previousYearHouseTaxArrears || null,
+            previous_year_water_tax_arrears: previousYearWaterTaxArrears || null,
+            current_year_house_tax_demand: currentYearHouseTaxDemand || null,
+            current_year_water_tax_demand: currentYearWaterTaxDemand || null,
+            total_house_tax_demand: totalHouseTaxDemand || null,
+            total_water_tax_demand: totalWaterTaxDemand || null,
+            total_house_tax_collection: totalHouseTaxCollection || null,
+            total_water_tax_collection: totalWaterTaxCollection || null,
+            balance_house_tax_collection: balanceHouseTaxCollection || null,
+            balance_water_tax_collection: balanceWaterTaxCollection || null,
+            house_tax_percentage: houseTaxPercentage || null,
+            water_tax_percentage: waterTaxPercentage || null,
+            remarks: remarks || '',
+            gram_panchayat_total_income: gramPanchayatTotalIncome || null,
+            fifteen_percent_amount: fifteenPercentAmount || null,
+            previous_balance: previousBalance || null,
+            total_expense: totalExpense || null,
+            expense_till_inspection_date: expenseTillInspectionDate || null,
+            balance_expense: balanceExpense || null,
+            budget_provision: budgetProvision || '',
+            tenders_called: tendersCalled || '',
+            entries_made: entriesMade || ''
           });
 
         if (formInsertError) throw formInsertError;
@@ -777,37 +877,37 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
               <ul style={{ marginLeft: '20px', lineHeight: '2.5' }}>
                 <li className="mb-3">
                   <label className="font-semibold text-gray-700">(1) मागील येणे रक्कम :- </label>
-                  गृहकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
-                  पाणीकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                  गृहकर- <input type="number" value={previousYearHouseTaxArrears} onChange={(e) => setPreviousYearHouseTaxArrears(e.target.value)} disabled={isViewMode} className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                  पाणीकर- <input type="number" value={previousYearWaterTaxArrears} onChange={(e) => setPreviousYearWaterTaxArrears(e.target.value)} disabled={isViewMode} className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
                 </li>
                 <li className="mb-3">
                   <label className="font-semibold text-gray-700">(2) चालू वर्षात मागणी :- </label>
-                  गृहकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
-                  पाणीकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                  गृहकर- <input type="number" value={currentYearHouseTaxDemand} onChange={(e) => setCurrentYearHouseTaxDemand(e.target.value)} disabled={isViewMode} className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                  पाणीकर- <input type="number" value={currentYearWaterTaxDemand} onChange={(e) => setCurrentYearWaterTaxDemand(e.target.value)} disabled={isViewMode} className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
                 </li>
                 <li className="mb-3">
                   <label className="font-semibold text-gray-700">(3) एकुण मागणी :- </label>
-                  गृहकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
-                  पाणीकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                  गृहकर- <input type="number" value={totalHouseTaxDemand} onChange={(e) => setTotalHouseTaxDemand(e.target.value)} disabled={isViewMode} className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                  पाणीकर- <input type="number" value={totalWaterTaxDemand} onChange={(e) => setTotalWaterTaxDemand(e.target.value)} disabled={isViewMode} className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
                 </li>
                 <li className="mb-3">
                   <label className="font-semibold text-gray-700">(4) एकुण वसूली :- </label>
-                  गृहकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
-                  पाणीकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                  गृहकर- <input type="number" value={totalHouseTaxCollection} onChange={(e) => setTotalHouseTaxCollection(e.target.value)} disabled={isViewMode} className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                  पाणीकर- <input type="number" value={totalWaterTaxCollection} onChange={(e) => setTotalWaterTaxCollection(e.target.value)} disabled={isViewMode} className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
                 </li>
                 <li className="mb-3">
                   <label className="font-semibold text-gray-700">(5) शिल्लक वसूली :- </label>
-                  गृहकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
-                  पाणीकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                  गृहकर- <input type="number" value={balanceHouseTaxCollection} onChange={(e) => setBalanceHouseTaxCollection(e.target.value)} disabled={isViewMode} className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                  पाणीकर- <input type="number" value={balanceWaterTaxCollection} onChange={(e) => setBalanceWaterTaxCollection(e.target.value)} disabled={isViewMode} className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
                 </li>
                 <li className="mb-3">
                   <label className="font-semibold text-gray-700">(6) टक्केवारी :- </label>
-                  गृहकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
-                  पाणीकर- <input type="number" className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                  गृहकर- <input type="number" value={houseTaxPercentage} onChange={(e) => setHouseTaxPercentage(e.target.value)} disabled={isViewMode} className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
+                  पाणीकर- <input type="number" value={waterTaxPercentage} onChange={(e) => setWaterTaxPercentage(e.target.value)} disabled={isViewMode} className="mx-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-32" />
                 </li>
                 <li className="mb-3">
                   <label className="font-semibold text-gray-700">(7) शेरा :- </label>
-                  <input type="text" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-96" />
+                  <input type="text" value={remarks} onChange={(e) => setRemarks(e.target.value)} disabled={isViewMode} className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-96" />
                 </li>
               </ul>
             </div>
@@ -817,27 +917,27 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
               <ul style={{ marginLeft: '20px', lineHeight: '2.5' }}>
                 <li className="mb-3">
                   <label className="font-semibold text-gray-700">(1) ग्राम पंचायतीचे एकुण उत्पन्न :- </label>
-                  <input type="number" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" />
+                  <input type="number" value={gramPanchayatTotalIncome} onChange={(e) => setGramPanchayatTotalIncome(e.target.value)} disabled={isViewMode} className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" />
                 </li>
                 <li className="mb-3">
                   <label className="font-semibold text-gray-700">(2) 15% रक्कम :- </label>
-                  <input type="number" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" />
+                  <input type="number" value={fifteenPercentAmount} onChange={(e) => setFifteenPercentAmount(e.target.value)} disabled={isViewMode} className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" />
                 </li>
                 <li className="mb-3">
                   <label className="font-semibold text-gray-700">(3) मागील अनुशेष </label>
-                  <input type="number" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" />
+                  <input type="number" value={previousBalance} onChange={(e) => setPreviousBalance(e.target.value)} disabled={isViewMode} className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" />
                 </li>
                 <li className="mb-3">
                   <label className="font-semibold text-gray-700">(4) करावयाचा एकुण खर्च </label>
-                  <input type="number" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" />
+                  <input type="number" value={totalExpense} onChange={(e) => setTotalExpense(e.target.value)} disabled={isViewMode} className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" />
                 </li>
                 <li className="mb-3">
                   <label className="font-semibold text-gray-700">(5) तपासणीत्या दिनांक पर्यंत झालेला खर्च: </label>
-                  <input type="number" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" />
+                  <input type="number" value={expenseTillInspectionDate} onChange={(e) => setExpenseTillInspectionDate(e.target.value)} disabled={isViewMode} className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" />
                 </li>
                 <li className="mb-3">
                   <label className="font-semibold text-gray-700">(6) शिल्लक खर्च </label>
-                  <input type="number" className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" />
+                  <input type="number" value={balanceExpense} onChange={(e) => setBalanceExpense(e.target.value)} disabled={isViewMode} className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-48" />
                 </li>
               </ul>
             </div>
@@ -849,11 +949,11 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
                 (क) कोणत्याही चालू खरेदी करणाऱ्यापूर्वी अंदाजपत्रकात योग्य तरतूद केली आहे काय ?
                 <span className="ml-6 space-x-6">
                   <label className="inline-flex items-center cursor-pointer">
-                    <input type="radio" name="budgetProvision" value="होय" className="w-5 h-5 text-orange-600 focus:ring-orange-500" />
+                    <input type="radio" name="budgetProvision" value="होय" checked={budgetProvision === 'होय'} onChange={(e) => setBudgetProvision(e.target.value)} disabled={isViewMode} className="w-5 h-5 text-orange-600 focus:ring-orange-500" />
                     <span className="ml-2 text-gray-800 font-medium">होय</span>
                   </label>
                   <label className="inline-flex items-center cursor-pointer">
-                    <input type="radio" name="budgetProvision" value="नाही" className="w-5 h-5 text-orange-600 focus:ring-orange-500" />
+                    <input type="radio" name="budgetProvision" value="नाही" checked={budgetProvision === 'नाही'} onChange={(e) => setBudgetProvision(e.target.value)} disabled={isViewMode} className="w-5 h-5 text-orange-600 focus:ring-orange-500" />
                     <span className="ml-2 text-gray-800 font-medium">नाही</span>
                   </label>
                 </span>
@@ -867,11 +967,11 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
               <p className="mb-4 text-gray-700">(ग) खरेदी करण्यासाठी नियमप्रमाणे दरपत्रके मागविली होती काय ?
                 <span className="ml-6 space-x-6">
                   <label className="inline-flex items-center cursor-pointer">
-                    <input type="radio" name="tendersCalled" value="होय" className="w-5 h-5 text-orange-600 focus:ring-orange-500" />
+                    <input type="radio" name="tendersCalled" value="होय" checked={tendersCalled === 'होय'} onChange={(e) => setTendersCalled(e.target.value)} disabled={isViewMode} className="w-5 h-5 text-orange-600 focus:ring-orange-500" />
                     <span className="ml-2 text-gray-800 font-medium">होय</span>
                   </label>
                   <label className="inline-flex items-center cursor-pointer">
-                    <input type="radio" name="tendersCalled" value="नाही" className="w-5 h-5 text-orange-600 focus:ring-orange-500" />
+                    <input type="radio" name="tendersCalled" value="नाही" checked={tendersCalled === 'नाही'} onChange={(e) => setTendersCalled(e.target.value)} disabled={isViewMode} className="w-5 h-5 text-orange-600 focus:ring-orange-500" />
                     <span className="ml-2 text-gray-800 font-medium">नाही</span>
                   </label>
                 </span>
@@ -879,11 +979,11 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
               <p className="mb-4 text-gray-700">(घ) खरेदी केलेल्या साहित्याचा नमुना 9,15 व 16 मधील नोंदवहीत नोंदी घेण्यात आल्या आहेत काय ?</p>
               <div className="ml-6 space-x-6">
                 <label className="inline-flex items-center cursor-pointer">
-                  <input type="radio" name="entriesMade" value="होय" className="w-5 h-5 text-orange-600 focus:ring-orange-500" />
+                  <input type="radio" name="entriesMade" value="होय" checked={entriesMade === 'होय'} onChange={(e) => setEntriesMade(e.target.value)} disabled={isViewMode} className="w-5 h-5 text-orange-600 focus:ring-orange-500" />
                   <span className="ml-2 text-gray-800 font-medium">होय</span>
                 </label>
                 <label className="inline-flex items-center cursor-pointer">
-                  <input type="radio" name="entriesMade" value="नाही" className="w-5 h-5 text-orange-600 focus:ring-orange-500" />
+                  <input type="radio" name="entriesMade" value="नाही" checked={entriesMade === 'नाही'} onChange={(e) => setEntriesMade(e.target.value)} disabled={isViewMode} className="w-5 h-5 text-orange-600 focus:ring-orange-500" />
                   <span className="ml-2 text-gray-800 font-medium">नाही</span>
                 </label>
               </div>
