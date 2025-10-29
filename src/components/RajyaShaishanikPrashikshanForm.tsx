@@ -230,40 +230,109 @@ export const RajyaShaishanikPrashikshanForm: React.FC<RajyaShaishanikPrashikshan
           const formData = await getAdarshShalaForm(editingInspection.id);
           
           if (formData) {
+            // Parse class_data JSON
+            let classEnrollmentData = initializeClassData();
+            if (formData.class_data) {
+              try {
+                const classData = typeof formData.class_data === 'string'
+                  ? JSON.parse(formData.class_data)
+                  : formData.class_data;
+                classData.forEach((cls: any) => {
+                  if (cls.class && classEnrollmentData[cls.class]) {
+                    classEnrollmentData[cls.class].enrollment = cls.total || 0;
+                    classEnrollmentData[cls.class].attendance = 0;
+                  }
+                });
+              } catch (e) {
+                console.error('Error parsing class_data:', e);
+              }
+            }
+
+            // Parse subject_performance JSON
+            let subjectLearningData = initializeSubjectData();
+            if (formData.subject_performance) {
+              try {
+                const subjectData = typeof formData.subject_performance === 'string'
+                  ? JSON.parse(formData.subject_performance)
+                  : formData.subject_performance;
+                subjectData.forEach((subj: any) => {
+                  for (let i = 1; i <= 8; i++) {
+                    const classKey = `class_${i}`;
+                    if (subj[classKey] !== undefined && subjectLearningData[i.toString()]) {
+                      // Map subject names
+                      let subjectName = '';
+                      if (subj.subject === 'Marathi') subjectName = 'मराठी';
+                      else if (subj.subject === 'English') subjectName = 'इंग्रजी';
+                      else if (subj.subject === 'Math') subjectName = 'गणित';
+                      else if (subj.subject === 'Science') subjectName = 'प.अ./विज्ञान';
+                      else if (subj.subject === 'Social Studies') subjectName = 'इतिहास';
+
+                      if (subjectName && subjectLearningData[i.toString()][subjectName] !== undefined) {
+                        subjectLearningData[i.toString()][subjectName] = subj[classKey];
+                      }
+                    }
+                  }
+                });
+              } catch (e) {
+                console.error('Error parsing subject_performance:', e);
+              }
+            }
+
+            // Parse material_usage JSON
+            let materialsData = initializeMaterialsData();
+            if (formData.material_usage) {
+              try {
+                const materialData = typeof formData.material_usage === 'string'
+                  ? JSON.parse(formData.material_usage)
+                  : formData.material_usage;
+                materialData.forEach((mat: any) => {
+                  if (mat.material && materialsData[mat.material]) {
+                    materialsData[mat.material] = {
+                      available: mat.available || false,
+                      usage_status: mat.usage || '',
+                      suggestions: mat.suggestions || ''
+                    };
+                  }
+                });
+              } catch (e) {
+                console.error('Error parsing material_usage:', e);
+              }
+            }
+
             setSchoolFormData({
               visit_date: formData.visit_date || '',
               school_name: formData.school_name || '',
               school_address: formData.school_address || '',
               principal_name: formData.principal_name || '',
-              principal_mobile: formData.principal_mobile || '',
-              udise_number: formData.udise_number || '',
-              center: formData.center_name || '',
-              taluka: formData.taluka_name || '',
-              district: formData.district_name || '',
+              principal_mobile: formData.principal_mobile_no?.toString() || '',
+              udise_number: formData.udise_code || '',
+              center: formData.center || '',
+              taluka: formData.taluka || '',
+              district: formData.district || '',
               management_type: formData.management_type || '',
-              school_achievement_self: formData.school_achievement_self || '',
-              school_achievement_external: formData.school_achievement_external || '',
+              school_achievement_self: formData.self_assessment_grade || '',
+              school_achievement_external: formData.external_assessment_grade || '',
               sanctioned_posts: formData.sanctioned_posts || 0,
               working_posts: formData.working_posts || 0,
               present_teachers: formData.present_teachers || 0,
-              class_enrollment: initializeClassData(),
+              class_enrollment: classEnrollmentData,
               math_teachers_count: formData.math_teachers_count || 0,
-              khan_registered_teachers: formData.khan_registered_teachers || 0,
-              khan_registered_students: formData.khan_registered_students || 0,
-              khan_active_students: formData.khan_active_students || 0,
-              khan_usage_method: formData.khan_usage_method || '',
-              sqdp_prepared: formData.sqdp_prepared || '',
-              sqdp_objectives_achieved: formData.sqdp_objectives_achieved || '',
-              nipun_bharat_verification: formData.nipun_bharat_verification || '',
-              learning_outcomes_assessment: formData.learning_outcomes_assessment || '',
-              subject_learning_outcomes: initializeSubjectData(),
-              officer_feedback: formData.officer_feedback || '',
-              innovative_initiatives: formData.innovative_initiatives || '',
-              suggested_changes: formData.suggested_changes || '',
-              srujanrang_articles: formData.srujanrang_articles || '',
-              future_articles: formData.future_articles || '',
-              ngo_involvement: formData.ngo_involvement || '',
-              materials_usage: initializeMaterialsData(),
+              khan_registered_teachers: formData.registered_teachers || 0,
+              khan_registered_students: formData.registered_students || 0,
+              khan_active_students: formData.active_students || 0,
+              khan_usage_method: formData.question1 || '',
+              sqdp_prepared: formData.question2 || '',
+              sqdp_objectives_achieved: formData.question3 || '',
+              nipun_bharat_verification: formData.question4 || '',
+              learning_outcomes_assessment: formData.question5 || '',
+              subject_learning_outcomes: subjectLearningData,
+              officer_feedback: formData.question6 || '',
+              innovative_initiatives: formData.question7 || '',
+              suggested_changes: formData.question8 || '',
+              srujanrang_articles: formData.question9 || '',
+              future_articles: formData.question10 || '',
+              ngo_involvement: formData.question11 || '',
+              materials_usage: materialsData,
               inspector_name: formData.inspector_name || '',
               inspector_designation: formData.inspector_designation || '',
               visit_date_inspector: formData.visit_date_inspector || ''
