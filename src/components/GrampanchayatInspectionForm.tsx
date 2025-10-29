@@ -338,8 +338,6 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
           .from('grampanchayat_inspection_form')
           .insert({
             inspection_id: inspectionResult.id,
-            category_id: sanitizedInspectionData.category_id,
-            user_id: user.id,
             gram_panchayat_name: gpName || '',
             panchayat_samiti: psName || '',
             general_inspection_date: inspectionDate || new Date().toISOString().split('T')[0],
