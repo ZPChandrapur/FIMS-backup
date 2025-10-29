@@ -674,10 +674,10 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
           <h3 className="text-base md:text-lg font-semibold text-gray-900">{t('fims.recentInspections')}</h3>
         </div>
         <div className="overflow-x-auto hidden md:block" style={{ maxHeight: '600px', overflowY: 'auto' }}>
-          <table className="w-full">
+          <table className="w-full" style={{ tableLayout: 'fixed' }}>
             <thead className="bg-gray-50 sticky top-0 z-10">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '18%' }}>
                   <div>{t('fims.inspectionNumber')}</div>
                   <input
                     type="text"
@@ -688,7 +688,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={(e) => e.stopPropagation()}
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '15%' }}>
                   <div>{t('fims.location')}</div>
                   <input
                     type="text"
@@ -699,7 +699,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={(e) => e.stopPropagation()}
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-56">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '22%' }}>
                   <div>{t('fims.category')}</div>
                   <input
                     type="text"
@@ -710,7 +710,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={(e) => e.stopPropagation()}
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '12%' }}>
                   <div>{t('fims.status')}</div>
                   <input
                     type="text"
@@ -721,7 +721,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={(e) => e.stopPropagation()}
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '12%' }}>
                   <div>{t('fims.date')}</div>
                   <input
                     type="text"
@@ -732,7 +732,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={(e) => e.stopPropagation()}
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">{t('fims.actions')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '21%' }}>{t('fims.actions')}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -740,16 +740,16 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                 const category = categories.find(c => c.id === inspection.category_id);
                 return (
                 <tr key={inspection.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900 w-48">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
                     {inspection.inspection_number}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 w-40 truncate" title={inspection.location_name}>
+                  <td className="px-6 py-4 text-sm text-gray-900 truncate" title={inspection.location_name}>
                     {inspection.location_name}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 w-56">
+                  <td className="px-6 py-4 text-sm text-gray-900">
                     {category ? t(`categories.${category.form_type}`, category.name) : '-'}
                   </td>
-                  <td className="px-6 py-4 w-32">
+                  <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       inspection.status === 'approved' ? 'bg-green-100 text-green-800' :
                       inspection.status === 'submitted' ? 'bg-blue-100 text-blue-800' :
@@ -763,10 +763,10 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                       {getStatusText(inspection.status)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 w-32">
+                  <td className="px-6 py-4 text-sm text-gray-900">
                     {inspection.inspection_date ? new Date(inspection.inspection_date).toLocaleDateString() : '-'}
                   </td>
-                  <td className="px-6 py-4 text-sm font-medium w-48">
+                  <td className="px-6 py-4 text-sm font-medium">
                     <button
                       onClick={() => {
                         setEditingInspection({...inspection, mode: 'view'});
