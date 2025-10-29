@@ -31,22 +31,79 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
 
   const isViewMode = editingInspection?.mode === 'view';
   const isEditMode = editingInspection?.mode === 'edit';
-  const [monthlyMeetings, setMonthlyMeetings] = useState('');
-  const [agendaUpToDate, setAgendaUpToDate] = useState('');
-  const [receiptUpToDate, setReceiptUpToDate] = useState('');
-  const [reassessmentDone, setReassessmentDone] = useState('');
-  const [reassessmentAction, setReassessmentAction] = useState('');
 
-  const [gpName, setGpName] = useState('');
-  const [psName, setPsName] = useState('');
-  const [inspectionDate, setInspectionDate] = useState('');
-  const [inspectionPlace, setInspectionPlace] = useState('');
-  const [officerName, setOfficerName] = useState('');
-  const [officerPost, setOfficerPost] = useState('');
-  const [secretaryName, setSecretaryName] = useState('');
-  const [secretaryTenure, setSecretaryTenure] = useState('');
-  const [resolutionNo, setResolutionNo] = useState('');
-  const [resolutionDate, setResolutionDate] = useState('');
+  // Comprehensive form data state
+  const [formData, setFormData] = useState<any>({
+    // Basic info
+    gpName: '',
+    psName: '',
+    inspectionDate: '',
+    inspectionPlace: '',
+    officerName: '',
+    officerPost: '',
+    secretaryName: '',
+    secretaryTenure: '',
+    monthlyMeetings: '',
+    agendaUpToDate: '',
+    receiptUpToDate: '',
+    reassessmentDone: '',
+    reassessmentAction: '',
+    resolutionNo: '',
+    resolutionDate: '',
+
+    // Tax data
+    previousYearHouseTaxArrears: '',
+    previousYearWaterTaxArrears: '',
+    currentYearHouseTaxDemand: '',
+    currentYearWaterTaxDemand: '',
+    totalHouseTaxDemand: '',
+    totalWaterTaxDemand: '',
+    totalHouseTaxCollection: '',
+    totalWaterTaxCollection: '',
+    balanceHouseTaxCollection: '',
+    balanceWaterTaxCollection: '',
+    houseTaxPercentage: '',
+    waterTaxPercentage: '',
+    remarks: '',
+
+    // Financial data
+    gramPanchayatTotalIncome: '',
+    fifteenPercentAmount: '',
+    previousBalance: '',
+    totalExpense: '',
+    expenseTillInspectionDate: '',
+    balanceExpense: '',
+    budgetProvision: '',
+    tendersCalled: '',
+    entriesMade: '',
+
+    // Forms check
+    form1: '', form2: '', form3: '', form4: '', form5: '', form6: '', form7: '', form8: '',
+    copy1: '', copy2: '', copy3: '',
+    copyToCeo: '', copyToBdo: '', copyToSecretary: '',
+
+    // Fund registers - each with 5 columns
+    funds: {} as Record<string, any>
+  });
+
+  // Helper function to update formData
+  const updateFormData = (field: string, value: any) => {
+    setFormData((prev: any) => ({ ...prev, [field]: value }));
+  };
+
+  // Helper to update fund data
+  const updateFundData = (fundKey: string, field: string, value: any) => {
+    setFormData((prev: any) => ({
+      ...prev,
+      funds: {
+        ...prev.funds,
+        [fundKey]: {
+          ...prev.funds[fundKey],
+          [field]: value
+        }
+      }
+    }));
+  };
 
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedPhotos, setUploadedPhotos] = useState<File[]>([]);
@@ -89,7 +146,7 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
         });
 
         // Load data from grampanchayat_inspection_form table
-        const { data: formData, error } = await supabase
+        const { data: dbFormData, error } = await supabase
           .from('grampanchayat_inspection_form')
           .select('*')
           .eq('inspection_id', editingInspection.id)
@@ -100,22 +157,87 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
           return;
         }
 
-        if (formData) {
-          setGpName(formData.gram_panchayat_name || '');
-          setPsName(formData.panchayat_samiti || '');
-          setInspectionDate(formData.general_inspection_date || '');
-          setInspectionPlace(formData.general_inspection_place || '');
-          setOfficerName(formData.inspection_officer_name || '');
-          setOfficerPost(formData.inspection_officer_post || '');
-          setSecretaryName(formData.secretary_name || '');
-          setSecretaryTenure(formData.secretary_tenure || '');
-          setMonthlyMeetings(formData.monthly_meetings || '');
-          setAgendaUpToDate(formData.meeting_agenda_up_to_date || '');
-          setReceiptUpToDate(formData.receipt_up_to_date || '');
-          setReassessmentDone(formData.reassessment_done || '');
-          setReassessmentAction(formData.reassessment_action || '');
-          setResolutionNo(formData.resolution_no || '');
-          setResolutionDate(formData.resolution_date || '');
+        if (dbFormData) {
+          setFormData({
+            gpName: dbFormData.gram_panchayat_name || '',
+            psName: dbFormData.panchayat_samiti || '',
+            inspectionDate: dbFormData.general_inspection_date || '',
+            inspectionPlace: dbFormData.general_inspection_place || '',
+            officerName: dbFormData.inspection_officer_name || '',
+            officerPost: dbFormData.inspection_officer_post || '',
+            secretaryName: dbFormData.secretary_name || '',
+            secretaryTenure: dbFormData.secretary_tenure || '',
+            monthlyMeetings: dbFormData.monthly_meetings || '',
+            agendaUpToDate: dbFormData.meeting_agenda_up_to_date || '',
+            receiptUpToDate: dbFormData.receipt_up_to_date || '',
+            reassessmentDone: dbFormData.reassessment_done || '',
+            reassessmentAction: dbFormData.reassessment_action || '',
+            resolutionNo: dbFormData.resolution_no || '',
+            resolutionDate: dbFormData.resolution_date || '',
+
+            // Tax data
+            previousYearHouseTaxArrears: dbFormData.previous_year_house_tax_arrears || '',
+            previousYearWaterTaxArrears: dbFormData.previous_year_water_tax_arrears || '',
+            currentYearHouseTaxDemand: dbFormData.current_year_house_tax_demand || '',
+            currentYearWaterTaxDemand: dbFormData.current_year_water_tax_demand || '',
+            totalHouseTaxDemand: dbFormData.total_house_tax_demand || '',
+            totalWaterTaxDemand: dbFormData.total_water_tax_demand || '',
+            totalHouseTaxCollection: dbFormData.total_house_tax_collection || '',
+            totalWaterTaxCollection: dbFormData.total_water_tax_collection || '',
+            balanceHouseTaxCollection: dbFormData.balance_house_tax_collection || '',
+            balanceWaterTaxCollection: dbFormData.balance_water_tax_collection || '',
+            houseTaxPercentage: dbFormData.house_tax_percentage || '',
+            waterTaxPercentage: dbFormData.water_tax_percentage || '',
+            remarks: dbFormData.remarks || '',
+
+            // Financial data
+            gramPanchayatTotalIncome: dbFormData.gram_panchayat_total_income || '',
+            fifteenPercentAmount: dbFormData.fifteen_percent_amount || '',
+            previousBalance: dbFormData.previous_balance || '',
+            totalExpense: dbFormData.total_expense || '',
+            expenseTillInspectionDate: dbFormData.expense_till_inspection_date || '',
+            balanceExpense: dbFormData.balance_expense || '',
+            budgetProvision: dbFormData.budget_provision || '',
+            tendersCalled: dbFormData.tenders_called || '',
+            entriesMade: dbFormData.entries_made || '',
+
+            // Forms
+            form1: dbFormData.form1 || '', form2: dbFormData.form2 || '', form3: dbFormData.form3 || '',
+            form4: dbFormData.form4 || '', form5: dbFormData.form5 || '', form6: dbFormData.form6 || '',
+            form7: dbFormData.form7 || '', form8: dbFormData.form8 || '',
+            copy1: dbFormData.copy1 || '', copy2: dbFormData.copy2 || '', copy3: dbFormData.copy3 || '',
+            copyToCeo: dbFormData.copy_to_ceo || '', copyToBdo: dbFormData.copy_to_bdo || '',
+            copyToSecretary: dbFormData.copy_to_secretary || '',
+
+            // Fund registers
+            funds: {
+              gramNidhi: {
+                srNo: dbFormData.sr_no_gram_nidhi || '',
+                registerBalance: dbFormData.gram_nidhi_register_balance || '',
+                bankBalance: dbFormData.gram_nidhi_bank_balance || '',
+                postBalance: dbFormData.gram_nidhi_post_balance || '',
+                handBalance: dbFormData.gram_nidhi_hand_balance || '',
+                check: dbFormData.gram_nidhi_check || ''
+              },
+              waterSupply: {
+                srNo: dbFormData.sr_no_water_supply || '',
+                registerBalance: dbFormData.water_supply_register_balance || '',
+                bankBalance: dbFormData.water_supply_bank_balance || '',
+                postBalance: dbFormData.water_supply_post_balance || '',
+                handBalance: dbFormData.water_supply_hand_balance || '',
+                check: dbFormData.water_supply_check || ''
+              },
+              financeCommission14: {
+                srNo: dbFormData.sr_no_14th_finance_commission || '',
+                registerBalance: dbFormData._14th_finance_commission_register_balance || '',
+                bankBalance: dbFormData._14th_finance_commission_bank_balance || '',
+                postBalance: dbFormData._14th_finance_commission_post_balance || '',
+                handBalance: dbFormData._14th_finance_commission_hand_balance || '',
+                check: dbFormData._14th_finance_commission_check || ''
+              }
+              // Add more funds as needed
+            }
+          });
         }
       }
     };
@@ -287,21 +409,60 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
         const { error: formUpdateError } = await supabase
           .from('grampanchayat_inspection_form')
           .update({
-            gram_panchayat_name: gpName || '',
-            panchayat_samiti: psName || '',
-            general_inspection_date: inspectionDate || new Date().toISOString().split('T')[0],
-            general_inspection_place: inspectionPlace || '',
-            inspection_officer_name: officerName || '',
-            inspection_officer_post: officerPost || '',
-            secretary_name: secretaryName || '',
-            secretary_tenure: secretaryTenure || '',
-            monthly_meetings: monthlyMeetings || '',
-            meeting_agenda_up_to_date: agendaUpToDate || '',
-            receipt_up_to_date: receiptUpToDate || '',
-            reassessment_done: reassessmentDone || '',
-            reassessment_action: reassessmentAction || '',
-            resolution_no: resolutionNo || '',
-            resolution_date: resolutionDate || new Date().toISOString().split('T')[0],
+            gram_panchayat_name: formData.gpName || '',
+            panchayat_samiti: formData.psName || '',
+            general_inspection_date: formData.inspectionDate || new Date().toISOString().split('T')[0],
+            general_inspection_place: formData.inspectionPlace || '',
+            inspection_officer_name: formData.officerName || '',
+            inspection_officer_post: formData.officerPost || '',
+            secretary_name: formData.secretaryName || '',
+            secretary_tenure: formData.secretaryTenure || '',
+            monthly_meetings: formData.monthlyMeetings || '',
+            meeting_agenda_up_to_date: formData.agendaUpToDate || '',
+            receipt_up_to_date: formData.receiptUpToDate || '',
+            reassessment_done: formData.reassessmentDone || '',
+            reassessment_action: formData.reassessmentAction || '',
+            resolution_no: formData.resolutionNo || '',
+            resolution_date: formData.resolutionDate || new Date().toISOString().split('T')[0],
+
+            // Add ALL other fields
+            previous_year_house_tax_arrears: parseFloat(formData.previousYearHouseTaxArrears) || 0,
+            previous_year_water_tax_arrears: parseFloat(formData.previousYearWaterTaxArrears) || 0,
+            current_year_house_tax_demand: parseFloat(formData.currentYearHouseTaxDemand) || 0,
+            current_year_water_tax_demand: parseFloat(formData.currentYearWaterTaxDemand) || 0,
+            total_house_tax_demand: parseFloat(formData.totalHouseTaxDemand) || 0,
+            total_water_tax_demand: parseFloat(formData.totalWaterTaxDemand) || 0,
+            total_house_tax_collection: parseFloat(formData.totalHouseTaxCollection) || 0,
+            total_water_tax_collection: parseFloat(formData.totalWaterTaxCollection) || 0,
+            balance_house_tax_collection: parseFloat(formData.balanceHouseTaxCollection) || 0,
+            balance_water_tax_collection: parseFloat(formData.balanceWaterTaxCollection) || 0,
+            house_tax_percentage: parseFloat(formData.houseTaxPercentage) || 0,
+            water_tax_percentage: parseFloat(formData.waterTaxPercentage) || 0,
+            remarks: formData.remarks || '',
+            gram_panchayat_total_income: parseFloat(formData.gramPanchayatTotalIncome) || 0,
+            fifteen_percent_amount: parseFloat(formData.fifteenPercentAmount) || 0,
+            previous_balance: parseFloat(formData.previousBalance) || 0,
+            total_expense: parseFloat(formData.totalExpense) || 0,
+            expense_till_inspection_date: parseFloat(formData.expenseTillInspectionDate) || 0,
+            balance_expense: parseFloat(formData.balanceExpense) || 0,
+            budget_provision: formData.budgetProvision || '',
+            tenders_called: formData.tendersCalled || '',
+            entries_made: formData.entriesMade || '',
+            form1: formData.form1 || '', form2: formData.form2 || '', form3: formData.form3 || '',
+            form4: formData.form4 || '', form5: formData.form5 || '', form6: formData.form6 || '',
+            form7: formData.form7 || '', form8: formData.form8 || '',
+            copy1: formData.copy1 || '', copy2: formData.copy2 || '', copy3: formData.copy3 || '',
+            copy_to_ceo: formData.copyToCeo || '', copy_to_bdo: formData.copyToBdo || '',
+            copy_to_secretary: formData.copyToSecretary || '',
+
+            // Fund data
+            sr_no_gram_nidhi: formData.funds?.gramNidhi?.srNo || '',
+            gram_nidhi_register_balance: formData.funds?.gramNidhi?.registerBalance || '',
+            gram_nidhi_bank_balance: formData.funds?.gramNidhi?.bankBalance || '',
+            gram_nidhi_post_balance: formData.funds?.gramNidhi?.postBalance || '',
+            gram_nidhi_hand_balance: formData.funds?.gramNidhi?.handBalance || '',
+            gram_nidhi_check: formData.funds?.gramNidhi?.check || '',
+
             updated_at: new Date().toISOString()
           })
           .eq('inspection_id', editingInspection.id);
@@ -338,46 +499,49 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
           .from('grampanchayat_inspection_form')
           .insert({
             inspection_id: inspectionResult.id,
-            gram_panchayat_name: gpName || '',
-            panchayat_samiti: psName || '',
-            general_inspection_date: inspectionDate || new Date().toISOString().split('T')[0],
-            general_inspection_place: inspectionPlace || '',
-            inspection_officer_name: officerName || '',
-            inspection_officer_post: officerPost || '',
-            secretary_name: secretaryName || '',
-            secretary_tenure: secretaryTenure || '',
-            monthly_meetings: monthlyMeetings || '',
-            meeting_agenda_up_to_date: agendaUpToDate || '',
-            receipt_up_to_date: receiptUpToDate || '',
-            reassessment_done: reassessmentDone || '',
-            reassessment_action: reassessmentAction || '',
-            resolution_no: resolutionNo || '',
-            resolution_date: resolutionDate || new Date().toISOString().split('T')[0],
-            previous_year_house_tax_arrears: 0,
-            previous_year_water_tax_arrears: 0,
-            current_year_house_tax_demand: 0,
-            current_year_water_tax_demand: 0,
-            total_house_tax_demand: 0,
-            total_water_tax_demand: 0,
-            total_house_tax_collection: 0,
-            total_water_tax_collection: 0,
-            balance_house_tax_collection: 0,
-            balance_water_tax_collection: 0,
-            house_tax_percentage: 0,
-            water_tax_percentage: 0,
-            remarks: '',
-            gram_panchayat_total_income: 0,
-            fifteen_percent_amount: 0,
-            previous_balance: 0,
-            total_expense: 0,
-            expense_till_inspection_date: 0,
-            balance_expense: 0,
-            budget_provision: '',
-            tenders_called: '',
-            entries_made: '',
-            form1: '', form2: '', form3: '', form4: '', form5: '', form6: '', form7: '', form8: '',
-            copy1: '', copy2: '', copy3: '',
-            copy_to_ceo: '', copy_to_bdo: '', copy_to_secretary: '',
+            gram_panchayat_name: formData.gpName || '',
+            panchayat_samiti: formData.psName || '',
+            general_inspection_date: formData.inspectionDate || new Date().toISOString().split('T')[0],
+            general_inspection_place: formData.inspectionPlace || '',
+            inspection_officer_name: formData.officerName || '',
+            inspection_officer_post: formData.officerPost || '',
+            secretary_name: formData.secretaryName || '',
+            secretary_tenure: formData.secretaryTenure || '',
+            monthly_meetings: formData.monthlyMeetings || '',
+            meeting_agenda_up_to_date: formData.agendaUpToDate || '',
+            receipt_up_to_date: formData.receiptUpToDate || '',
+            reassessment_done: formData.reassessmentDone || '',
+            reassessment_action: formData.reassessmentAction || '',
+            resolution_no: formData.resolutionNo || '',
+            resolution_date: formData.resolutionDate || new Date().toISOString().split('T')[0],
+            previous_year_house_tax_arrears: parseFloat(formData.previousYearHouseTaxArrears) || 0,
+            previous_year_water_tax_arrears: parseFloat(formData.previousYearWaterTaxArrears) || 0,
+            current_year_house_tax_demand: parseFloat(formData.currentYearHouseTaxDemand) || 0,
+            current_year_water_tax_demand: parseFloat(formData.currentYearWaterTaxDemand) || 0,
+            total_house_tax_demand: parseFloat(formData.totalHouseTaxDemand) || 0,
+            total_water_tax_demand: parseFloat(formData.totalWaterTaxDemand) || 0,
+            total_house_tax_collection: parseFloat(formData.totalHouseTaxCollection) || 0,
+            total_water_tax_collection: parseFloat(formData.totalWaterTaxCollection) || 0,
+            balance_house_tax_collection: parseFloat(formData.balanceHouseTaxCollection) || 0,
+            balance_water_tax_collection: parseFloat(formData.balanceWaterTaxCollection) || 0,
+            house_tax_percentage: parseFloat(formData.houseTaxPercentage) || 0,
+            water_tax_percentage: parseFloat(formData.waterTaxPercentage) || 0,
+            remarks: formData.remarks || '',
+            gram_panchayat_total_income: parseFloat(formData.gramPanchayatTotalIncome) || 0,
+            fifteen_percent_amount: parseFloat(formData.fifteenPercentAmount) || 0,
+            previous_balance: parseFloat(formData.previousBalance) || 0,
+            total_expense: parseFloat(formData.totalExpense) || 0,
+            expense_till_inspection_date: parseFloat(formData.expenseTillInspectionDate) || 0,
+            balance_expense: parseFloat(formData.balanceExpense) || 0,
+            budget_provision: formData.budgetProvision || '',
+            tenders_called: formData.tendersCalled || '',
+            entries_made: formData.entriesMade || '',
+            form1: formData.form1 || '', form2: formData.form2 || '', form3: formData.form3 || '',
+            form4: formData.form4 || '', form5: formData.form5 || '', form6: formData.form6 || '',
+            form7: formData.form7 || '', form8: formData.form8 || '',
+            copy1: formData.copy1 || '', copy2: formData.copy2 || '', copy3: formData.copy3 || '',
+            copy_to_ceo: formData.copyToCeo || '', copy_to_bdo: formData.copyToBdo || '',
+            copy_to_secretary: formData.copyToSecretary || '',
             sr_no_gram_nidhi: '', gram_nidhi_register_balance: '', gram_nidhi_bank_balance: '',
             gram_nidhi_post_balance: '', gram_nidhi_hand_balance: '', gram_nidhi_check: '',
             sr_no_water_supply: '', water_supply_register_balance: '', water_supply_bank_balance: '',
@@ -521,16 +685,18 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
                   <label className="font-semibold text-gray-700">ग्राम पंचायतिचे नांव:</label>
                   <input
                     type="text"
-                    value={gpName}
-                    onChange={(e) => setGpName(e.target.value)}
+                    value={formData.gpName}
+                    onChange={(e) => updateFormData('gpName', e.target.value)}
+                    disabled={isViewMode}
                     className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
                     placeholder="ग्राम पंचायतिचे नांव"
                   />
                   <label className="ml-4 font-semibold text-gray-700">पंचायत समिती:</label>
                   <input
                     type="text"
-                    value={psName}
-                    onChange={(e) => setPsName(e.target.value)}
+                    value={formData.psName}
+                    onChange={(e) => updateFormData('psName', e.target.value)}
+                    disabled={isViewMode}
                     className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
                     placeholder="पंचायत समिती"
                   />
@@ -539,8 +705,9 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
                   <label className="font-semibold text-gray-700">(क) सर्वसाधारण तपासणीची तारीख:</label>
                   <input
                     type="date"
-                    value={inspectionDate}
-                    onChange={(e) => setInspectionDate(e.target.value)}
+                    value={formData.inspectionDate}
+                    onChange={(e) => updateFormData('inspectionDate', e.target.value)}
+                    disabled={isViewMode}
                     className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </li>
@@ -548,8 +715,9 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
                   <label className="font-semibold text-gray-700">(ख) सर्वसाधारण तपासणीचे ठिकाण:</label>
                   <input
                     type="text"
-                    value={inspectionPlace}
-                    onChange={(e) => setInspectionPlace(e.target.value)}
+                    value={formData.inspectionPlace}
+                    onChange={(e) => updateFormData('inspectionPlace', e.target.value)}
+                    disabled={isViewMode}
                     className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-80"
                     placeholder="तपासणीचे ठिकाण"
                   />
@@ -558,16 +726,18 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
                   <label className="font-semibold text-gray-700">तपासणी अधिकारीाचे नांव व हुद्दा:</label>
                   <input
                     type="text"
-                    value={officerName}
-                    onChange={(e) => setOfficerName(e.target.value)}
+                    value={formData.officerName}
+                    onChange={(e) => updateFormData('officerName', e.target.value)}
+                    disabled={isViewMode}
                     className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-56"
                     placeholder="अधिकारीाचे नांव"
                   />
                   <span className="mx-2 text-gray-500">/</span>
                   <input
                     type="text"
-                    value={officerPost}
-                    onChange={(e) => setOfficerPost(e.target.value)}
+                    value={formData.officerPost}
+                    onChange={(e) => updateFormData('officerPost', e.target.value)}
+                    disabled={isViewMode}
                     className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-56"
                     placeholder="हुद्दा"
                   />
@@ -576,16 +746,18 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
                   <label className="font-semibold text-gray-700">सचिवाचे नांव व तो सदस्य पंचायतीत केलेला पासून काम करीत आहे:</label>
                   <input
                     type="text"
-                    value={secretaryName}
-                    onChange={(e) => setSecretaryName(e.target.value)}
+                    value={formData.secretaryName}
+                    onChange={(e) => updateFormData('secretaryName', e.target.value)}
+                    disabled={isViewMode}
                     className="ml-3 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-56"
                     placeholder="सचिवाचे नांव"
                   />
                   <span className="mx-2 text-gray-500">/</span>
                   <input
                     type="text"
-                    value={secretaryTenure}
-                    onChange={(e) => setSecretaryTenure(e.target.value)}
+                    value={formData.secretaryTenure}
+                    onChange={(e) => updateFormData('secretaryTenure', e.target.value)}
+                    disabled={isViewMode}
                     className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-56"
                     placeholder="कार्यकाळ"
                   />
