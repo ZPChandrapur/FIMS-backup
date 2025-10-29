@@ -1010,8 +1010,8 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
                 / / ठराव क्रमांक -
                 <input
                   type="text"
-                  value={resolutionNo}
-                  onChange={(e) => setResolutionNo(e.target.value)}
+                  value={formData.resolutionNo}
+                  onChange={(e) => updateFormData('resolutionNo', e.target.value)}
                   className="ml-2 px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 w-40"
                 />
               </p>
