@@ -838,8 +838,8 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
                         type="radio"
                         name="monthlyMeetings"
                         value="होय"
-                        checked={monthlyMeetings === 'होय'}
-                        onChange={(e) => setMonthlyMeetings(e.target.value)}
+                        checked={formData.monthlyMeetings === 'होय'}
+                        onChange={(e) => updateFormData('monthlyMeetings', e.target.value)}
                         className="w-5 h-5 text-purple-600 focus:ring-purple-500"
                       />
                       <span className="ml-2 text-gray-800 font-medium">होय</span>
@@ -849,8 +849,8 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
                         type="radio"
                         name="monthlyMeetings"
                         value="नाही"
-                        checked={monthlyMeetings === 'नाही'}
-                        onChange={(e) => setMonthlyMeetings(e.target.value)}
+                        checked={formData.monthlyMeetings === 'नाही'}
+                        onChange={(e) => updateFormData('monthlyMeetings', e.target.value)}
                         className="w-5 h-5 text-purple-600 focus:ring-purple-500"
                       />
                       <span className="ml-2 text-gray-800 font-medium">नाही</span>
