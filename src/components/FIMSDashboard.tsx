@@ -211,7 +211,12 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
           fims_categories(name, name_marathi),
           fims_anganwadi_forms(*),
           fims_office_inspection_forms(*),
-          fims_inspection_photos(*)
+          fims_school_inspection_forms(*),
+          adarsha_shala(*),
+          fims_inspection_photos(*),
+          grampanchayat_inspection_form(*),
+          health_inspection_form(*),
+          sub_centre_monitoring_checklist(*)
         `)
         .order('created_at', { ascending: false });
       

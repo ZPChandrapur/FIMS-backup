@@ -226,9 +226,16 @@ export const RajyaShaishanikPrashikshanForm: React.FC<RajyaShaishanikPrashikshan
       // Load adarsh shala form data
       const loadAdarshShalaData = async () => {
         try {
-          const { getAdarshShalaForm } = await import('../services/fimsService');
-          const formData = await getAdarshShalaForm(editingInspection.id);
-          
+          // First try to get from joined data
+          let formData = null;
+          if (editingInspection.adarsha_shala && editingInspection.adarsha_shala.length > 0) {
+            formData = editingInspection.adarsha_shala[0];
+          } else {
+            // Fallback to service call if not in joined data
+            const { getAdarshShalaForm } = await import('../services/fimsService');
+            formData = await getAdarshShalaForm(editingInspection.id);
+          }
+
           if (formData) {
             setSchoolFormData({
               visit_date: formData.visit_date || '',

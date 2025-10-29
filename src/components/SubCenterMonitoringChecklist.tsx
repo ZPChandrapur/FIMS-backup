@@ -573,7 +573,7 @@ export const SubCenterMonitoringChecklist: React.FC<SubCenterFormProps> = ({
             general_comments: generalComments,
             updated_at: new Date().toISOString()
           })
-          .eq('id', editingInspection.id);
+          .eq('inspection_id', editingInspection.id);
 
         if (formUpdateError) throw formUpdateError;
 
@@ -606,6 +606,7 @@ export const SubCenterMonitoringChecklist: React.FC<SubCenterFormProps> = ({
         const { error: formInsertError } = await supabase
           .from('sub_centre_monitoring_checklist')
           .insert({
+            inspection_id: inspectionResult.id,
             category_id: sanitizedInspectionData.category_id,
             user_id: user.id,
             district,
