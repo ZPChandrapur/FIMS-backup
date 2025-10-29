@@ -779,7 +779,7 @@ export const GrampanchayatInspectionForm: React.FC<GrampanchayatFormProps> = ({
                   </label>
                   <input
                     type="text"
-                    value={inspectionData.location_name || gpName}
+                    value={inspectionData.location_name || formData.gpName}
                     onChange={(e) => setInspectionData(prev => ({...prev, location_name: e.target.value}))}
                     className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="स्थानाचे नाव"
