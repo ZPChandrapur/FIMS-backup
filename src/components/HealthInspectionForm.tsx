@@ -39,7 +39,6 @@ export const HealthInspectionForm: React.FC<HealthInspectionFormProps> = ({
   const isEditMode = editingInspection?.mode === 'edit';
 
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
-  const [existingPhotos, setExistingPhotos] = useState<any[]>([]);
   const [programsData, setProgramsData] = useState<ProgramData[]>([
     { program: 'राष्ट्रीय कुटुंब कल्याण कार्यक्रम', target: '', achieved: '', percentage: '' },
     { program: 'पुरुष नसबंदी शस्त्रक्रिया', target: '', achieved: '', percentage: '' },
@@ -215,17 +214,6 @@ export const HealthInspectionForm: React.FC<HealthInspectionFormProps> = ({
           if (formData.programs_data && Array.isArray(formData.programs_data)) {
             setProgramsData(formData.programs_data);
           }
-        }
-
-        // Load photos
-        const { data: photosData, error: photosError } = await supabase
-          .from('fims_inspection_photos')
-          .select('*')
-          .eq('inspection_id', editingInspection.id)
-          .order('photo_order', { ascending: true });
-
-        if (!photosError && photosData) {
-          setExistingPhotos(photosData);
         }
       }
     };
@@ -785,24 +773,6 @@ export const HealthInspectionForm: React.FC<HealthInspectionFormProps> = ({
                         <p className="text-xs text-gray-600 truncate mt-2 px-1">{file.name}</p>
                       </div>
                     ))}
-                  </div>
-                )}
-
-                {existingPhotos.length > 0 && (
-                  <div className="mt-6">
-                    <h4 className="text-sm font-medium text-gray-700 mb-3">Uploaded Photos</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {existingPhotos.map((photo, index) => (
-                        <div key={photo.id} className="relative group">
-                          <img
-                            src={photo.photo_url}
-                            alt={photo.photo_name || `Photo ${index + 1}`}
-                            className="w-full h-40 object-cover rounded-lg shadow-md"
-                          />
-                          <p className="text-xs text-gray-600 truncate mt-2 px-1">{photo.photo_name || `Photo ${index + 1}`}</p>
-                        </div>
-                      ))}
-                    </div>
                   </div>
                 )}
               </div>
