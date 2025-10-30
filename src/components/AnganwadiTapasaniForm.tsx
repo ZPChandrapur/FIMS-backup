@@ -612,13 +612,13 @@ const uploadPhotosToSupabase = async (inspectionId: string) => {
         if (updateError) throw updateError;
         inspectionResult = updateResult;
 
-        // Upsert anganwadi form record
+        // Update anganwadi form record
         const { error: formError } = await supabase
           .from('fims_anganwadi_forms')
-          .upsert({
-            inspection_id: editingInspection.id,
+          .update({
             ...anganwadiFormData
-          });
+          })
+          .eq('inspection_id', editingInspection.id);
 
         if (formError) throw formError;
       } else {
