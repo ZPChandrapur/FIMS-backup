@@ -575,53 +575,8 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
     );
   }
 
-  const renderDashboard = () => {
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const images = ['/image.png', '/image copy.png', '/image copy copy.png'];
-
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setCurrentImageIndex((prev) => (prev + 1) % images.length);
-      }, 3000);
-      return () => clearInterval(interval);
-    }, []);
-
-    return (
+  const renderDashboard = () => (
     <div className="space-y-4 md:space-y-6">
-      {/* Image Carousel */}
-      <div className="relative w-full h-48 md:h-64 lg:h-80 overflow-hidden rounded-xl shadow-lg">
-        <div
-          className="flex transition-transform duration-700 ease-in-out h-full"
-          style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}
-        >
-          {images.map((image, index) => (
-            <div key={index} className="min-w-full h-full">
-              <img
-                src={image}
-                alt={`Slide ${index + 1}`}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          ))}
-        </div>
-
-        {/* Carousel Indicators */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-          {images.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentImageIndex(index)}
-              className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all duration-300 ${
-                currentImageIndex === index
-                  ? 'bg-white w-6 md:w-8'
-                  : 'bg-white/50 hover:bg-white/75'
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
-      </div>
-
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300">
@@ -863,8 +818,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
         </div>
       </div>
     </div>
-    );
-  };
+  );
 
   const renderInspections = () => (
     <div className="space-y-4 md:space-y-6">
