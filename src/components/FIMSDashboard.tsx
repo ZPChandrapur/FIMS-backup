@@ -577,6 +577,50 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
 
   const renderDashboard = () => (
     <div className="space-y-4 md:space-y-6">
+      {/* Hero Images Section with Animation */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="animate-fadeInSlideUp" style={{ animationDelay: '0.1s' }}>
+          <div className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105 group">
+            <img
+              src="/files_6345612-1761837302350-image.png"
+              alt="Dashboard Image 1"
+              className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          </div>
+        </div>
+        <div className="animate-fadeInSlideUp" style={{ animationDelay: '0.2s' }}>
+          <div className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105 group">
+            <img
+              src="/files_6345612-1761837310931-image.png"
+              alt="Dashboard Image 2"
+              className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          </div>
+        </div>
+        <div className="animate-fadeInSlideUp" style={{ animationDelay: '0.3s' }}>
+          <div className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105 group">
+            <img
+              src="/files_6345612-1761837319198-image.png"
+              alt="Dashboard Image 3"
+              className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          </div>
+        </div>
+        <div className="animate-fadeInSlideUp" style={{ animationDelay: '0.4s' }}>
+          <div className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105 group">
+            <img
+              src="/files_6345612-1761837326121-image.png"
+              alt="Dashboard Image 4"
+              className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          </div>
+        </div>
+      </div>
+
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300">

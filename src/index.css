@@ -92,4 +92,21 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
   }
+
+  /* Dashboard image animations */
+  @keyframes fadeInSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fadeInSlideUp {
+    animation: fadeInSlideUp 0.8s ease-out forwards;
+    opacity: 0;
+  }
 }
