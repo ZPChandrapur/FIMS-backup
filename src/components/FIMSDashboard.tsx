@@ -577,7 +577,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
 
   const renderDashboard = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const images = ['/image.png', '/image copy.png'];
+    const images = ['/image.png', '/image copy.png', '/image copy copy.png'];
 
     useEffect(() => {
       const interval = setInterval(() => {
