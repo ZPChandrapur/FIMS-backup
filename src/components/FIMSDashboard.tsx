@@ -623,7 +623,10 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <div className="bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300">
+        <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300 relative overflow-hidden">
+          <div className="absolute top-2 left-2 opacity-20">
+            <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+          </div>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-white/90 text-sm font-medium">{t('fims.totalInspections')}</p>
@@ -635,7 +638,10 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300">
+        <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300 relative overflow-hidden">
+          <div className="absolute top-2 left-2 opacity-20">
+            <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+          </div>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-white/90 text-sm font-medium">{t('fims.completed')}</p>
@@ -647,7 +653,10 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300">
+        <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300 relative overflow-hidden">
+          <div className="absolute top-2 left-2 opacity-20">
+            <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+          </div>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-white/90 text-sm font-medium">{t('fims.pending')}</p>
@@ -659,7 +668,10 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300">
+        <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300 relative overflow-hidden">
+          <div className="absolute top-2 left-2 opacity-20">
+            <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+          </div>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-white/90 text-sm font-medium">{t('fims.successRate')}</p>
@@ -681,16 +693,22 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
         <div className={`grid grid-cols-1 ${userRole === 'developer' ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4`}>
           <button
             onClick={() => setActiveTab('newInspection')}
-            className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white p-4 rounded-lg transition-all duration-200 flex items-center space-x-3 hover:shadow-lg hover:scale-105"
+            className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white p-4 rounded-lg transition-all duration-200 flex items-center space-x-3 hover:shadow-lg hover:scale-105 relative overflow-hidden"
           >
+            <div className="absolute top-2 left-2 opacity-10">
+              <img src="/logo.png" alt="Logo" className="h-6 w-6" />
+            </div>
             <Plus className="h-5 w-5" />
             <span className="font-medium">{t('fims.newInspection')}</span>
           </button>
 
           <button
             onClick={() => setActiveTab('inspections')}
-            className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white p-4 rounded-lg transition-all duration-200 flex items-center space-x-3 hover:shadow-lg hover:scale-105"
+            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white p-4 rounded-lg transition-all duration-200 flex items-center space-x-3 hover:shadow-lg hover:scale-105 relative overflow-hidden"
           >
+            <div className="absolute top-2 left-2 opacity-10">
+              <img src="/logo.png" alt="Logo" className="h-6 w-6" />
+            </div>
             <FileText className="h-5 w-5" />
             <span className="font-medium">{t('fims.inspections')}</span>
           </button>
@@ -698,8 +716,11 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
           {userRole === 'developer' && (
             <button
               onClick={() => setActiveTab('analytics')}
-              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white p-4 rounded-lg transition-all duration-200 flex items-center space-x-3 hover:shadow-lg hover:scale-105"
+              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white p-4 rounded-lg transition-all duration-200 flex items-center space-x-3 hover:shadow-lg hover:scale-105 relative overflow-hidden"
             >
+              <div className="absolute top-2 left-2 opacity-10">
+                <img src="/logo.png" alt="Logo" className="h-6 w-6" />
+              </div>
               <PieChart className="h-5 w-5" />
               <span className="font-medium">{t('fims.analytics')}</span>
             </button>
