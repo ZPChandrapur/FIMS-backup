@@ -456,8 +456,8 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
             }}
             className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-all duration-200 ${
               activeTab === item.id
-                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
-                : 'text-gray-600 hover:bg-gradient-to-r hover:from-cyan-400 hover:to-blue-500 hover:text-white'
+                ? 'bg-gradient-to-r from-teal-500 to-green-500 text-white shadow-lg'
+                : 'text-gray-600 hover:bg-gradient-to-r hover:from-teal-400 hover:to-green-400 hover:text-white'
             }`}
           >
             <item.icon className="h-5 w-5" />
@@ -1312,8 +1312,8 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                   onClick={() => setActiveTab('dashboard')}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                     activeTab === 'dashboard'
-                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
-                      : 'text-white hover:bg-gradient-to-r hover:from-cyan-400 hover:to-blue-500 hover:shadow-md'
+                      ? 'bg-gradient-to-r from-teal-500 to-green-500 text-white shadow-lg'
+                      : 'text-white hover:bg-gradient-to-r hover:from-teal-400 hover:to-green-400 hover:shadow-md'
                   }`}
                 >
                   <Home className="h-5 w-5" />
@@ -1324,8 +1324,8 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                   onClick={() => setActiveTab('inspections')}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                     activeTab === 'inspections'
-                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
-                      : 'text-white hover:bg-gradient-to-r hover:from-cyan-400 hover:to-blue-500 hover:shadow-md'
+                      ? 'bg-gradient-to-r from-teal-500 to-green-500 text-white shadow-lg'
+                      : 'text-white hover:bg-gradient-to-r hover:from-teal-400 hover:to-green-400 hover:shadow-md'
                   }`}
                 >
                   <FileText className="h-5 w-5" />
@@ -1336,8 +1336,8 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                   onClick={() => setActiveTab('newInspection')}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                     activeTab === 'newInspection'
-                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
-                      : 'text-white hover:bg-gradient-to-r hover:from-cyan-400 hover:to-blue-500 hover:shadow-md'
+                      ? 'bg-gradient-to-r from-teal-500 to-green-500 text-white shadow-lg'
+                      : 'text-white hover:bg-gradient-to-r hover:from-teal-400 hover:to-green-400 hover:shadow-md'
                   }`}
                 >
                   <Plus className="h-5 w-5" />
@@ -1349,8 +1349,8 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={() => setActiveTab('analytics')}
                     className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                       activeTab === 'analytics'
-                        ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
-                        : 'text-white hover:bg-gradient-to-r hover:from-cyan-400 hover:to-blue-500 hover:shadow-md'
+                        ? 'bg-gradient-to-r from-teal-500 to-green-500 text-white shadow-lg'
+                        : 'text-white hover:bg-gradient-to-r hover:from-teal-400 hover:to-green-400 hover:shadow-md'
                     }`}
                   >
                     <BarChart3 className="h-5 w-5" />
