@@ -1044,7 +1044,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                           {inspection.inspection_number}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm font-bold text-blue-900 hover:text-blue-700 transition-colors duration-200 w-[13%]">
+                      <td className="px-6 py-4 text-sm font-bold text-blue-900 hover:text-blue-700 transition-colors duration-200 w-[20%]">
                         <div>
                           <div className="font-medium truncate" title={inspection.location_name}>
                             {inspection.location_name}
