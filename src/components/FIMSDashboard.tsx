@@ -487,8 +487,8 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
             }}
             className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-all duration-200 ${
               activeTab === item.id
-                ? 'text-purple-600 bg-purple-50'
-                : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50'
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
+                : 'text-gray-600 hover:bg-gradient-to-r hover:from-cyan-400 hover:to-blue-500 hover:text-white'
             }`}
           >
             <item.icon className="h-5 w-5" />
@@ -1290,47 +1290,47 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
               <nav className="flex space-x-6">
                 <button
                   onClick={() => setActiveTab('dashboard')}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 ${
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                     activeTab === 'dashboard'
-                      ? 'bg-purple-100 text-purple-700'
-                      : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
+                      : 'text-gray-600 hover:bg-gradient-to-r hover:from-cyan-400 hover:to-blue-500 hover:text-white hover:shadow-md'
                   }`}
                 >
                   <Home className="h-5 w-5" />
                   <span>{t('fims.dashboard')}</span>
                 </button>
-                
+
                 <button
                   onClick={() => setActiveTab('inspections')}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 ${
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                     activeTab === 'inspections'
-                      ? 'bg-purple-100 text-purple-700'
-                      : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
+                      : 'text-gray-600 hover:bg-gradient-to-r hover:from-cyan-400 hover:to-blue-500 hover:text-white hover:shadow-md'
                   }`}
                 >
                   <FileText className="h-5 w-5" />
                   <span>{t('fims.inspections')}</span>
                 </button>
-                
+
                 <button
                   onClick={() => setActiveTab('newInspection')}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 ${
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                     activeTab === 'newInspection'
-                      ? 'bg-purple-100 text-purple-700'
-                      : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
+                      : 'text-gray-600 hover:bg-gradient-to-r hover:from-cyan-400 hover:to-blue-500 hover:text-white hover:shadow-md'
                   }`}
                 >
                   <Plus className="h-5 w-5" />
                   <span>{t('fims.newInspection')}</span>
                 </button>
-                
+
                 {userRole === 'developer' && (
                   <button
                     onClick={() => setActiveTab('analytics')}
-                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 ${
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                       activeTab === 'analytics'
-                        ? 'bg-purple-100 text-purple-700'
-                        : 'text-gray-600 hover:text-purple-600 hover:bg-gray-50'
+                        ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
+                        : 'text-gray-600 hover:bg-gradient-to-r hover:from-cyan-400 hover:to-blue-500 hover:text-white hover:shadow-md'
                     }`}
                   >
                     <BarChart3 className="h-5 w-5" />
