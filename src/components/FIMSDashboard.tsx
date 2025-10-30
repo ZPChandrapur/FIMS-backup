@@ -577,51 +577,83 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
 
   const renderDashboard = () => (
     <div className="space-y-4 md:space-y-6">
-      {/* KPI Cards */}
+      {/* Hero Section with Background */}
+      <div className="relative rounded-2xl overflow-hidden shadow-2xl mb-6">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 via-blue-800/85 to-cyan-900/90"></div>
+        <img
+          src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1920"
+          alt="Government Building"
+          className="w-full h-48 md:h-64 object-cover opacity-40"
+        />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center text-white px-4">
+            <h1 className="text-3xl md:text-5xl font-bold mb-2 drop-shadow-lg">
+              {t('fims.systemName', 'Field Inspection Management System')}
+            </h1>
+            <p className="text-lg md:text-xl text-blue-100 drop-shadow">
+              {t('fims.heroSubtitle', 'Empowering Rural Development Through Digital Inspections')}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* KPI Cards with Icons */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300">
-          <div className="flex items-center justify-between">
+        <div className="relative overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300">
+          <div className="absolute top-0 right-0 opacity-10">
+            <FileText className="h-32 w-32 transform rotate-12" />
+          </div>
+          <div className="relative flex items-center justify-between">
             <div>
               <p className="text-blue-100 text-sm font-medium">{t('fims.totalInspections')}</p>
               <p className="text-3xl font-bold">{getStatusCounts().total}</p>
             </div>
-            <div className="bg-white/20 p-3 rounded-full">
+            <div className="bg-white/20 p-3 rounded-full backdrop-blur-sm">
               <FileText className="h-8 w-8 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300">
-          <div className="flex items-center justify-between">
+        <div className="relative overflow-hidden bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300">
+          <div className="absolute top-0 right-0 opacity-10">
+            <CheckCircle className="h-32 w-32 transform rotate-12" />
+          </div>
+          <div className="relative flex items-center justify-between">
             <div>
               <p className="text-green-100 text-sm font-medium">{t('fims.completed')}</p>
               <p className="text-3xl font-bold">{getStatusCounts().completed}</p>
             </div>
-            <div className="bg-white/20 p-3 rounded-full">
+            <div className="bg-white/20 p-3 rounded-full backdrop-blur-sm">
               <CheckCircle className="h-8 w-8 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-orange-500 to-red-500 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300">
-          <div className="flex items-center justify-between">
+        <div className="relative overflow-hidden bg-gradient-to-br from-orange-500 to-red-500 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300">
+          <div className="absolute top-0 right-0 opacity-10">
+            <Clock className="h-32 w-32 transform rotate-12" />
+          </div>
+          <div className="relative flex items-center justify-between">
             <div>
               <p className="text-orange-100 text-sm font-medium">{t('fims.pending')}</p>
               <p className="text-3xl font-bold">{getStatusCounts().pending}</p>
             </div>
-            <div className="bg-white/20 p-3 rounded-full">
+            <div className="bg-white/20 p-3 rounded-full backdrop-blur-sm">
               <Clock className="h-8 w-8 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300">
-          <div className="flex items-center justify-between">
+        <div className="relative overflow-hidden bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300">
+          <div className="absolute top-0 right-0 opacity-10">
+            <TrendingUp className="h-32 w-32 transform rotate-12" />
+          </div>
+          <div className="relative flex items-center justify-between">
             <div>
-              <p className="text-purple-100 text-sm font-medium">{t('fims.successRate')}</p>
+              <p className="text-amber-100 text-sm font-medium">{t('fims.successRate')}</p>
               <p className="text-3xl font-bold">{getCompletionRate()}%</p>
             </div>
-            <div className="bg-white/20 p-3 rounded-full">
+            <div className="bg-white/20 p-3 rounded-full backdrop-blur-sm">
               <TrendingUp className="h-8 w-8 text-white" />
             </div>
           </div>
@@ -637,29 +669,93 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
         <div className={`grid grid-cols-1 ${userRole === 'developer' ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4`}>
           <button
             onClick={() => setActiveTab('newInspection')}
-            className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white p-4 rounded-lg transition-all duration-200 flex items-center space-x-3 hover:shadow-lg hover:scale-105"
+            className="relative overflow-hidden group bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white p-4 rounded-lg transition-all duration-200 flex items-center space-x-3 hover:shadow-lg hover:scale-105"
           >
-            <Plus className="h-5 w-5" />
-            <span className="font-medium">{t('fims.newInspection')}</span>
+            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-200"></div>
+            <Plus className="h-5 w-5 relative z-10" />
+            <span className="font-medium relative z-10">{t('fims.newInspection')}</span>
           </button>
 
           <button
             onClick={() => setActiveTab('inspections')}
-            className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white p-4 rounded-lg transition-all duration-200 flex items-center space-x-3 hover:shadow-lg hover:scale-105"
+            className="relative overflow-hidden group bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white p-4 rounded-lg transition-all duration-200 flex items-center space-x-3 hover:shadow-lg hover:scale-105"
           >
-            <FileText className="h-5 w-5" />
-            <span className="font-medium">{t('fims.inspections')}</span>
+            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-200"></div>
+            <FileText className="h-5 w-5 relative z-10" />
+            <span className="font-medium relative z-10">{t('fims.inspections')}</span>
           </button>
 
           {userRole === 'developer' && (
             <button
               onClick={() => setActiveTab('analytics')}
-              className="bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white p-4 rounded-lg transition-all duration-200 flex items-center space-x-3 hover:shadow-lg hover:scale-105"
+              className="relative overflow-hidden group bg-gradient-to-r from-amber-600 to-orange-500 hover:from-amber-700 hover:to-orange-600 text-white p-4 rounded-lg transition-all duration-200 flex items-center space-x-3 hover:shadow-lg hover:scale-105"
             >
-              <PieChart className="h-5 w-5" />
-              <span className="font-medium">{t('fims.analytics')}</span>
+              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-200"></div>
+              <PieChart className="h-5 w-5 relative z-10" />
+              <span className="font-medium relative z-10">{t('fims.analytics')}</span>
             </button>
           )}
+        </div>
+      </div>
+
+      {/* Inspection Categories Showcase */}
+      <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-gray-100">
+        <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-6 flex items-center">
+          <Camera className="h-6 w-6 mr-2 text-blue-600" />
+          {t('fims.inspectionCategories', 'Inspection Categories')}
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="group relative rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+            <img
+              src="https://images.pexels.com/photos/8364026/pexels-photo-8364026.jpeg?auto=compress&cs=tinysrgb&w=600"
+              alt="Education"
+              className="w-full h-48 object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-blue-900/90 via-blue-900/50 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+              <h4 className="font-bold text-lg mb-1">{t('fims.educationInspections', 'Education')}</h4>
+              <p className="text-sm text-blue-100">{t('fims.schoolInspections', 'School & Training Inspections')}</p>
+            </div>
+          </div>
+
+          <div className="group relative rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+            <img
+              src="https://images.pexels.com/photos/3184436/pexels-photo-3184436.jpeg?auto=compress&cs=tinysrgb&w=600"
+              alt="Healthcare"
+              className="w-full h-48 object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-green-900/90 via-green-900/50 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+              <h4 className="font-bold text-lg mb-1">{t('fims.healthInspections', 'Healthcare')}</h4>
+              <p className="text-sm text-green-100">{t('fims.healthCenterInspections', 'Health Center Inspections')}</p>
+            </div>
+          </div>
+
+          <div className="group relative rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+            <img
+              src="https://images.pexels.com/photos/159358/construction-site-build-construction-work-159358.jpeg?auto=compress&cs=tinysrgb&w=600"
+              alt="Construction"
+              className="w-full h-48 object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-orange-900/90 via-orange-900/50 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+              <h4 className="font-bold text-lg mb-1">{t('fims.constructionInspections', 'Construction')}</h4>
+              <p className="text-sm text-orange-100">{t('fims.buildingInspections', 'Building & Infrastructure')}</p>
+            </div>
+          </div>
+
+          <div className="group relative rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+            <img
+              src="https://images.pexels.com/photos/422218/pexels-photo-422218.jpeg?auto=compress&cs=tinysrgb&w=600"
+              alt="Agriculture"
+              className="w-full h-48 object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/90 via-emerald-900/50 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+              <h4 className="font-bold text-lg mb-1">{t('fims.agricultureInspections', 'Agriculture')}</h4>
+              <p className="text-sm text-emerald-100">{t('fims.ruralDevelopment', 'Rural Development Programs')}</p>
+            </div>
+          </div>
         </div>
       </div>
 
