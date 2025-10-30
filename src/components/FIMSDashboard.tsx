@@ -503,7 +503,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
     <div className="bg-white border-b border-gray-200 px-4 py-3 md:hidden">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <img src="/logo.png" alt="FIMS Logo" className="h-10 w-10 object-contain" />
+          <img src="/logo.png" alt="FIMS Logo" className="h-16 w-16 object-contain" />
           <div>
             <h1 className="text-lg font-semibold text-gray-900">FIMS</h1>
             <p className="text-xs text-gray-500">Field Inspection</p>
@@ -1293,7 +1293,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <img src="/logo.png" alt="FIMS Logo" className="h-12 w-12 object-contain" />
+              <img src="/logo.png" alt="FIMS Logo" className="h-20 w-20 object-contain" />
               <div>
                 <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
                   FIMS
