@@ -467,11 +467,10 @@ export const RajyaShaishanikPrashikshanForm: React.FC<RajyaShaishanikPrashikshan
         if (updateError) throw updateError;
         inspectionResult = { id: editingInspection.id };
 
-        // Upsert adarsha_shala record
+        // Update adarsha_shala record
         const { error: formError } = await supabase
           .from('adarsha_shala')
-          .upsert({
-            inspection_id: editingInspection.id,
+          .update({
             visit_date: schoolFormData.visit_date || new Date().toISOString().split('T')[0],
             school_name: schoolFormData.school_name || '',
             school_address: schoolFormData.school_address || '',
@@ -525,7 +524,8 @@ export const RajyaShaishanikPrashikshanForm: React.FC<RajyaShaishanikPrashikshan
               usage: schoolFormData.materials_usage[material].usage_status,
               suggestions: schoolFormData.materials_usage[material].suggestions
             })))
-          });
+          })
+          .eq('inspection_id', editingInspection.id);
 
         if (formError) throw formError;
       } else {
