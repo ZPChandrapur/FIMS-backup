@@ -500,7 +500,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
   );
 
   const renderMobileHeader = () => (
-    <div className="bg-white border-b border-gray-200 px-4 py-3 md:hidden">
+    <div className="bg-white border-b border-gray-200 px-4 py-3 md:hidden" style={{ backgroundImage: 'url(/site.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <div className="flex items-center justify-between">
         <div className="flex flex-col items-center space-y-2">
           <img src="/logo.png" alt="FIMS Logo" className="h-16 w-16 object-contain" />
@@ -1289,7 +1289,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
       {isMobile && renderMobileHeader()}
 
       {/* Desktop Header */}
-      <div className="hidden md:block bg-white border-b border-gray-200">
+      <div className="hidden md:block bg-white border-b border-gray-200" style={{ backgroundImage: 'url(/site.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-center space-y-3">
