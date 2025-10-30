@@ -1292,7 +1292,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
 
       {/* Desktop Header */}
       <div className="hidden md:block relative bg-white border-b border-gray-200">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url(/site.png)', filter: 'blur(10px)' }}></div>
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url(/site.png)', filter: 'blur(30px)' }}></div>
         <div className="relative px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-center space-y-3">
