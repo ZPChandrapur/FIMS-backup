@@ -1293,7 +1293,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <img src="/logo.png" alt="FIMS Logo" className="h-20 w-20 object-contain" />
+              <img src="/logo.png" alt="FIMS Logo" className="h-30 w-30 object-contain" />
               <div>
                 <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
                   FIMS
