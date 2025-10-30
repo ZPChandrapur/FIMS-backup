@@ -523,7 +523,10 @@ export const RajyaShaishanikPrashikshanForm: React.FC<RajyaShaishanikPrashikshan
               available: schoolFormData.materials_usage[material].available,
               usage: schoolFormData.materials_usage[material].usage_status,
               suggestions: schoolFormData.materials_usage[material].suggestions
-            })))
+            }))),
+            inspector_name: schoolFormData.inspector_name || null,
+            inspector_designation: schoolFormData.inspector_designation || null,
+            visit_date_inspector: schoolFormData.visit_date_inspector || null
           })
           .eq('inspection_id', editingInspection.id);
 
@@ -623,7 +626,10 @@ export const RajyaShaishanikPrashikshanForm: React.FC<RajyaShaishanikPrashikshan
               available: schoolFormData.materials_usage[material].available,
               usage: schoolFormData.materials_usage[material].usage_status,
               suggestions: schoolFormData.materials_usage[material].suggestions
-            })))
+            }))),
+            inspector_name: schoolFormData.inspector_name || null,
+            inspector_designation: schoolFormData.inspector_designation || null,
+            visit_date_inspector: schoolFormData.visit_date_inspector || null
           });
 
         if (formError) throw formError;
