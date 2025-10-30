@@ -90,7 +90,6 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
     inspectionNumber: '',
     location: '',
     category: '',
-    inspectorName: '',
     status: '',
     date: ''
   });
@@ -181,8 +180,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
           fims_categories(name, name_marathi),
           fims_anganwadi_forms(*),
           fims_office_inspection_forms(*),
-          fims_inspection_photos(*),
-          inspector:user_roles!inspector_id(name)
+          fims_inspection_photos(*)
         `)
         .order('created_at', { ascending: false });
       
@@ -364,9 +362,6 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
       const matchesLocation = columnFilters.location === '' ||
         inspection.location_name?.toLowerCase().includes(columnFilters.location.toLowerCase());
 
-      const matchesInspectorName = columnFilters.inspectorName === '' ||
-        inspection.inspector?.name?.toLowerCase().includes(columnFilters.inspectorName.toLowerCase());
-
       const category = categories.find(c => c.id === inspection.category_id);
       const categoryName = category ? t(`categories.${category.form_type}`, category.name) : '';
       const matchesCategoryFilter = columnFilters.category === '' ||
@@ -380,8 +375,8 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
         (inspectionDate && new Date(inspectionDate).toLocaleDateString().includes(columnFilters.date));
 
       return matchesSearch && matchesCategory && matchesStatus &&
-             matchesInspectionNumber && matchesLocation && matchesInspectorName &&
-             matchesCategoryFilter && matchesStatusFilter && matchesDateFilter;
+             matchesInspectionNumber && matchesLocation && matchesCategoryFilter &&
+             matchesStatusFilter && matchesDateFilter;
     });
   };
 
@@ -461,8 +456,8 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
             }}
             className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-all duration-200 ${
               activeTab === item.id
-                ? 'bg-gradient-to-r from-teal-500 to-green-500 text-white shadow-lg'
-                : 'text-gray-600 hover:bg-gradient-to-r hover:from-teal-400 hover:to-green-400 hover:text-white'
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
+                : 'text-gray-600 hover:bg-gradient-to-r hover:from-cyan-400 hover:to-blue-500 hover:text-white'
             }`}
           >
             <item.icon className="h-5 w-5" />
@@ -753,7 +748,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={(e) => e.stopPropagation()}
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[18%]">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[22%]">
                   <div>{t('fims.location')}</div>
                   <input
                     type="text"
@@ -764,7 +759,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={(e) => e.stopPropagation()}
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[15%]">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[22%]">
                   <div>{t('fims.category')}</div>
                   <input
                     type="text"
@@ -776,17 +771,6 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                   />
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[15%]">
-                  <div>Inspector Name</div>
-                  <input
-                    type="text"
-                    placeholder="Filter..."
-                    value={columnFilters.inspectorName || ''}
-                    onChange={(e) => setColumnFilters({...columnFilters, inspectorName: e.target.value})}
-                    className="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[12%]">
                   <div>{t('fims.status')}</div>
                   <input
                     type="text"
@@ -797,7 +781,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={(e) => e.stopPropagation()}
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[10%]">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[13%]">
                   <div>{t('fims.date')}</div>
                   <input
                     type="text"
@@ -808,7 +792,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={(e) => e.stopPropagation()}
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[10%]">{t('fims.actions')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[13%]">{t('fims.actions')}</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -819,16 +803,13 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                   <td className="px-6 py-4 text-sm font-medium text-gray-900 w-[15%] truncate">
                     {inspection.inspection_number}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 w-[18%] truncate">
+                  <td className="px-6 py-4 text-sm text-gray-900 w-[22%] truncate">
                     {inspection.location_name}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 w-[15%] truncate">
+                  <td className="px-6 py-4 text-sm text-gray-900 w-[22%] truncate">
                     {category ? t(`categories.${category.form_type}`, category.name) : '-'}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 w-[15%] truncate">
-                    {inspection.inspector?.name || '-'}
-                  </td>
-                  <td className="px-6 py-4 w-[12%]">
+                  <td className="px-6 py-4 w-[15%]">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       inspection.status === 'approved' ? 'bg-green-100 text-green-800' :
                       inspection.status === 'submitted' ? 'bg-blue-100 text-blue-800' :
@@ -842,7 +823,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                       {getStatusText(inspection.status)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 w-[10%] truncate">
+                  <td className="px-6 py-4 text-sm text-gray-900 w-[13%] truncate">
                     {inspection.inspection_date ? new Date(inspection.inspection_date).toLocaleDateString() : '-'}
                   </td>
                   <td className="px-6 py-4 text-sm font-medium w-[13%]">
@@ -889,10 +870,6 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                 </div>
                 <div className="text-sm text-gray-600 mb-1">
                   {inspection.location_name}
-                </div>
-                <div className="text-sm text-gray-600 mb-1">
-                  <span className="font-medium">Inspector: </span>
-                  {inspection.inspector?.name || '-'}
                 </div>
                 <div className="flex items-center justify-between text-xs text-gray-500">
                   <span>{category ? t(`categories.${category.form_type}`, category.name) : '-'}</span>
@@ -976,7 +953,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
         
         {/* Desktop Table */}
         <div className="overflow-x-auto hidden md:block" style={{ maxHeight: '600px', overflowY: 'auto' }}>
-          <table className="w-full bg-gradient-to-br from-blue-50 to-cyan-50 divide-y divide-blue-200" style={{  }}>
+          <table className="w-full bg-gradient-to-br from-blue-50 to-cyan-50 divide-y divide-blue-200" style={{ tableLayout: 'fixed' }}>
             <thead className="bg-gray-50 sticky top-0 z-10">
               <tr className="bg-gradient-to-r from-blue-200 via-blue-100 to-cyan-100 border-b-2 border-blue-300">
                 <th className="px-6 py-4 text-left text-xs font-bold text-blue-900 uppercase tracking-wider bg-gradient-to-r from-blue-300 to-blue-200 shadow-sm w-[7%]">
@@ -1001,24 +978,13 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={(e) => e.stopPropagation()}
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-[10%]">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-[11%]">
                   <div>{t('fims.category')}</div>
                   <input
                     type="text"
                     placeholder="Filter..."
                     value={columnFilters.category}
                     onChange={(e) => setColumnFilters({...columnFilters, category: e.target.value})}
-                    className="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-[10%]">
-                  <div>Inspector Name</div>
-                  <input
-                    type="text"
-                    placeholder="Filter..."
-                    value={columnFilters.inspectorName}
-                    onChange={(e) => setColumnFilters({...columnFilters, inspectorName: e.target.value})}
                     className="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                     onClick={(e) => e.stopPropagation()}
                   />
@@ -1056,7 +1022,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
             <tbody className="bg-white divide-y divide-gray-200">
               {getFilteredInspections().length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={9} className="px-6 py-8 text-center text-gray-500">
                     {t('fims.noInspectionsFound')}
                   </td>
                 </tr>
@@ -1078,7 +1044,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                           {inspection.inspection_number}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm font-bold text-blue-900 hover:text-blue-700 transition-colors duration-200 w-[20%]">
+                      <td className="px-6 py-4 text-sm font-bold text-blue-900 hover:text-blue-700 transition-colors duration-200 w-[13%]">
                         <div>
                           <div className="font-medium truncate" title={inspection.location_name}>
                             {inspection.location_name}
@@ -1090,11 +1056,8 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-blue-800 hover:text-blue-600 transition-colors duration-200 w-[10%] truncate">
+                      <td className="px-6 py-4 text-sm text-blue-800 hover:text-blue-600 transition-colors duration-200 w-[11%] truncate">
                         {category ? t(`categories.${category.form_type}`, category.name) : '-'}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900 w-[10%] truncate">
-                        {inspection.inspector?.name || '-'}
                       </td>
                       <td className="px-6 py-4 w-[7%]">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -1244,12 +1207,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                       </div>
                     )}
                   </div>
-
-                  <div className="text-sm text-gray-600 mb-2">
-                    <span className="font-medium">Inspector: </span>
-                    {inspection.inspector?.name || '-'}
-                  </div>
-
+                  
                   <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
                     <span>{category ? t(`categories.${category.form_type}`, category.name) : '-'}</span>
                     <span>
@@ -1354,8 +1312,8 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                   onClick={() => setActiveTab('dashboard')}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                     activeTab === 'dashboard'
-                      ? 'bg-gradient-to-r from-teal-500 to-green-500 text-white shadow-lg'
-                      : 'text-white hover:bg-gradient-to-r hover:from-teal-400 hover:to-green-400 hover:shadow-md'
+                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
+                      : 'text-white hover:bg-gradient-to-r hover:from-cyan-400 hover:to-blue-500 hover:shadow-md'
                   }`}
                 >
                   <Home className="h-5 w-5" />
@@ -1366,8 +1324,8 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                   onClick={() => setActiveTab('inspections')}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                     activeTab === 'inspections'
-                      ? 'bg-gradient-to-r from-teal-500 to-green-500 text-white shadow-lg'
-                      : 'text-white hover:bg-gradient-to-r hover:from-teal-400 hover:to-green-400 hover:shadow-md'
+                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
+                      : 'text-white hover:bg-gradient-to-r hover:from-cyan-400 hover:to-blue-500 hover:shadow-md'
                   }`}
                 >
                   <FileText className="h-5 w-5" />
@@ -1378,8 +1336,8 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                   onClick={() => setActiveTab('newInspection')}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                     activeTab === 'newInspection'
-                      ? 'bg-gradient-to-r from-teal-500 to-green-500 text-white shadow-lg'
-                      : 'text-white hover:bg-gradient-to-r hover:from-teal-400 hover:to-green-400 hover:shadow-md'
+                      ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
+                      : 'text-white hover:bg-gradient-to-r hover:from-cyan-400 hover:to-blue-500 hover:shadow-md'
                   }`}
                 >
                   <Plus className="h-5 w-5" />
@@ -1391,8 +1349,8 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={() => setActiveTab('analytics')}
                     className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                       activeTab === 'analytics'
-                        ? 'bg-gradient-to-r from-teal-500 to-green-500 text-white shadow-lg'
-                        : 'text-white hover:bg-gradient-to-r hover:from-teal-400 hover:to-green-400 hover:shadow-md'
+                        ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
+                        : 'text-white hover:bg-gradient-to-r hover:from-cyan-400 hover:to-blue-500 hover:shadow-md'
                     }`}
                   >
                     <BarChart3 className="h-5 w-5" />
