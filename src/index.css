@@ -109,4 +109,22 @@ body {
     animation: fadeInSlideUp 0.8s ease-out forwards;
     opacity: 0;
   }
+
+  /* Infinite scrolling animation */
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-scroll {
+    animation: scroll 20s linear infinite;
+  }
+
+  .animate-scroll:hover {
+    animation-play-state: paused;
+  }
 }
