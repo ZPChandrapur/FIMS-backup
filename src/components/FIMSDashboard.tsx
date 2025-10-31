@@ -733,8 +733,8 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
       </div>
 
       {/* Recent Inspections */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="px-4 md:px-6 py-3 md:py-4 border-b border-gray-200">
+      <div className="bg-white rounded-lg shadow-sm border border-blue-200">
+        <div className="px-4 md:px-6 py-3 md:py-4 border-b border-blue-200">
           <h3 className="text-base md:text-lg font-semibold text-gray-900">{t('fims.recentInspections')}</h3>
         </div>
         <div className="overflow-x-auto hidden md:block" style={{ maxHeight: '600px', overflowY: 'auto' }}>
