@@ -735,7 +735,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
           <h3 className="text-base md:text-lg font-semibold text-gray-900">{t('fims.recentInspections')}</h3>
         </div>
         <div className="overflow-x-auto hidden md:block" style={{ maxHeight: '600px', overflowY: 'auto' }}>
-          <table className="w-full" style={{ tableLayout: 'fixed' }}>
+          <table className="w-full" style={{ }}>
             <thead className="bg-gray-50 sticky top-0 z-10">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[15%]">
@@ -954,7 +954,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
         
         {/* Desktop Table */}
         <div className="overflow-x-auto hidden md:block" style={{ maxHeight: '600px', overflowY: 'auto' }}>
-          <table className="w-full bg-gradient-to-br from-blue-50 to-cyan-50 divide-y divide-blue-200" style={{ tableLayout: 'fixed' }}>
+          <table className="w-full bg-gradient-to-br from-blue-50 to-cyan-50 divide-y divide-blue-200" style={{  }}>
             <thead className="bg-gray-50 sticky top-0 z-10">
               <tr className="bg-gradient-to-r from-blue-200 via-blue-100 to-cyan-100 border-b-2 border-blue-300">
                 <th className="px-6 py-4 text-left text-xs font-bold text-blue-900 uppercase tracking-wider bg-gradient-to-r from-blue-300 to-blue-200 shadow-sm w-[7%]">
@@ -1013,7 +1013,15 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                   />
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-[10%]">
-                  <div>Filled By</div>
+                  <div>Names</div>
+                  <input
+                    type="text"
+                    placeholder="Filter..."
+                    value={columnFilters.date}
+                    onChange={(e) => setColumnFilters({...columnFilters, Names: e.target.value})}
+                    className="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                    onClick={(e) => e.stopPropagation()}
+                  />
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-[7%]">{t('fims.locationAccuracy')}</th>
                 <th className="px-6 py-4 text-left text-xs font-bold text-blue-900 uppercase tracking-wider bg-gradient-to-r from-blue-300 to-blue-200 shadow-sm w-[22%]">
