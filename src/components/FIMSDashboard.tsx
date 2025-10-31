@@ -752,7 +752,17 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={(e) => e.stopPropagation()}
                   />
                 </th>
-                
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[22%]">
+                  <div>{t('fims.location')}</div>
+                  <input
+                    type="text"
+                    placeholder="Filter..."
+                    value={columnFilters.location}
+                    onChange={(e) => setColumnFilters({...columnFilters, location: e.target.value})}
+                    className="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[22%]">
                   <div>{t('fims.category')}</div>
                   <input
@@ -797,7 +807,9 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                   <td className="px-6 py-4 text-sm font-medium text-gray-900 w-[15%] truncate">
                     {inspection.inspection_number}
                   </td>
-                  
+                  <td className="px-6 py-4 text-sm text-gray-900 w-[22%] truncate">
+                    {inspection.location_name}
+                  </td>
                   <td className="px-6 py-4 text-sm text-gray-900 w-[22%] truncate">
                     {category ? t(`categories.${category.form_type}`, category.name) : '-'}
                   </td>
@@ -860,7 +872,9 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     {getStatusText(inspection.status)}
                   </span>
                 </div>
-                
+                <div className="text-sm text-gray-600 mb-1">
+                  {inspection.location_name}
+                </div>
                 <div className="flex items-center justify-between text-xs text-gray-500">
                   <span>{category ? t(`categories.${category.form_type}`, category.name) : '-'}</span>
                   <span>
@@ -957,7 +971,17 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={(e) => e.stopPropagation()}
                   />
                 </th>
-              
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-[11%]">
+                  <div>{t('fims.location')}</div>
+                  <input
+                    type="text"
+                    placeholder="Filter..."
+                    value={columnFilters.location}
+                    onChange={(e) => setColumnFilters({...columnFilters, location: e.target.value})}
+                    className="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-[11%]">
                   <div>{t('fims.category')}</div>
                   <input
