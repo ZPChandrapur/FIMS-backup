@@ -642,7 +642,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-green-400 to-orange-500 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300 relative overflow-hidden">
           <div className="absolute top-2 left-2 opacity-20">
             <img src="/logo.png" alt="Logo" className="h-8 w-8" />
           </div>
@@ -657,7 +657,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-green-400 to-orange-500 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300 relative overflow-hidden">
           <div className="absolute top-2 left-2 opacity-20">
             <img src="/logo.png" alt="Logo" className="h-8 w-8" />
           </div>
@@ -689,7 +689,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-gradient-to-br from-white via-blue-50/30 to-cyan-50/30 rounded-xl shadow-lg border-2 border-blue-200 p-4 md:p-6">
+      <div className="bg-gradient-to-br from-white via-teal-50/30 to-cyan-50/30 rounded-xl shadow-lg border-2 border-blue-200 p-4 md:p-6">
         <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4 flex items-center">
           <Target className="h-6 w-6 mr-2 text-blue-600" />
           {t('fims.quickActions')}
