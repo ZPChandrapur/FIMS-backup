@@ -348,120 +348,127 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
   };
 
   const handleSubmit = async (isDraft: boolean = false) => {
-    try {
-      setIsLoading(true);
+  try {
+    setIsLoading(true);
 
-      // Convert empty date strings to null for database compatibility
-      const sanitizedInspectionData = {
-        ...inspectionData,
-        planned_date: inspectionData.planned_date || null
+    // Convert empty date strings to null for database compatibility
+    const sanitizedInspectionData = {
+      ...inspectionData,
+      planned_date: inspectionData.planned_date || null
+    };
+
+    let inspectionResult;
+
+    if (editingInspection && editingInspection.id) {
+      // ============= UPDATE EXISTING INSPECTION =============
+      const { data: updateResult, error: updateError } = await supabase
+        .from('fims_inspections')
+        .update({
+          location_name: sanitizedInspectionData.location_name,
+          latitude: sanitizedInspectionData.latitude,
+          longitude: sanitizedInspectionData.longitude,
+          location_accuracy: sanitizedInspectionData.location_accuracy,
+          address: sanitizedInspectionData.address,
+          planned_date: sanitizedInspectionData.planned_date,
+          inspection_date: new Date().toISOString(),
+          status: isDraft ? 'draft' : 'submitted',
+          form_data: officeFormData,
+          updated_at: new Date().toISOString()  // ✅ ADDED: Track update time
+        })
+        .eq('id', editingInspection.id)
+        .select()
+        .single();
+
+      if (updateError) throw updateError;
+      inspectionResult = updateResult;
+
+      // Upsert office inspection form record
+      const sanitizedFormData = {
+        ...officeFormData,
+        work_quality: officeFormData.work_quality || null
       };
 
-      let inspectionResult;
+      const { error: formError } = await supabase
+        .from('fims_office_inspection_forms')
+        .upsert({
+          inspection_id: editingInspection.id,
+          ...sanitizedFormData,
+          updated_at: new Date().toISOString()  // ✅ ADDED: Track update time
+        });
 
-      if (editingInspection && editingInspection.id) {
-        // Update existing inspection
-        const { data: updateResult, error: updateError } = await supabase
-          .from('fims_inspections')
-          .update({
-            location_name: sanitizedInspectionData.location_name,
-            latitude: sanitizedInspectionData.latitude,
-            longitude: sanitizedInspectionData.longitude,
-            location_accuracy: sanitizedInspectionData.location_accuracy,
-            address: sanitizedInspectionData.address,
-            planned_date: sanitizedInspectionData.planned_date,
-            inspection_date: new Date().toISOString(),
-            status: isDraft ? 'draft' : 'submitted',
-            form_data: officeFormData,
-            updatedat: new Date().toISOString()  // ADD THIS to track update time
+      if (formError) throw formError;
 
-          })
-          .eq('id', editingInspection.id)
-          .select()
-          .single();
+    } else {
+      // ============= CREATE NEW INSPECTION =============
+      const inspectionNumber = generateInspectionNumber();
 
-        if (updateError) throw updateError;
-        inspectionResult = updateResult;
+      const { data: createResult, error: createError } = await supabase
+        .from('fims_inspections')
+        .insert({
+          inspection_number: inspectionNumber,
+          category_id: sanitizedInspectionData.category_id,
+          inspector_id: user.id,
+          location_name: sanitizedInspectionData.location_name,
+          latitude: sanitizedInspectionData.latitude,
+          longitude: sanitizedInspectionData.longitude,
+          location_accuracy: sanitizedInspectionData.location_accuracy,
+          address: sanitizedInspectionData.address,
+          planned_date: sanitizedInspectionData.planned_date,
+          inspection_date: new Date().toISOString(),
+          status: isDraft ? 'draft' : 'submitted',
+          form_data: officeFormData
+        })
+        .select()
+        .single();
 
-        // Upsert office inspection form record
-        const sanitizedFormData = {
-          ...officeFormData,
-          work_quality: officeFormData.work_quality || null
-        };
+      if (createError) throw createError;
+      inspectionResult = createResult;
 
-        const { error: formError } = await supabase
-          .from('fims_office_inspection_forms')
-          .upsert({
-            inspection_id: editingInspection.id,
-            ...sanitizedFormData,
-            updatedat: new Date().toISOString()  // ADD THIS
+      // Create office inspection form record
+      const sanitizedFormData = {
+        ...officeFormData,
+        work_quality: officeFormData.work_quality || null
+      };
 
-          });
+      const { error: formError } = await supabase
+        .from('fims_office_inspection_forms')
+        .insert({
+          inspection_id: inspectionResult.id,
+          ...sanitizedFormData
+        });
 
-        if (formError) throw formError;
-      } else {
-        // Create new inspection
-        const inspectionNumber = generateInspectionNumber();
-
-        const { data: createResult, error: createError } = await supabase
-          .from('fims_inspections')
-          .insert({
-            inspection_number: inspectionNumber,
-            category_id: sanitizedInspectionData.category_id,
-            inspector_id: user.id,
-            location_name: sanitizedInspectionData.location_name,
-            latitude: sanitizedInspectionData.latitude,
-            longitude: sanitizedInspectionData.longitude,
-            location_accuracy: sanitizedInspectionData.location_accuracy,
-            address: sanitizedInspectionData.address,
-            planned_date: sanitizedInspectionData.planned_date,
-            inspection_date: new Date().toISOString(),
-            status: isDraft ? 'draft' : 'submitted',
-            form_data: officeFormData
-          })
-          .select()
-          .single();
-
-        if (createError) throw createError;
-        inspectionResult = createResult;
-
-        // Create office inspection form record
-        const sanitizedFormData = {
-          ...officeFormData,
-          work_quality: officeFormData.work_quality || null
-        };
-
-        const { error: formError } = await supabase
-          .from('fims_office_inspection_forms')
-          .insert({
-            inspection_id: inspectionResult.id,
-            ...sanitizedFormData
-          });
-
-        if (formError) throw formError;
-      }
-
-      // Upload photos if any
-      if (uploadedPhotos.length > 0) {
-        await uploadPhotosToSupabase(inspectionResult.id);
-      }
-
-      const isUpdate = editingInspection && editingInspection.id;
-      const message = isDraft
-        ? (isUpdate ? t('fims.inspectionUpdatedAsDraft') : t('fims.inspectionSavedAsDraft'))
-        : (isUpdate ? t('fims.inspectionUpdatedSuccessfully') : t('fims.inspectionSubmittedSuccessfully'));
-
-      alert(message);
-      await onInspectionCreated();
-      onBack();
-
-    } catch (error) {
-      console.error('Error saving inspection:', error);
-      alert('Error saving inspection: ' + error.message);
-    } finally {
-      setIsLoading(false);
+      if (formError) throw formError;
     }
-  };
+
+    // Upload photos if any
+    if (uploadedPhotos.length > 0) {
+      await uploadPhotosToSupabase(inspectionResult.id);
+    }
+
+    const isUpdate = editingInspection && editingInspection.id;
+    const message = isDraft
+      ? (isUpdate ? t('fims.inspectionUpdatedAsDraft') : t('fims.inspectionSavedAsDraft'))
+      : (isUpdate ? t('fims.inspectionUpdatedSuccessfully') : t('fims.inspectionSubmittedSuccessfully'));
+
+    alert(message);
+    
+    // ✅ FIXED: Properly trigger parent refresh and wait for it
+    if (onInspectionCreated) {
+      await onInspectionCreated();
+    }
+    
+    // ✅ FIXED: Add small delay to ensure data is refreshed before going back
+    setTimeout(() => {
+      onBack();
+    }, 300);
+
+  } catch (error) {
+    console.error('Error saving inspection:', error);
+    alert('Error saving inspection: ' + error.message);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const renderStepIndicator = () => (
     <div className="flex items-center justify-center mb-8">
