@@ -39,7 +39,7 @@ interface Inspection {
   location_name: string;
   latitude: number | null;
   longitude: number | null;
-  //location_accuracy: number | null;
+  location_accuracy: number | null;
   address: string | null;
   planned_date: string | null;
   inspection_date: string | null;
@@ -49,7 +49,7 @@ interface Inspection {
   requires_revisit: boolean;
   created_at: string;
   updated_at: string;
-  filled_by_name?: string | null;
+  name: string | null;
   anganwadi_forms?: any;
   photos?: InspectionPhoto[];
 }
@@ -1090,7 +1090,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                          inspection.planned_date ? new Date(inspection.planned_date).toLocaleDateString() : '-'}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900 w-[10%] truncate">
-                        {inspection.filled_by_name || '-'}
+                        {inspection.name || '-'}
                       </td>
                       
                       <td className="px-4 py-4 text-sm text-blue-700 hover:text-blue-500 transition-colors duration-200 w-[22%]">
