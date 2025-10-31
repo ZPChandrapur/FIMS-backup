@@ -627,7 +627,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-green-400 to-orange-500 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300 relative overflow-hidden">
           <div className="absolute top-2 left-2 opacity-20">
             <img src="/logo.png" alt="Logo" className="h-8 w-8" />
           </div>
