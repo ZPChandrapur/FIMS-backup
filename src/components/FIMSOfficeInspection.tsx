@@ -393,7 +393,7 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
           .from('fims_office_inspection_forms')
           .upsert({
             inspection_id: editingInspection.id,
-            ...sanitizedFormData
+            ...sanitizedFormData,
             updatedat: new Date().toISOString()  // ADD THIS
 
           });
