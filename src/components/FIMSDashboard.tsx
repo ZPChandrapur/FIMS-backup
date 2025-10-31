@@ -1013,12 +1013,12 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                   />
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-[10%]">
-                  <div>{t('names')}</div>
+                  <div>{t('filled_by_name')}</div>
                   <input
                     type="text"
                     placeholder="Filter..."
-                    value={columnFilters.names}
-                    onChange={(e) => setColumnFilters({...columnFilters, names: e.target.value})}
+                    value={columnFilters.filled_by_name}
+                    onChange={(e) => setColumnFilters({...columnFilters, filled_by_name: e.target.value})}
                     className="mt-1 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                     onClick={(e) => e.stopPropagation()}
                   />
