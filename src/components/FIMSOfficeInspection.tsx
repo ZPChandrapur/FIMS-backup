@@ -28,7 +28,7 @@ interface FIMSOfficeInspectionProps {
 }
 
 interface OfficeInspectionFormData {
-  // Section 1: कर्मचाऱ्याची माहिती
+  // Section 1: à¤•à¤°à¥à¤®à¤šà¤¾à¤±à¥à¤¯à¤¾à¤šà¥€ à¤®à¤¾à¤¹à¤¿à¤¤à¥€
   department_name: string;
   employee_name: string;
   designation: string;
@@ -36,7 +36,7 @@ interface OfficeInspectionFormData {
   date_of_joining: string;
   work_nature: string;
   
-  // Section 2: पत्र व्यवहार तपशील
+  // Section 2: à¤ªà¤¤à¥à¤° à¤µà¥à¤¯à¤µà¤¹à¤¾à¤° à¤¤à¤ªà¤¶à¥€à¤²
   letter_received_logged: boolean;
   letter_priority_disposed: boolean;
   weekly_report_created: boolean;
@@ -46,12 +46,12 @@ interface OfficeInspectionFormData {
   class_d_letters_destroyed: boolean;
   long_pending_cases: boolean;
   
-  // Section 3: नोंदवह्या
+  // Section 3: à¤¨à¥‹à¤‚à¤¦à¤µà¤¹à¥à¤¯à¤¾
   required_registers: boolean;
   updated_registers: boolean;
   registers_submitted_on_time: boolean;
   
-  // Section 4: दप्तरची रचना
+  // Section 4: à¤¦à¤ªà¥à¤¤à¤°à¤šà¥€ à¤°à¤šà¤¨à¤¾
   file_structure_six_bundle: boolean;
   post_disposal_bundling: boolean;
   periodic_statements_submitted: boolean;
@@ -62,14 +62,14 @@ interface OfficeInspectionFormData {
   binding_and_submission: boolean;
   disposal_speed_satisfactory: boolean;
   
-  // Section 5: तपासणीच्या तुटी
+  // Section 5: à¤¤à¤ªà¤¾à¤¸à¤£à¥€à¤šà¥à¤¯à¤¾ à¤¤à¥à¤Ÿà¥€
   inspection_issues_json: any[];
   
-  // Section 6: कामाचा दर्जा मूल्यांकन
+  // Section 6: à¤•à¤¾à¤®à¤¾à¤šà¤¾ à¤¦à¤°à¥à¤œà¤¾ à¤®à¥‚à¤²à¥à¤¯à¤¾à¤‚à¤•à¤¨
   evaluation_score: number;
   work_quality: string;
   
-  // Section 7: अधिकारी अभिज्ञान
+  // Section 7: à¤…à¤§à¤¿à¤•à¤¾à¤°à¥€ à¤…à¤­à¤¿à¤œà¥à¤žà¤¾à¤¨
   inspector_name: string;
   inspector_designation: string;
   supervisor_remarks: string;
@@ -348,127 +348,116 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
   };
 
   const handleSubmit = async (isDraft: boolean = false) => {
-  try {
-    setIsLoading(true);
+    try {
+      setIsLoading(true);
 
-    // Convert empty date strings to null for database compatibility
-    const sanitizedInspectionData = {
-      ...inspectionData,
-      planned_date: inspectionData.planned_date || null
-    };
-
-    let inspectionResult;
-
-    if (editingInspection && editingInspection.id) {
-      // ============= UPDATE EXISTING INSPECTION =============
-      const { data: updateResult, error: updateError } = await supabase
-        .from('fims_inspections')
-        .update({
-          location_name: sanitizedInspectionData.location_name,
-          latitude: sanitizedInspectionData.latitude,
-          longitude: sanitizedInspectionData.longitude,
-          location_accuracy: sanitizedInspectionData.location_accuracy,
-          address: sanitizedInspectionData.address,
-          planned_date: sanitizedInspectionData.planned_date,
-          inspection_date: new Date().toISOString(),
-          status: isDraft ? 'draft' : 'submitted',
-          form_data: officeFormData,
-          updated_at: new Date().toISOString()  // ✅ ADDED: Track update time
-        })
-        .eq('id', editingInspection.id)
-        .select()
-        .single();
-
-      if (updateError) throw updateError;
-      inspectionResult = updateResult;
-
-      // Upsert office inspection form record
-      const sanitizedFormData = {
-        ...officeFormData,
-        work_quality: officeFormData.work_quality || null
+      // Convert empty date strings to null for database compatibility
+      const sanitizedInspectionData = {
+        ...inspectionData,
+        planned_date: inspectionData.planned_date || null
       };
 
-      const { error: formError } = await supabase
-        .from('fims_office_inspection_forms')
-        .upsert({
-          inspection_id: editingInspection.id,
-          ...sanitizedFormData,
-          updated_at: new Date().toISOString()  // ✅ ADDED: Track update time
-        });
+      let inspectionResult;
 
-      if (formError) throw formError;
+      if (editingInspection && editingInspection.id) {
+        // Update existing inspection
+        const { data: updateResult, error: updateError } = await supabase
+          .from('fims_inspections')
+          .update({
+            location_name: sanitizedInspectionData.location_name,
+            latitude: sanitizedInspectionData.latitude,
+            longitude: sanitizedInspectionData.longitude,
+            location_accuracy: sanitizedInspectionData.location_accuracy,
+            address: sanitizedInspectionData.address,
+            planned_date: sanitizedInspectionData.planned_date,
+            inspection_date: new Date().toISOString(),
+            status: isDraft ? 'draft' : 'submitted',
+            form_data: officeFormData
+          })
+          .eq('id', editingInspection.id)
+          .select()
+          .single();
 
-    } else {
-      // ============= CREATE NEW INSPECTION =============
-      const inspectionNumber = generateInspectionNumber();
+        if (updateError) throw updateError;
+        inspectionResult = updateResult;
 
-      const { data: createResult, error: createError } = await supabase
-        .from('fims_inspections')
-        .insert({
-          inspection_number: inspectionNumber,
-          category_id: sanitizedInspectionData.category_id,
-          inspector_id: user.id,
-          location_name: sanitizedInspectionData.location_name,
-          latitude: sanitizedInspectionData.latitude,
-          longitude: sanitizedInspectionData.longitude,
-          location_accuracy: sanitizedInspectionData.location_accuracy,
-          address: sanitizedInspectionData.address,
-          planned_date: sanitizedInspectionData.planned_date,
-          inspection_date: new Date().toISOString(),
-          status: isDraft ? 'draft' : 'submitted',
-          form_data: officeFormData
-        })
-        .select()
-        .single();
+        // Upsert office inspection form record
+        const sanitizedFormData = {
+          ...officeFormData,
+          work_quality: officeFormData.work_quality || null
+        };
 
-      if (createError) throw createError;
-      inspectionResult = createResult;
+        const { error: formError } = await supabase
+          .from('fims_office_inspection_forms')
+          .upsert({
+            inspection_id: editingInspection.id,
+            ...sanitizedFormData
+          });
 
-      // Create office inspection form record
-      const sanitizedFormData = {
-        ...officeFormData,
-        work_quality: officeFormData.work_quality || null
-      };
+        if (formError) throw formError;
+      } else {
+        // Create new inspection
+        const inspectionNumber = generateInspectionNumber();
 
-      const { error: formError } = await supabase
-        .from('fims_office_inspection_forms')
-        .insert({
-          inspection_id: inspectionResult.id,
-          ...sanitizedFormData
-        });
+        const { data: createResult, error: createError } = await supabase
+          .from('fims_inspections')
+          .insert({
+            inspection_number: inspectionNumber,
+            category_id: sanitizedInspectionData.category_id,
+            inspector_id: user.id,
+            location_name: sanitizedInspectionData.location_name,
+            latitude: sanitizedInspectionData.latitude,
+            longitude: sanitizedInspectionData.longitude,
+            location_accuracy: sanitizedInspectionData.location_accuracy,
+            address: sanitizedInspectionData.address,
+            planned_date: sanitizedInspectionData.planned_date,
+            inspection_date: new Date().toISOString(),
+            status: isDraft ? 'draft' : 'submitted',
+            form_data: officeFormData
+          })
+          .select()
+          .single();
 
-      if (formError) throw formError;
-    }
+        if (createError) throw createError;
+        inspectionResult = createResult;
 
-    // Upload photos if any
-    if (uploadedPhotos.length > 0) {
-      await uploadPhotosToSupabase(inspectionResult.id);
-    }
+        // Create office inspection form record
+        const sanitizedFormData = {
+          ...officeFormData,
+          work_quality: officeFormData.work_quality || null
+        };
 
-    const isUpdate = editingInspection && editingInspection.id;
-    const message = isDraft
-      ? (isUpdate ? t('fims.inspectionUpdatedAsDraft') : t('fims.inspectionSavedAsDraft'))
-      : (isUpdate ? t('fims.inspectionUpdatedSuccessfully') : t('fims.inspectionSubmittedSuccessfully'));
+        const { error: formError } = await supabase
+          .from('fims_office_inspection_forms')
+          .insert({
+            inspection_id: inspectionResult.id,
+            ...sanitizedFormData
+          });
 
-    alert(message);
-    
-    // ✅ FIXED: Properly trigger parent refresh and wait for it
-    if (onInspectionCreated) {
+        if (formError) throw formError;
+      }
+
+      // Upload photos if any
+      if (uploadedPhotos.length > 0) {
+        await uploadPhotosToSupabase(inspectionResult.id);
+      }
+
+      const isUpdate = editingInspection && editingInspection.id;
+      const message = isDraft
+        ? (isUpdate ? t('fims.inspectionUpdatedAsDraft') : t('fims.inspectionSavedAsDraft'))
+        : (isUpdate ? t('fims.inspectionUpdatedSuccessfully') : t('fims.inspectionSubmittedSuccessfully'));
+
+      alert(message);
       await onInspectionCreated();
-    }
-    
-    // ✅ FIXED: Add small delay to ensure data is refreshed before going back
-    setTimeout(() => {
       onBack();
-    }, 300);
 
-  } catch (error) {
-    console.error('Error saving inspection:', error);
-    alert('Error saving inspection: ' + error.message);
-  } finally {
-    setIsLoading(false);
-  }
-};
+    } catch (error) {
+      console.error('Error saving inspection:', error);
+      alert('Error saving inspection: ' + error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const renderStepIndicator = () => (
     <div className="flex items-center justify-center mb-8">
@@ -495,67 +484,67 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
         <Users className="h-5 w-5 mr-2 text-purple-600" />
-        कर्मचाऱ्याची माहिती (Employee Information)
+        à¤•à¤°à¥à¤®à¤šà¤¾à¤±à¥à¤¯à¤¾à¤šà¥€ à¤®à¤¾à¤¹à¤¿à¤¤à¥€ (Employee Information)
       </h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            विभागाचे नाव *
+            à¤µà¤¿à¤­à¤¾à¤—à¤¾à¤šà¥‡ à¤¨à¤¾à¤µ *
           </label>
           <input
             type="text"
             value={officeFormData.department_name}
             onChange={(e) => setOfficeFormData(prev => ({...prev, department_name: e.target.value}))}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            placeholder="विभागाचे नाव प्रविष्ट करा"
+            placeholder="à¤µà¤¿à¤­à¤¾à¤—à¤¾à¤šà¥‡ à¤¨à¤¾à¤µ à¤ªà¥à¤°à¤µà¤¿à¤·à¥à¤Ÿ à¤•à¤°à¤¾"
             required
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            कर्मचाऱ्याचे नाव *
+            à¤•à¤°à¥à¤®à¤šà¤¾à¤±à¥à¤¯à¤¾à¤šà¥‡ à¤¨à¤¾à¤µ *
           </label>
           <input
             type="text"
             value={officeFormData.employee_name}
             onChange={(e) => setOfficeFormData(prev => ({...prev, employee_name: e.target.value}))}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            placeholder="कर्मचाऱ्याचे नाव प्रविष्ट करा"
+            placeholder="à¤•à¤°à¥à¤®à¤šà¤¾à¤±à¥à¤¯à¤¾à¤šà¥‡ à¤¨à¤¾à¤µ à¤ªà¥à¤°à¤µà¤¿à¤·à¥à¤Ÿ à¤•à¤°à¤¾"
             required
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            पदनाम
+            à¤ªà¤¦à¤¨à¤¾à¤®
           </label>
           <input
             type="text"
             value={officeFormData.designation}
             onChange={(e) => setOfficeFormData(prev => ({...prev, designation: e.target.value}))}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            placeholder="पदनाम प्रविष्ट करा"
+            placeholder="à¤ªà¤¦à¤¨à¤¾à¤® à¤ªà¥à¤°à¤µà¤¿à¤·à¥à¤Ÿ à¤•à¤°à¤¾"
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            टेबल क्रमांक
+            à¤Ÿà¥‡à¤¬à¤² à¤•à¥à¤°à¤®à¤¾à¤‚à¤•
           </label>
           <input
             type="text"
             value={officeFormData.table_number}
             onChange={(e) => setOfficeFormData(prev => ({...prev, table_number: e.target.value}))}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            placeholder="टेबल क्रमांक प्रविष्ट करा"
+            placeholder="à¤Ÿà¥‡à¤¬à¤² à¤•à¥à¤°à¤®à¤¾à¤‚à¤• à¤ªà¥à¤°à¤µà¤¿à¤·à¥à¤Ÿ à¤•à¤°à¤¾"
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            कार्यरत असण्याची तारीख
+            à¤•à¤¾à¤°à¥à¤¯à¤°à¤¤ à¤…à¤¸à¤£à¥à¤¯à¤¾à¤šà¥€ à¤¤à¤¾à¤°à¥€à¤–
           </label>
           <input
             type="date"
@@ -567,14 +556,14 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            हाताळलेले कामाचे स्वरूप
+            à¤¹à¤¾à¤¤à¤¾à¤³à¤²à¥‡à¤²à¥‡ à¤•à¤¾à¤®à¤¾à¤šà¥‡ à¤¸à¥à¤µà¤°à¥‚à¤ª
           </label>
           <textarea
             value={officeFormData.work_nature}
             onChange={(e) => setOfficeFormData(prev => ({...prev, work_nature: e.target.value}))}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             rows={3}
-            placeholder="कामाचे स्वरूप वर्णन करा"
+            placeholder="à¤•à¤¾à¤®à¤¾à¤šà¥‡ à¤¸à¥à¤µà¤°à¥‚à¤ª à¤µà¤°à¥à¤£à¤¨ à¤•à¤°à¤¾"
           />
         </div>
       </div>
@@ -586,21 +575,21 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
       <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-t-lg">
         <h3 className="text-lg font-semibold flex items-center">
           <MapPin className="h-5 w-5 mr-2" />
-          स्थान माहिती (Location Information)
+          à¤¸à¥à¤¥à¤¾à¤¨ à¤®à¤¾à¤¹à¤¿à¤¤à¥€ (Location Information)
         </h3>
       </div>
       
       <div className="bg-white p-6 rounded-b-lg border border-gray-200 space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            स्थानाचे नाव *
+            à¤¸à¥à¤¥à¤¾à¤¨à¤¾à¤šà¥‡ à¤¨à¤¾à¤µ *
           </label>
           <input
             type="text"
             value={inspectionData.location_name}
             onChange={(e) => setInspectionData(prev => ({...prev, location_name: e.target.value}))}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            placeholder="स्थानाचे नाव प्रविष्ट करा"
+            placeholder="à¤¸à¥à¤¥à¤¾à¤¨à¤¾à¤šà¥‡ à¤¨à¤¾à¤µ à¤ªà¥à¤°à¤µà¤¿à¤·à¥à¤Ÿ à¤•à¤°à¤¾"
             required
           />
         </div>
@@ -608,7 +597,7 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              नियोजित तारीख
+              à¤¨à¤¿à¤¯à¥‹à¤œà¤¿à¤¤ à¤¤à¤¾à¤°à¥€à¤–
             </label>
             <input
               type="date"
@@ -629,32 +618,32 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
               className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
             >
               <MapPin className="h-4 w-4" />
-              <span>{isLoading ? 'स्थान मिळवत आहे...' : 'सध्याचे स्थान मिळवा'}</span>
+              <span>{isLoading ? 'à¤¸à¥à¤¥à¤¾à¤¨ à¤®à¤¿à¤³à¤µà¤¤ à¤†à¤¹à¥‡...' : 'à¤¸à¤§à¥à¤¯à¤¾à¤šà¥‡ à¤¸à¥à¤¥à¤¾à¤¨ à¤®à¤¿à¤³à¤µà¤¾'}</span>
             </button>
           </div>
         </div>
 
         {inspectionData.latitude && inspectionData.longitude && (
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <p className="text-sm text-green-800 font-medium mb-2">स्थान कॅप्चर केले</p>
+            <p className="text-sm text-green-800 font-medium mb-2">à¤¸à¥à¤¥à¤¾à¤¨ à¤•à¥…à¤ªà¥à¤šà¤° à¤•à¥‡à¤²à¥‡</p>
             <div className="text-xs text-green-600 space-y-1">
-              <p>अक्षांश: {inspectionData.latitude.toFixed(6)}</p>
-              <p>रेखांश: {inspectionData.longitude.toFixed(6)}</p>
-              <p>अचूकता: {inspectionData.location_accuracy ? Math.round(inspectionData.location_accuracy) + 'm' : 'N/A'}</p>
+              <p>à¤…à¤•à¥à¤·à¤¾à¤‚à¤¶: {inspectionData.latitude.toFixed(6)}</p>
+              <p>à¤°à¥‡à¤–à¤¾à¤‚à¤¶: {inspectionData.longitude.toFixed(6)}</p>
+              <p>à¤…à¤šà¥‚à¤•à¤¤à¤¾: {inspectionData.location_accuracy ? Math.round(inspectionData.location_accuracy) + 'm' : 'N/A'}</p>
             </div>
           </div>
         )}
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            शोधलेले स्थान (Location Detected)
+            à¤¶à¥‹à¤§à¤²à¥‡à¤²à¥‡ à¤¸à¥à¤¥à¤¾à¤¨ (Location Detected)
           </label>
           <textarea
             value={inspectionData.address}
             onChange={(e) => setInspectionData(prev => ({...prev, address: e.target.value}))}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             rows={3}
-            placeholder="संपूर्ण पत्ता प्रविष्ट करा"
+            placeholder="à¤¸à¤‚à¤ªà¥‚à¤°à¥à¤£ à¤ªà¤¤à¥à¤¤à¤¾ à¤ªà¥à¤°à¤µà¤¿à¤·à¥à¤Ÿ à¤•à¤°à¤¾"
           />
         </div>
       </div>
@@ -664,26 +653,26 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
   const renderOfficeInspectionForm = () => (
     <div className="space-y-8">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        दफ्तर निरीक्षण प्रपत्र (Office Inspection Form)
+        à¤¦à¤«à¥à¤¤à¤° à¤¨à¤¿à¤°à¥€à¤•à¥à¤·à¤£ à¤ªà¥à¤°à¤ªà¤¤à¥à¤° (Office Inspection Form)
       </h3>
 
-      {/* Section 2: पत्र व्यवहार तपशील */}
+      {/* Section 2: à¤ªà¤¤à¥à¤° à¤µà¥à¤¯à¤µà¤¹à¤¾à¤° à¤¤à¤ªà¤¶à¥€à¤² */}
       <div className="bg-gray-50 p-6 rounded-lg">
         <h4 className="text-md font-semibold text-gray-800 mb-4 flex items-center">
           <FileText className="h-5 w-5 mr-2 text-purple-600" />
-          पत्र व्यवहार तपशील (Letter Correspondence Details)
+          à¤ªà¤¤à¥à¤° à¤µà¥à¤¯à¤µà¤¹à¤¾à¤° à¤¤à¤ªà¤¶à¥€à¤² (Letter Correspondence Details)
         </h4>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
-            { key: 'letter_received_logged', label: 'प्राप्त पत्रे कार्यविवरण पंजीत नोंदवले जातात?' },
-            { key: 'letter_priority_disposed', label: 'पत्रांचा प्राधान्यानुसार निपटारा केला जातो?' },
-            { key: 'weekly_report_created', label: 'आठवडी गोपवारा नियमित काढला जातो?' },
-            { key: 'pending_register_maintained', label: 'प्रतिक्षाधिन तोंश्वही ठेवली आहे?' },
-            { key: 'reminders_sent_in_time', label: 'विहित मुदतीत स्मरणपत्र दिले जाते?' },
-            { key: 'letters_bound_with_permission', label: 'अधिकाऱ्याच्या आदेशानंतर नस्तीबद्ध केले जाते?' },
-            { key: 'class_d_letters_destroyed', label: '\'ड\' वर्ग पत्र नष्ट केले जातात?' },
-            { key: 'long_pending_cases', label: 'दिर्घ प्रलंबित पत्रे/प्रकरणे?' }
+            { key: 'letter_received_logged', label: 'à¤ªà¥à¤°à¤¾à¤ªà¥à¤¤ à¤ªà¤¤à¥à¤°à¥‡ à¤•à¤¾à¤°à¥à¤¯à¤µà¤¿à¤µà¤°à¤£ à¤ªà¤‚à¤œà¥€à¤¤ à¤¨à¥‹à¤‚à¤¦à¤µà¤²à¥‡ à¤œà¤¾à¤¤à¤¾à¤¤?' },
+            { key: 'letter_priority_disposed', label: 'à¤ªà¤¤à¥à¤°à¤¾à¤‚à¤šà¤¾ à¤ªà¥à¤°à¤¾à¤§à¤¾à¤¨à¥à¤¯à¤¾à¤¨à¥à¤¸à¤¾à¤° à¤¨à¤¿à¤ªà¤Ÿà¤¾à¤°à¤¾ à¤•à¥‡à¤²à¤¾ à¤œà¤¾à¤¤à¥‹?' },
+            { key: 'weekly_report_created', label: 'à¤†à¤ à¤µà¤¡à¥€ à¤—à¥‹à¤ªà¤µà¤¾à¤°à¤¾ à¤¨à¤¿à¤¯à¤®à¤¿à¤¤ à¤•à¤¾à¤¢à¤²à¤¾ à¤œà¤¾à¤¤à¥‹?' },
+            { key: 'pending_register_maintained', label: 'à¤ªà¥à¤°à¤¤à¤¿à¤•à¥à¤·à¤¾à¤§à¤¿à¤¨ à¤¤à¥‹à¤‚à¤¶à¥à¤µà¤¹à¥€ à¤ à¥‡à¤µà¤²à¥€ à¤†à¤¹à¥‡?' },
+            { key: 'reminders_sent_in_time', label: 'à¤µà¤¿à¤¹à¤¿à¤¤ à¤®à¥à¤¦à¤¤à¥€à¤¤ à¤¸à¥à¤®à¤°à¤£à¤ªà¤¤à¥à¤° à¤¦à¤¿à¤²à¥‡ à¤œà¤¾à¤¤à¥‡?' },
+            { key: 'letters_bound_with_permission', label: 'à¤…à¤§à¤¿à¤•à¤¾à¤±à¥à¤¯à¤¾à¤šà¥à¤¯à¤¾ à¤†à¤¦à¥‡à¤¶à¤¾à¤¨à¤‚à¤¤à¤° à¤¨à¤¸à¥à¤¤à¥€à¤¬à¤¦à¥à¤§ à¤•à¥‡à¤²à¥‡ à¤œà¤¾à¤¤à¥‡?' },
+            { key: 'class_d_letters_destroyed', label: '\'à¤¡\' à¤µà¤°à¥à¤— à¤ªà¤¤à¥à¤° à¤¨à¤·à¥à¤Ÿ à¤•à¥‡à¤²à¥‡ à¤œà¤¾à¤¤à¤¾à¤¤?' },
+            { key: 'long_pending_cases', label: 'à¤¦à¤¿à¤°à¥à¤˜ à¤ªà¥à¤°à¤²à¤‚à¤¬à¤¿à¤¤ à¤ªà¤¤à¥à¤°à¥‡/à¤ªà¥à¤°à¤•à¤°à¤£à¥‡?' }
           ].map((field) => (
             <div key={field.key} className="flex items-center space-x-3">
               <input
@@ -701,18 +690,18 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
         </div>
       </div>
 
-      {/* Section 3: नोंदवह्या */}
+      {/* Section 3: à¤¨à¥‹à¤‚à¤¦à¤µà¤¹à¥à¤¯à¤¾ */}
       <div className="bg-gray-50 p-6 rounded-lg">
         <h4 className="text-md font-semibold text-gray-800 mb-4 flex items-center">
           <BookOpen className="h-5 w-5 mr-2 text-purple-600" />
-          नोंदवह्या (Registers)
+          à¤¨à¥‹à¤‚à¤¦à¤µà¤¹à¥à¤¯à¤¾ (Registers)
         </h4>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
-            { key: 'required_registers', label: 'आवश्यक नोंदवह्या आहेत?' },
-            { key: 'updated_registers', label: 'अद्ययावत आहेत?' },
-            { key: 'registers_submitted_on_time', label: 'तपासणीसाठी सादर केल्या जातात?' }
+            { key: 'required_registers', label: 'à¤†à¤µà¤¶à¥à¤¯à¤• à¤¨à¥‹à¤‚à¤¦à¤µà¤¹à¥à¤¯à¤¾ à¤†à¤¹à¥‡à¤¤?' },
+            { key: 'updated_registers', label: 'à¤…à¤¦à¥à¤¯à¤¯à¤¾à¤µà¤¤ à¤†à¤¹à¥‡à¤¤?' },
+            { key: 'registers_submitted_on_time', label: 'à¤¤à¤ªà¤¾à¤¸à¤£à¥€à¤¸à¤¾à¤ à¥€ à¤¸à¤¾à¤¦à¤° à¤•à¥‡à¤²à¥à¤¯à¤¾ à¤œà¤¾à¤¤à¤¾à¤¤?' }
           ].map((field) => (
             <div key={field.key} className="flex items-center space-x-3">
               <input
@@ -730,24 +719,24 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
         </div>
       </div>
 
-      {/* Section 4: दप्तरची रचना */}
+      {/* Section 4: à¤¦à¤ªà¥à¤¤à¤°à¤šà¥€ à¤°à¤šà¤¨à¤¾ */}
       <div className="bg-gray-50 p-6 rounded-lg">
         <h4 className="text-md font-semibold text-gray-800 mb-4 flex items-center">
           <FolderOpen className="h-5 w-5 mr-2 text-purple-600" />
-          दप्तरची रचना (Office Structure)
+          à¤¦à¤ªà¥à¤¤à¤°à¤šà¥€ à¤°à¤šà¤¨à¤¾ (Office Structure)
         </h4>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
-            { key: 'file_structure_six_bundle', label: '६ गठ्ठे पद्धत वापरण्यात आलेली?' },
-            { key: 'post_disposal_bundling', label: 'प्राप्त पत्रांची निपटारी ६ गठ्ठ्यात केली जाते?' },
-            { key: 'periodic_statements_submitted', label: 'नियतकालिक विवरण पाठवले जाते?' },
-            { key: 'permanent_instruction_available', label: 'स्थायी आदेश वस्त्या उपलब्ध?' },
-            { key: 'indexed_instruction_complete', label: 'पृष्ठांकन व अनुक्रमणिका पूर्ण?' },
-            { key: 'updated_by_gov_circular', label: 'शासन निर्णय व परिपत्रकाने अद्ययावत?' },
-            { key: 'files_classified', label: 'निंदणीकरण व वर्गीकरण?' },
-            { key: 'binding_and_submission', label: 'योग्य वस्त्यात बाइंडिंग आणि पाठवणी?' },
-            { key: 'disposal_speed_satisfactory', label: 'कामाचा निपटारा आवश्यक गतीने?' }
+            { key: 'file_structure_six_bundle', label: 'à¥¬ à¤—à¤ à¥à¤ à¥‡ à¤ªà¤¦à¥à¤§à¤¤ à¤µà¤¾à¤ªà¤°à¤£à¥à¤¯à¤¾à¤¤ à¤†à¤²à¥‡à¤²à¥€?' },
+            { key: 'post_disposal_bundling', label: 'à¤ªà¥à¤°à¤¾à¤ªà¥à¤¤ à¤ªà¤¤à¥à¤°à¤¾à¤‚à¤šà¥€ à¤¨à¤¿à¤ªà¤Ÿà¤¾à¤°à¥€ à¥¬ à¤—à¤ à¥à¤ à¥à¤¯à¤¾à¤¤ à¤•à¥‡à¤²à¥€ à¤œà¤¾à¤¤à¥‡?' },
+            { key: 'periodic_statements_submitted', label: 'à¤¨à¤¿à¤¯à¤¤à¤•à¤¾à¤²à¤¿à¤• à¤µà¤¿à¤µà¤°à¤£ à¤ªà¤¾à¤ à¤µà¤²à¥‡ à¤œà¤¾à¤¤à¥‡?' },
+            { key: 'permanent_instruction_available', label: 'à¤¸à¥à¤¥à¤¾à¤¯à¥€ à¤†à¤¦à¥‡à¤¶ à¤µà¤¸à¥à¤¤à¥à¤¯à¤¾ à¤‰à¤ªà¤²à¤¬à¥à¤§?' },
+            { key: 'indexed_instruction_complete', label: 'à¤ªà¥ƒà¤·à¥à¤ à¤¾à¤‚à¤•à¤¨ à¤µ à¤…à¤¨à¥à¤•à¥à¤°à¤®à¤£à¤¿à¤•à¤¾ à¤ªà¥‚à¤°à¥à¤£?' },
+            { key: 'updated_by_gov_circular', label: 'à¤¶à¤¾à¤¸à¤¨ à¤¨à¤¿à¤°à¥à¤£à¤¯ à¤µ à¤ªà¤°à¤¿à¤ªà¤¤à¥à¤°à¤•à¤¾à¤¨à¥‡ à¤…à¤¦à¥à¤¯à¤¯à¤¾à¤µà¤¤?' },
+            { key: 'files_classified', label: 'à¤¨à¤¿à¤‚à¤¦à¤£à¥€à¤•à¤°à¤£ à¤µ à¤µà¤°à¥à¤—à¥€à¤•à¤°à¤£?' },
+            { key: 'binding_and_submission', label: 'à¤¯à¥‹à¤—à¥à¤¯ à¤µà¤¸à¥à¤¤à¥à¤¯à¤¾à¤¤ à¤¬à¤¾à¤‡à¤‚à¤¡à¤¿à¤‚à¤— à¤†à¤£à¤¿ à¤ªà¤¾à¤ à¤µà¤£à¥€?' },
+            { key: 'disposal_speed_satisfactory', label: 'à¤•à¤¾à¤®à¤¾à¤šà¤¾ à¤¨à¤¿à¤ªà¤Ÿà¤¾à¤°à¤¾ à¤†à¤µà¤¶à¥à¤¯à¤• à¤—à¤¤à¥€à¤¨à¥‡?' }
           ].map((field) => (
             <div key={field.key} className="flex items-center space-x-3">
               <input
@@ -765,17 +754,17 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
         </div>
       </div>
 
-      {/* Section 6: कामाचा दर्जा मूल्यांकन */}
+      {/* Section 6: à¤•à¤¾à¤®à¤¾à¤šà¤¾ à¤¦à¤°à¥à¤œà¤¾ à¤®à¥‚à¤²à¥à¤¯à¤¾à¤‚à¤•à¤¨ */}
       <div className="bg-gray-50 p-6 rounded-lg">
         <h4 className="text-md font-semibold text-gray-800 mb-4 flex items-center">
           <CheckCircle className="h-5 w-5 mr-2 text-purple-600" />
-          कामाचा दर्जा मूल्यांकन (Work Quality Evaluation)
+          à¤•à¤¾à¤®à¤¾à¤šà¤¾ à¤¦à¤°à¥à¤œà¤¾ à¤®à¥‚à¤²à¥à¤¯à¤¾à¤‚à¤•à¤¨ (Work Quality Evaluation)
         </h4>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              होय उत्तरांची संख्या (Automatic)
+              à¤¹à¥‹à¤¯ à¤‰à¤¤à¥à¤¤à¤°à¤¾à¤‚à¤šà¥€ à¤¸à¤‚à¤–à¥à¤¯à¤¾ (Automatic)
             </label>
             <input
               type="number"
@@ -787,83 +776,83 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              कामाचा दर्जा
+              à¤•à¤¾à¤®à¤¾à¤šà¤¾ à¤¦à¤°à¥à¤œà¤¾
             </label>
             <select
               value={officeFormData.work_quality}
               onChange={(e) => setOfficeFormData(prev => ({...prev, work_quality: e.target.value}))}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             >
-              <option value="">दर्जा निवडा</option>
-              <option value="वाईट">वाईट</option>
-              <option value="साधारण">साधारण</option>
-              <option value="चांगला">चांगला</option>
-              <option value="उत्तम">उत्तम</option>
-              <option value="उत्कृष्ट">उत्कृष्ट</option>
+              <option value="">à¤¦à¤°à¥à¤œà¤¾ à¤¨à¤¿à¤µà¤¡à¤¾</option>
+              <option value="à¤µà¤¾à¤ˆà¤Ÿ">à¤µà¤¾à¤ˆà¤Ÿ</option>
+              <option value="à¤¸à¤¾à¤§à¤¾à¤°à¤£">à¤¸à¤¾à¤§à¤¾à¤°à¤£</option>
+              <option value="à¤šà¤¾à¤‚à¤—à¤²à¤¾">à¤šà¤¾à¤‚à¤—à¤²à¤¾</option>
+              <option value="à¤‰à¤¤à¥à¤¤à¤®">à¤‰à¤¤à¥à¤¤à¤®</option>
+              <option value="à¤‰à¤¤à¥à¤•à¥ƒà¤·à¥à¤Ÿ">à¤‰à¤¤à¥à¤•à¥ƒà¤·à¥à¤Ÿ</option>
             </select>
           </div>
         </div>
       </div>
 
-      {/* Section 7: अधिकारी अभिज्ञान */}
+      {/* Section 7: à¤…à¤§à¤¿à¤•à¤¾à¤°à¥€ à¤…à¤­à¤¿à¤œà¥à¤žà¤¾à¤¨ */}
       <div className="bg-gray-50 p-6 rounded-lg">
         <h4 className="text-md font-semibold text-gray-800 mb-4 flex items-center">
           <AlertCircle className="h-5 w-5 mr-2 text-purple-600" />
-          अधिकारी अभिज्ञान (Officer Acknowledgment)
+          à¤…à¤§à¤¿à¤•à¤¾à¤°à¥€ à¤…à¤­à¤¿à¤œà¥à¤žà¤¾à¤¨ (Officer Acknowledgment)
         </h4>
         
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                निरीक्षण करणाऱ्या अधिकाऱ्याचे नाव
+                à¤¨à¤¿à¤°à¥€à¤•à¥à¤·à¤£ à¤•à¤°à¤£à¤¾à¤±à¥à¤¯à¤¾ à¤…à¤§à¤¿à¤•à¤¾à¤±à¥à¤¯à¤¾à¤šà¥‡ à¤¨à¤¾à¤µ
               </label>
               <input
                 type="text"
                 value={officeFormData.inspector_name}
                 onChange={(e) => setOfficeFormData(prev => ({...prev, inspector_name: e.target.value}))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="अधिकाऱ्याचे नाव प्रविष्ट करा"
+                placeholder="à¤…à¤§à¤¿à¤•à¤¾à¤±à¥à¤¯à¤¾à¤šà¥‡ à¤¨à¤¾à¤µ à¤ªà¥à¤°à¤µà¤¿à¤·à¥à¤Ÿ à¤•à¤°à¤¾"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                पदनाम
+                à¤ªà¤¦à¤¨à¤¾à¤®
               </label>
               <input
                 type="text"
                 value={officeFormData.inspector_designation}
                 onChange={(e) => setOfficeFormData(prev => ({...prev, inspector_designation: e.target.value}))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="पदनाम प्रविष्ट करा"
+                placeholder="à¤ªà¤¦à¤¨à¤¾à¤® à¤ªà¥à¤°à¤µà¤¿à¤·à¥à¤Ÿ à¤•à¤°à¤¾"
               />
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              कार्यालय प्रमुखाचे अभिप्राय
+              à¤•à¤¾à¤°à¥à¤¯à¤¾à¤²à¤¯ à¤ªà¥à¤°à¤®à¥à¤–à¤¾à¤šà¥‡ à¤…à¤­à¤¿à¤ªà¥à¤°à¤¾à¤¯
             </label>
             <textarea
               value={officeFormData.supervisor_remarks}
               onChange={(e) => setOfficeFormData(prev => ({...prev, supervisor_remarks: e.target.value}))}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               rows={4}
-              placeholder="कार्यालय प्रमुखाचे अभिप्राय प्रविष्ट करा"
+              placeholder="à¤•à¤¾à¤°à¥à¤¯à¤¾à¤²à¤¯ à¤ªà¥à¤°à¤®à¥à¤–à¤¾à¤šà¥‡ à¤…à¤­à¤¿à¤ªà¥à¤°à¤¾à¤¯ à¤ªà¥à¤°à¤µà¤¿à¤·à¥à¤Ÿ à¤•à¤°à¤¾"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              कार्यालय प्रमुखाची स्वाक्षरी
+              à¤•à¤¾à¤°à¥à¤¯à¤¾à¤²à¤¯ à¤ªà¥à¤°à¤®à¥à¤–à¤¾à¤šà¥€ à¤¸à¥à¤µà¤¾à¤•à¥à¤·à¤°à¥€
             </label>
             <input
               type="text"
               value={officeFormData.supervisor_signature}
               onChange={(e) => setOfficeFormData(prev => ({...prev, supervisor_signature: e.target.value}))}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="स्वाक्षरी प्रविष्ट करा"
+              placeholder="à¤¸à¥à¤µà¤¾à¤•à¥à¤·à¤°à¥€ à¤ªà¥à¤°à¤µà¤¿à¤·à¥à¤Ÿ à¤•à¤°à¤¾"
             />
           </div>
         </div>
@@ -925,7 +914,7 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
                     onClick={() => removePhoto(index)}
                     className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1"
                   >
-                    ×
+                    Ã—
                   </button>
                 )}
                 <p className="text-xs text-gray-600 mt-1 truncate">
@@ -1036,7 +1025,7 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
             <h1 className="text-lg md:text-2xl font-bold text-gray-900 text-center">
               {editingInspection?.mode === 'view' ? t('fims.viewInspection') : 
                editingInspection?.mode === 'edit' ? t('fims.editInspection') : 
-               t('fims.newInspection')} - दफ्तर निरीक्षण प्रपत्र
+               t('fims.newInspection')} - à¤¦à¤«à¥à¤¤à¤° à¤¨à¤¿à¤°à¥€à¤•à¥à¤·à¤£ à¤ªà¥à¤°à¤ªà¤¤à¥à¤°
             </h1>
             <div className="w-20"></div>
           </div>
@@ -1045,13 +1034,13 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
 
           <div className="flex justify-center space-x-4 md:space-x-8 text-xs md:text-sm">
             <div className={`${currentStep === 1 ? 'text-purple-600 font-medium' : 'text-gray-500'}`}>
-              कर्मचारी माहिती
+              à¤•à¤°à¥à¤®à¤šà¤¾à¤°à¥€ à¤®à¤¾à¤¹à¤¿à¤¤à¥€
             </div>
             <div className={`${currentStep === 2 ? 'text-purple-600 font-medium' : 'text-gray-500'}`}>
               {t('fims.locationDetails')}
             </div>
             <div className={`${currentStep === 3 ? 'text-purple-600 font-medium' : 'text-gray-500'}`}>
-              दफ्तर निरीक्षण
+              à¤¦à¤«à¥à¤¤à¤° à¤¨à¤¿à¤°à¥€à¤•à¥à¤·à¤£
             </div>
             <div className={`${currentStep === 4 ? 'text-purple-600 font-medium' : 'text-gray-500'}`}>
               {t('fims.photosSubmit')}
