@@ -375,8 +375,8 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
       const matchesDateFilter = columnFilters.date === '' ||
         (inspectionDate && new Date(inspectionDate).toLocaleDateString().includes(columnFilters.date));
 
-      const matchesFilledBy = !columnFilters.filledbyname || 
-      inspection.filled_by_name?.toLowerCase().includes(columnFilters.filledbyname.toLowerCase());
+      const matchesFilledBy = !columnFilters.filled_by_name || 
+      inspection.filled_by_name?.toLowerCase().includes(columnFilters.filled_by_name.toLowerCase());
 
       return matchesSearch && matchesCategory && matchesStatus &&
              matchesInspectionNumber && matchesLocation && matchesCategoryFilter &&
@@ -1016,7 +1016,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                   />
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-[10%]">
-                  <div>{t('filled_by_name')}</div>
+                  <div>{t('filled_by_name','Filled By Name')}</div>
                   <input
                     type="text"
                     placeholder="Filter..."
