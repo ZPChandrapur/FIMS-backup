@@ -375,9 +375,12 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
       const matchesDateFilter = columnFilters.date === '' ||
         (inspectionDate && new Date(inspectionDate).toLocaleDateString().includes(columnFilters.date));
 
+      const matchesFilledBy = !columnFilters.filledbyname || 
+      inspection.filled_by_name?.toLowerCase().includes(columnFilters.filledbyname.toLowerCase());
+
       return matchesSearch && matchesCategory && matchesStatus &&
              matchesInspectionNumber && matchesLocation && matchesCategoryFilter &&
-             matchesStatusFilter && matchesDateFilter;
+             matchesStatusFilter && matchesDateFilter && matchesFilledBy;  // Add this
     });
   };
 
