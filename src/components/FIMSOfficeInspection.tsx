@@ -443,12 +443,12 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
       }
 
       const isUpdate = editingInspection && editingInspection.id;
-      const message = isDraft 
+      const message = isDraft
         ? (isUpdate ? t('fims.inspectionUpdatedAsDraft') : t('fims.inspectionSavedAsDraft'))
         : (isUpdate ? t('fims.inspectionUpdatedSuccessfully') : t('fims.inspectionSubmittedSuccessfully'));
-      
+
       alert(message);
-      onInspectionCreated();
+      await onInspectionCreated();
       onBack();
 
     } catch (error) {
