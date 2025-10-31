@@ -382,11 +382,16 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
         inspectionResult = updateResult;
 
         // Upsert office inspection form record
+        const sanitizedFormData = {
+          ...officeFormData,
+          work_quality: officeFormData.work_quality || null
+        };
+
         const { error: formError } = await supabase
           .from('fims_office_inspection_forms')
           .upsert({
             inspection_id: editingInspection.id,
-            ...officeFormData
+            ...sanitizedFormData
           });
 
         if (formError) throw formError;
@@ -417,11 +422,16 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
         inspectionResult = createResult;
 
         // Create office inspection form record
+        const sanitizedFormData = {
+          ...officeFormData,
+          work_quality: officeFormData.work_quality || null
+        };
+
         const { error: formError } = await supabase
           .from('fims_office_inspection_forms')
           .insert({
             inspection_id: inspectionResult.id,
-            ...officeFormData
+            ...sanitizedFormData
           });
 
         if (formError) throw formError;
