@@ -697,7 +697,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
         <div className={`grid grid-cols-1 ${userRole === 'developer' ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4`}>
           <button
             onClick={() => setActiveTab('newInspection')}
-            className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white p-4 rounded-lg transition-all duration-200 flex items-center space-x-3 hover:shadow-lg hover:scale-105 relative overflow-hidden"
+            className="bg-gradient-to-r from-green-400 to-orange-500 hover:from-orange-600 hover:to-orange-700 text-white p-4 rounded-lg transition-all duration-200 flex items-center space-x-3 hover:shadow-lg hover:scale-105 relative overflow-hidden"
           >
             <div className="absolute top-2 left-2 opacity-10">
               <img src="/logo.png" alt="Logo" className="h-6 w-6" />
