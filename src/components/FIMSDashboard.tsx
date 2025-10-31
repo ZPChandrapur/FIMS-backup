@@ -39,7 +39,7 @@ interface Inspection {
   location_name: string;
   latitude: number | null;
   longitude: number | null;
-  location_accuracy: number | null;
+  //location_accuracy: number | null;
   address: string | null;
   planned_date: string | null;
   inspection_date: string | null;
@@ -1092,9 +1092,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                       <td className="px-6 py-4 text-sm text-gray-900 w-[10%] truncate">
                         {inspection.filled_by_name || '-'}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900 w-[7%] truncate">
-                        {inspection.location_accuracy ? `${Math.round(inspection.location_accuracy)}m` : '-'}
-                      </td>
+                      
                       <td className="px-4 py-4 text-sm text-blue-700 hover:text-blue-500 transition-colors duration-200 w-[22%]">
                         <div className="flex items-center space-x-1">
                           <button
