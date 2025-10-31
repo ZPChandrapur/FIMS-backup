@@ -372,7 +372,9 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
             planned_date: sanitizedInspectionData.planned_date,
             inspection_date: new Date().toISOString(),
             status: isDraft ? 'draft' : 'submitted',
-            form_data: officeFormData
+            form_data: officeFormData,
+            updatedat: new Date().toISOString()  // ADD THIS to track update time
+
           })
           .eq('id', editingInspection.id)
           .select()
@@ -392,6 +394,8 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
           .upsert({
             inspection_id: editingInspection.id,
             ...sanitizedFormData
+            updatedat: new Date().toISOString()  // ADD THIS
+
           });
 
         if (formError) throw formError;
