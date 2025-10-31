@@ -638,7 +638,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-purple-400 to-rose-500 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300 relative overflow-hidden p-6 text-white transform hover:scale-105 transition-all duration-300 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all duration-300 relative overflow-hidden">
           <div className="absolute top-2 left-2 opacity-20">
             <img src="/logo.png" alt="Logo" className="h-8 w-8" />
           </div>
@@ -953,7 +953,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
         
         {/* Desktop Table */}
         <div className="overflow-x-auto hidden md:block" style={{ maxHeight: '600px', overflowY: 'auto' }}>
-          <table className="w-full bg-gradient-to-br from-blue-50 to-cyan-50 divide-y divide-blue-200" style={{ }}>
+          <table className="w-full bg-gradient-to-br from-blue-50 to-cyan-50 divide-y divide-blue-200" style={{ tableLayout: 'fixed' }}>
             <thead className="bg-gray-50 sticky top-0 z-10">
               <tr className="bg-gradient-to-r from-blue-200 via-blue-100 to-cyan-100 border-b-2 border-blue-300">
                 <th className="px-6 py-4 text-left text-xs font-bold text-blue-900 uppercase tracking-wider bg-gradient-to-r from-blue-300 to-blue-200 shadow-sm w-[7%]">
@@ -1292,7 +1292,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
 
       {/* Desktop Header */}
       <div className="hidden md:block relative bg-white border-b border-gray-200">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url(/site.png)', filter: 'blur(30px)' }}></div>
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url(/site.png)', filter: 'blur(10px)' }}></div>
         <div className="relative px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex flex-col items-center space-y-3">
