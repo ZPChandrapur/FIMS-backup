@@ -261,11 +261,11 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
 
     try {
       setIsLoading(true);
-      
+
       await deleteInspection(inspectionId);
       alert(t('fims.inspectionDeletedSuccessfully') || 'Inspection deleted successfully');
-      await fetchInspectionsData();
-      
+      await fetchAllData();
+
     } catch (error) {
       console.error('Error deleting inspection:', error);
       alert(t('fims.errorDeletingInspection') || 'Error deleting inspection: ' + (error as Error).message);
@@ -283,10 +283,10 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
         .from('fims_inspections')
         .update({ status: 'approved' })
         .eq('id', inspectionId);
-      
+
       if (error) throw error;
-      
-      await fetchInspectionsData();
+
+      await fetchAllData();
       alert('Inspection marked as completed');
     } catch (error) {
       console.error('Error completing inspection:', error);
@@ -1423,14 +1423,14 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
           {activeTab === 'dashboard' && renderDashboard()}
           {activeTab === 'inspections' && renderInspections()}
           {activeTab === 'newInspection' && (
-            <FIMSNewInspection 
-              user={user} 
+            <FIMSNewInspection
+              user={user}
               onBack={() => {
                 setEditingInspection(null);
                 setActiveTab('dashboard');
               }}
               categories={categories}
-              onInspectionCreated={fetchInspectionsData}
+              onInspectionCreated={fetchAllData}
               editingInspection={editingInspection}
             />
           )}
