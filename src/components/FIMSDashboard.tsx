@@ -49,6 +49,7 @@ interface Inspection {
   requires_revisit: boolean;
   created_at: string;
   updated_at: string;
+  filled_by_name?: string | null;
   anganwadi_forms?: any;
   photos?: InspectionPhoto[];
 }
@@ -1011,6 +1012,9 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     onClick={(e) => e.stopPropagation()}
                   />
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-[10%]">
+                  <div>Filled By</div>
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-[7%]">{t('fims.locationAccuracy')}</th>
                 <th className="px-6 py-4 text-left text-xs font-bold text-blue-900 uppercase tracking-wider bg-gradient-to-r from-blue-300 to-blue-200 shadow-sm w-[22%]">
                   {t('fims.actions')}
@@ -1022,7 +1026,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
             <tbody className="bg-white divide-y divide-gray-200">
               {getFilteredInspections().length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={10} className="px-6 py-8 text-center text-gray-500">
                     {t('fims.noInspectionsFound')}
                   </td>
                 </tr>
@@ -1076,6 +1080,9 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                       <td className="px-6 py-4 text-sm text-gray-900 w-[7%] truncate">
                         {inspection.inspection_date ? new Date(inspection.inspection_date).toLocaleDateString() :
                          inspection.planned_date ? new Date(inspection.planned_date).toLocaleDateString() : '-'}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900 w-[10%] truncate">
+                        {inspection.filled_by_name || '-'}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900 w-[7%] truncate">
                         {inspection.location_accuracy ? `${Math.round(inspection.location_accuracy)}m` : '-'}

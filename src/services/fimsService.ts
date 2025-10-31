@@ -25,6 +25,7 @@ export interface Inspection {
   is_compliant?: boolean;
   non_compliance_reason?: string;
   requires_revisit?: boolean;
+  filled_by_name?: string;
   created_at: string;
   updated_at: string;
   fims_categories?: {
