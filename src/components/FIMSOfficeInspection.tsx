@@ -380,21 +380,65 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
 
         if (updateError) throw updateError;
         inspectionResult = updateResult;
+        
+        // Upsert office inspection form record
+        // const sanitizedFormData = {
+        //   ...officeFormData,
+        //   work_quality: officeFormData.work_quality || null
+        // };
+
+        // const { error: formError } = await supabase
+        //   .from('fims_office_inspection_forms')
+        //   .upsert({
+        //     inspection_id: editingInspection.id,
+        //     ...sanitizedFormData
+        //   });
+
+        // if (formError) throw formError;
 
         // Upsert office inspection form record
-        const sanitizedFormData = {
-          ...officeFormData,
-          work_quality: officeFormData.work_quality || null
-        };
+      const sanitizedFormData = {
+        ...officeFormData,
+        work_quality: officeFormData.work_quality || null
+      };
 
-        const { error: formError } = await supabase
+      // Step 1: Check if form record already exists
+      const { data: existingForm, error: checkError } = await supabase
+        .from('fims_office_inspection_forms')
+        .select('id')
+        .eq('inspection_id', editingInspection.id)
+        .maybeSingle(); // Use maybeSingle() to avoid error if not found
+
+      if (checkError) throw checkError;
+
+      // Step 2: Decide whether to INSERT or UPDATE based on existence
+      if (existingForm) {
+        // Record EXISTS - UPDATE it
+        // console.log('Form record exists, updating...');
+        
+        const { error: updateError } = await supabase
           .from('fims_office_inspection_forms')
-          .upsert({
+          .update(sanitizedFormData)
+          .eq('inspection_id', editingInspection.id);
+
+        if (updateError) throw updateError;
+        // console.log('✅ Form updated successfully');
+        
+      } else {
+        // Record DOESN'T EXIST - INSERT it
+        console.log('Form record does not exist, inserting...');
+        
+        const { error: insertError } = await supabase
+          .from('fims_office_inspection_forms')
+          .insert({
             inspection_id: editingInspection.id,
             ...sanitizedFormData
           });
 
-        if (formError) throw formError;
+        if (insertError) throw insertError;
+        // console.log('✅ Form inserted successfully');
+      }
+
       } else {
         // Create new inspection
         const inspectionNumber = generateInspectionNumber();
@@ -443,12 +487,12 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
       }
 
       const isUpdate = editingInspection && editingInspection.id;
-      const message = isDraft
+      const message = isDraft 
         ? (isUpdate ? t('fims.inspectionUpdatedAsDraft') : t('fims.inspectionSavedAsDraft'))
         : (isUpdate ? t('fims.inspectionUpdatedSuccessfully') : t('fims.inspectionSubmittedSuccessfully'));
-
+      
       alert(message);
-      await onInspectionCreated();
+      onInspectionCreated();
       onBack();
 
     } catch (error) {
@@ -1053,7 +1097,7 @@ export const FIMSOfficeInspection: React.FC<FIMSOfficeInspectionProps> = ({
           {renderStepContent()}
         </div>
 
-        {/* Navigation Buttonss */}
+        {/* Navigation Buttons */}
         <div className="flex justify-between items-center">
           <button
             onClick={() => setCurrentStep(prev => Math.max(1, prev - 1))}
