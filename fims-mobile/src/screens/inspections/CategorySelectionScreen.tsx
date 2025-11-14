@@ -52,17 +52,27 @@ export default function CategorySelectionScreen() {
       'office': 'FIMSOfficeInspection',
       'anganwadi': 'AnganwadiTapasani',
       'health': 'HealthInspection',
+      'Health Inspection': 'HealthInspection',
       'grampanchayat': 'GrampanchayatInspection',
       'Grampanchayat Inspection': 'GrampanchayatInspection',
       'subcenter': 'SubCenterMonitoring',
+      'Sub Centre Monitoring': 'SubCenterMonitoring',
       'bandhkam1': 'BandhkamVibhag1',
+      'Zilla Parishad Construction Progress Report Form': 'BandhkamVibhag1',
       'bandhkam2': 'BandhkamVibhag2',
+      'Zilla Parishad Construction Inspection Format': 'BandhkamVibhag2',
       'mgnrega': 'MahatmaGandhiRojgarHami',
+      'Mahatma Gandhi National Rural Employment Guarantee Scheme Inspection': 'MahatmaGandhiRojgarHami',
       'nyayalay': 'MumbaiNyayalay',
+      'High Court Order Inspection Form': 'MumbaiNyayalay',
       'veterinary': 'PahuvaidhakiyaTapasani',
+      'Veterinary Institution Inspection': 'PahuvaidhakiyaTapasani',
       'education': 'RajyaShaishanikPrashikshan',
+      'Rajya Shaishanik Prashikshan Inspection': 'RajyaShaishanikPrashikshan',
       'quality': 'RajyaGunwattaNirikshak',
+      'State Level Quality Inspection Form': 'RajyaGunwattaNirikshak',
       'monthly': 'ZPDarMahinyala',
+      'Monthly Report Submission Form': 'ZPDarMahinyala',
     };
 
     const routeName = formTypeMap[category.form_type] || formTypeMap[category.form_type.toLowerCase()];
@@ -70,9 +80,10 @@ export default function CategorySelectionScreen() {
     if (routeName) {
       navigation.navigate(routeName, { categoryId: category.id });
     } else {
+      console.log('Unmapped form_type:', category.form_type);
       Alert.alert(
         t('common.info'),
-        `Form for "${category.name}" coming soon!`
+        `Form for "${category.name}" coming soon!\n\nform_type: ${category.form_type}`
       );
     }
   };
