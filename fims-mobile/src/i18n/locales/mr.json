@@ -27,7 +27,8 @@
     "complete": "पूर्ण",
     "revisit": "पुन्हा पाहा",
     "offline": "ऑफलाइन मोड",
-    "online": "ऑनलाइन"
+    "online": "ऑनलाइन",
+    "name":'"नाव"
   },
   "offline": {
     "noConnection": "इंटरनेट कनेक्शन नाही",
