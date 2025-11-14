@@ -334,13 +334,13 @@ export default function AnganwadiTapasaniScreen() {
                 title={t('fims.saveAsDraft')}
                 onPress={handleSaveAsDraft}
                 variant="outline"
-                style={styles.halfButton}
+                style={styles.button}
                 loading={loading}
               />
               <Button
                 title={t('fims.submitInspection')}
                 onPress={handleSubmit}
-                style={styles.halfButton}
+                style={styles.button}
                 loading={loading}
               />
             </View>
