@@ -48,10 +48,22 @@ export default function CategorySelectionScreen() {
   };
 
   const handleCategoryPress = (category: InspectionCategory) => {
-    Alert.alert(
-      t('common.info'),
-      `Form screen for "${category.name}" will be added soon. This requires converting ${category.form_type} form to mobile.`
-    );
+    const formTypeMap: { [key: string]: keyof FormsStackParamList } = {
+      'office': 'FIMSOfficeInspection',
+      'anganwadi': 'AnganwadiTapasani',
+      'health': 'HealthInspection',
+    };
+
+    const routeName = formTypeMap[category.form_type];
+
+    if (routeName) {
+      navigation.navigate(routeName, { categoryId: category.id });
+    } else {
+      Alert.alert(
+        t('common.info'),
+        `Form for "${category.name}" coming soon!`
+      );
+    }
   };
 
   const renderHeader = () => (
