@@ -121,7 +121,7 @@ export default function ProfileScreen() {
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>FIMS Mobile v1.0.0</Text>
-          <Text style={styles.footerText}>© झिल्हा परिषद, चंद्रपूर</Text>
+          <Text style={styles.footerText}>© जिल्हा परिषद, चंद्रपूर</Text>
         </View>
       </ScrollView>
     </View>
