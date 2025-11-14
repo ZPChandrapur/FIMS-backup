@@ -7,7 +7,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  Switch,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
@@ -15,7 +14,6 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { FormsStackParamList, LocationData } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
 import { createInspection, updateInspection, uploadPhoto } from '../../services/fimsService';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Stepper from '../../components/common/Stepper';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
@@ -35,29 +33,6 @@ interface OfficeFormData {
   table_number: string;
   date_of_joining: string;
   work_nature: string;
-  letter_received_logged: boolean;
-  letter_priority_disposed: boolean;
-  weekly_report_created: boolean;
-  pending_register_maintained: boolean;
-  reminders_sent_in_time: boolean;
-  letters_bound_with_permission: boolean;
-  class_d_letters_destroyed: boolean;
-  long_pending_cases: boolean;
-  required_registers: boolean;
-  updated_registers: boolean;
-  registers_submitted_on_time: boolean;
-  file_structure_six_bundle: boolean;
-  post_disposal_bundling: boolean;
-  periodic_statements_submitted: boolean;
-  permanent_instruction_available: boolean;
-  indexed_instruction_complete: boolean;
-  updated_by_gov_circular: boolean;
-  files_classified: boolean;
-  binding_and_submission: boolean;
-  disposal_speed_satisfactory: boolean;
-  evaluation_score: number;
-  work_quality: string;
-  inspection_issues: string;
 }
 
 export default function FIMSOfficeInspectionScreen() {
@@ -79,42 +54,7 @@ export default function FIMSOfficeInspectionScreen() {
     table_number: '',
     date_of_joining: '',
     work_nature: '',
-    letter_received_logged: false,
-    letter_priority_disposed: false,
-    weekly_report_created: false,
-    pending_register_maintained: false,
-    reminders_sent_in_time: false,
-    letters_bound_with_permission: false,
-    class_d_letters_destroyed: false,
-    long_pending_cases: false,
-    required_registers: false,
-    updated_registers: false,
-    registers_submitted_on_time: false,
-    file_structure_six_bundle: false,
-    post_disposal_bundling: false,
-    periodic_statements_submitted: false,
-    permanent_instruction_available: false,
-    indexed_instruction_complete: false,
-    updated_by_gov_circular: false,
-    files_classified: false,
-    binding_and_submission: false,
-    disposal_speed_satisfactory: false,
-    evaluation_score: 0,
-    work_quality: '',
-    inspection_issues: '',
   });
-
-  const saveLocally = async (inspectionId: string, data: any) => {
-    try {
-      const key = `inspection_${inspectionId}`;
-      await AsyncStorage.setItem(key, JSON.stringify(data));
-
-      const photosKey = `inspection_photos_${inspectionId}`;
-      await AsyncStorage.setItem(photosKey, JSON.stringify(photos));
-    } catch (error) {
-      console.error('Error saving locally:', error);
-    }
-  };
 
   const handleNext = () => {
     if (currentStep === 0) {
@@ -129,6 +69,9 @@ export default function FIMSOfficeInspectionScreen() {
         Alert.alert(t('common.error'), 'Please capture location');
         return;
       }
+    }
+
+    if (currentStep === 2) {
     }
 
     if (currentStep < STEPS.length - 1) {
@@ -155,8 +98,6 @@ export default function FIMSOfficeInspectionScreen() {
         location_longitude: location?.longitude,
         location_address: location?.address || null,
       });
-
-      await saveLocally(inspection.id, { formData, location, photos });
 
       Alert.alert(t('common.success'), t('fims.inspectionSaved'));
       navigation.goBack();
@@ -187,8 +128,6 @@ export default function FIMSOfficeInspectionScreen() {
         location_address: location?.address || null,
       });
 
-      await saveLocally(inspection.id, { formData, location, photos });
-
       for (let i = 0; i < photos.length; i++) {
         await uploadPhoto(inspection.id, photos[i], `photo_${i + 1}.jpg`, i + 1);
       }
@@ -203,18 +142,11 @@ export default function FIMSOfficeInspectionScreen() {
     }
   };
 
-  const renderCheckItem = (label: string, value: boolean, onChange: (val: boolean) => void) => (
-    <View style={styles.checkItem}>
-      <Text style={styles.checkLabel}>{label}</Text>
-      <Switch value={value} onValueChange={onChange} />
-    </View>
-  );
-
   const renderStep = () => {
     switch (currentStep) {
       case 0:
         return (
-          <ScrollView>
+          <View>
             <Text style={styles.sectionTitle}>कर्मचाऱ्याची माहिती</Text>
             <Text style={styles.sectionSubtitle}>Employee Information</Text>
 
@@ -262,7 +194,7 @@ export default function FIMSOfficeInspectionScreen() {
               multiline
               numberOfLines={3}
             />
-          </ScrollView>
+          </View>
         );
 
       case 1:
@@ -275,97 +207,21 @@ export default function FIMSOfficeInspectionScreen() {
 
       case 2:
         return (
-          <ScrollView>
+          <View>
             <Text style={styles.sectionTitle}>दफ्तर निरीक्षण</Text>
-            <Text style={styles.sectionSubtitle}>Office Inspection Checklist</Text>
-
-            <View style={styles.section}>
-              <Text style={styles.subSectionTitle}>पत्र व्यवहार तपशील</Text>
-              {renderCheckItem('प्राप्त पत्र नोंदवली गेली आहे', formData.letter_received_logged, (val) =>
-                setFormData({ ...formData, letter_received_logged: val })
-              )}
-              {renderCheckItem('प्राधान्यक्रमाने खातमी केली', formData.letter_priority_disposed, (val) =>
-                setFormData({ ...formData, letter_priority_disposed: val })
-              )}
-              {renderCheckItem('साप्ताहिक अहवाल तयार केला', formData.weekly_report_created, (val) =>
-                setFormData({ ...formData, weekly_report_created: val })
-              )}
-              {renderCheckItem('प्रलंबित नोंदवही राखली आहे', formData.pending_register_maintained, (val) =>
-                setFormData({ ...formData, pending_register_maintained: val })
-              )}
-              {renderCheckItem('स्मरणपत्र वेळेवर पाठवली', formData.reminders_sent_in_time, (val) =>
-                setFormData({ ...formData, reminders_sent_in_time: val })
-              )}
-            </View>
-
-            <View style={styles.section}>
-              <Text style={styles.subSectionTitle}>नोंदवह्या</Text>
-              {renderCheckItem('आवश्यक नोंदवह्या आहेत', formData.required_registers, (val) =>
-                setFormData({ ...formData, required_registers: val })
-              )}
-              {renderCheckItem('अद्ययावत नोंदवह्या', formData.updated_registers, (val) =>
-                setFormData({ ...formData, updated_registers: val })
-              )}
-              {renderCheckItem('वेळेवर सादर केली', formData.registers_submitted_on_time, (val) =>
-                setFormData({ ...formData, registers_submitted_on_time: val })
-              )}
-            </View>
-
-            <View style={styles.section}>
-              <Text style={styles.subSectionTitle}>दप्तर रचना</Text>
-              {renderCheckItem('सहा गठ्ठी रचना', formData.file_structure_six_bundle, (val) =>
-                setFormData({ ...formData, file_structure_six_bundle: val })
-              )}
-              {renderCheckItem('पोस्ट खातमी गठ्ठीबंधन', formData.post_disposal_bundling, (val) =>
-                setFormData({ ...formData, post_disposal_bundling: val })
-              )}
-              {renderCheckItem('कालावधी विवरणपत्र सादर', formData.periodic_statements_submitted, (val) =>
-                setFormData({ ...formData, periodic_statements_submitted: val })
-              )}
-              {renderCheckItem('कायम सूचना उपलब्ध', formData.permanent_instruction_available, (val) =>
-                setFormData({ ...formData, permanent_instruction_available: val })
-              )}
-              {renderCheckItem('अनुक्रमित सूचना पूर्ण', formData.indexed_instruction_complete, (val) =>
-                setFormData({ ...formData, indexed_instruction_complete: val })
-              )}
-              {renderCheckItem('सरकारी परिपत्रकाने अद्ययावत', formData.updated_by_gov_circular, (val) =>
-                setFormData({ ...formData, updated_by_gov_circular: val })
-              )}
-              {renderCheckItem('फायली वर्गीकृत केल्या', formData.files_classified, (val) =>
-                setFormData({ ...formData, files_classified: val })
-              )}
-              {renderCheckItem('बंधन आणि सबमिशन', formData.binding_and_submission, (val) =>
-                setFormData({ ...formData, binding_and_submission: val })
-              )}
-              {renderCheckItem('खातमी गती समाधानकारक', formData.disposal_speed_satisfactory, (val) =>
-                setFormData({ ...formData, disposal_speed_satisfactory: val })
-              )}
-            </View>
-
-            <Input
-              label="तपासणीच्या तुटी / Inspection Issues"
-              value={formData.inspection_issues}
-              onChangeText={(text) => setFormData({ ...formData, inspection_issues: text })}
-              placeholder="Enter any issues found"
-              multiline
-              numberOfLines={4}
-            />
-
-            <Input
-              label="कामाचा दर्जा / Work Quality"
-              value={formData.work_quality}
-              onChangeText={(text) => setFormData({ ...formData, work_quality: text })}
-              placeholder="Excellent / Good / Satisfactory / Needs Improvement"
-            />
-          </ScrollView>
+            <Text style={styles.sectionSubtitle}>Office Inspection</Text>
+            <Text style={styles.infoText}>
+              Office inspection checklist will be added here. This is a simplified demo version.
+            </Text>
+          </View>
         );
 
       case 3:
         return (
-          <ScrollView contentContainerStyle={styles.photoStepContainer}>
+          <View>
             <Text style={styles.sectionTitle}>{t('fims.photosSubmit')}</Text>
             <PhotoUpload photos={photos} onPhotosChange={setPhotos} />
-          </ScrollView>
+          </View>
         );
 
       default:
@@ -380,9 +236,9 @@ export default function FIMSOfficeInspectionScreen() {
     >
       <Stepper steps={STEPS} currentStep={currentStep} />
 
-      <View style={styles.content}>
+      <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
         <Card>{renderStep()}</Card>
-      </View>
+      </ScrollView>
 
       <View style={styles.footer}>
         <View style={styles.buttonRow}>
@@ -432,10 +288,9 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 16,
   },
-  photoStepContainer: {
-    minHeight: 400,
+  contentContainer: {
+    padding: 16,
   },
   sectionTitle: {
     fontSize: 18,
@@ -448,31 +303,12 @@ const styles = StyleSheet.create({
     color: '#6b7280',
     marginBottom: 16,
   },
-  section: {
-    marginBottom: 20,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-  },
-  subSectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 12,
-  },
-  checkItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
-  },
-  checkLabel: {
+  infoText: {
     fontSize: 14,
-    color: '#1f2937',
-    flex: 1,
-    marginRight: 12,
+    color: '#6b7280',
+    lineHeight: 20,
+    textAlign: 'center',
+    paddingVertical: 32,
   },
   footer: {
     backgroundColor: '#ffffff',
