@@ -29,6 +29,15 @@
     "offline": "Offline Mode",
     "online": "Online"
   },
+  "offline": {
+    "noConnection": "No Internet Connection",
+    "pendingSync": "pending to sync",
+    "tapToSync": "Tap to sync now",
+    "syncing": "Syncing...",
+    "savedOffline": "Saved offline. Will sync when online.",
+    "syncComplete": "Sync completed successfully",
+    "syncFailed": "Sync failed. Will retry later."
+  },
   "auth": {
     "signIn": "Sign In",
     "signOut": "Sign Out",

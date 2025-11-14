@@ -1,5 +1,6 @@
 import { supabase, isSupabaseConfigured } from './supabase';
 import { Inspection, InspectionCategory } from '../types';
+import offlineService, { OfflineInspection, OfflinePhoto } from './offlineService';
 
 export const getInspections = async (userId?: string, userRole?: string): Promise<Inspection[]> => {
   if (!isSupabaseConfigured) {
@@ -120,6 +121,39 @@ export const getInspectionById = async (id: string): Promise<Inspection | null> 
 export const createInspection = async (inspectionData: Partial<Inspection>): Promise<Inspection> => {
   if (!isSupabaseConfigured) {
     throw new Error('Supabase client not initialized');
+  }
+
+  const isOnline = await offlineService.isOnline();
+
+  if (!isOnline) {
+    const offlineInspection: OfflineInspection = {
+      id: `offline_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      category_id: inspectionData.category_id!,
+      inspector_id: inspectionData.inspector_id,
+      filled_by_name: inspectionData.filled_by_name || '',
+      status: inspectionData.status || 'draft',
+      location_latitude: inspectionData.location_latitude,
+      location_longitude: inspectionData.location_longitude,
+      location_address: inspectionData.location_address,
+      created_at: new Date().toISOString(),
+      photos: [],
+    };
+
+    await offlineService.saveOfflineInspection(offlineInspection);
+
+    return {
+      id: offlineInspection.id,
+      category_id: offlineInspection.category_id,
+      status: offlineInspection.status,
+      location_latitude: offlineInspection.location_latitude,
+      location_longitude: offlineInspection.location_longitude,
+      location_address: offlineInspection.location_address,
+      inspector_id: offlineInspection.inspector_id,
+      filled_by_name: offlineInspection.filled_by_name,
+      created_at: offlineInspection.created_at,
+      updated_at: offlineInspection.created_at,
+      photos: [],
+    };
   }
 
   try {
