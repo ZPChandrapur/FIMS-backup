@@ -14,7 +14,7 @@ export default function SplashScreen() {
           </View>
         </View>
         <Text style={styles.title}>{t('auth.fieldInspectionSystem')}</Text>
-        <Text style={styles.subtitle}>झिल्हा परिषद, चंद्रपूर</Text>
+        <Text style={styles.subtitle}>जिल्हा परिषद, चंद्रपूर</Text>
         <ActivityIndicator size="large" color="#2563eb" style={styles.loader} />
       </View>
     </View>

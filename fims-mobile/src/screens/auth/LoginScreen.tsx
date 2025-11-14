@@ -87,7 +87,7 @@ export default function LoginScreen() {
           </View>
           <Text style={styles.title}>{t('auth.welcome')}</Text>
           <Text style={styles.subtitle}>{t('auth.fieldInspectionSystem')}</Text>
-          <Text style={styles.orgName}>झिल्हा परिषद, चंद्रपूर</Text>
+          <Text style={styles.orgName}>जिल्हा परिषद, चंद्रपूर</Text>
         </View>
 
         <View style={styles.form}>
