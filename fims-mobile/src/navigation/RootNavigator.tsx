@@ -11,19 +11,14 @@ const Stack = createStackNavigator<RootStackParamList>();
 export default function RootNavigator() {
   const { user, loading } = useAuth();
 
-  if (loading) {
-    return <SplashScreen />;
-  }
-
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {user ? (
+      {loading ? (
+        <Stack.Screen name="Splash" component={SplashScreen} />
+      ) : user ? (
         <Stack.Screen name="Main" component={MainNavigator} />
       ) : (
-        <>
-          <Stack.Screen name="Splash" component={SplashScreen} />
-          <Stack.Screen name="Login" component={LoginScreen} />
-        </>
+        <Stack.Screen name="Login" component={LoginScreen} />
       )}
     </Stack.Navigator>
   );

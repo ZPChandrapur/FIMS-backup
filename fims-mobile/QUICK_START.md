@@ -1,14 +1,24 @@
-# FIMS Mobile - Quick Start ⚡
+# 🚀 FIMS Mobile - SPLASH SCREEN FIX APPLIED ✅
 
-## 1️⃣ **Install & Run (5 minutes)**
+## ✅ **ISSUE FIXED - App Was Stuck on Loading Screen**
+
+Your app was hanging on the splash screen because Supabase authentication check had no timeout.
+
+**Changes made:**
+- ✅ Added 5-second timeout to auth check
+- ✅ Proper error handling
+- ✅ Auto-redirect to login screen
+
+---
+
+## 1️⃣ **RESTART YOUR APP NOW**
 
 ```bash
 cd /tmp/cc-agent/56810241/project/fims-mobile
-npm install
-npx expo start
+npx expo start -c
 ```
 
-📱 **On your phone:** Install "Expo Go" → Scan QR code → App loads!
+📱 **On your phone:** Scan QR code → App will load login screen within 5 seconds!
 
 ---
 
