@@ -52,9 +52,20 @@ export default function CategorySelectionScreen() {
       'office': 'FIMSOfficeInspection',
       'anganwadi': 'AnganwadiTapasani',
       'health': 'HealthInspection',
+      'grampanchayat': 'GrampanchayatInspection',
+      'Grampanchayat Inspection': 'GrampanchayatInspection',
+      'subcenter': 'SubCenterMonitoring',
+      'bandhkam1': 'BandhkamVibhag1',
+      'bandhkam2': 'BandhkamVibhag2',
+      'mgnrega': 'MahatmaGandhiRojgarHami',
+      'nyayalay': 'MumbaiNyayalay',
+      'veterinary': 'PahuvaidhakiyaTapasani',
+      'education': 'RajyaShaishanikPrashikshan',
+      'quality': 'RajyaGunwattaNirikshak',
+      'monthly': 'ZPDarMahinyala',
     };
 
-    const routeName = formTypeMap[category.form_type];
+    const routeName = formTypeMap[category.form_type] || formTypeMap[category.form_type.toLowerCase()];
 
     if (routeName) {
       navigation.navigate(routeName, { categoryId: category.id });
