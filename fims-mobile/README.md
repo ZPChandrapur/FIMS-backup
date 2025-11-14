@@ -313,5 +313,5 @@ For issues or questions:
 
 ## License
 
-© झिल्हा परिषद, चंद्रपूर
+© जिल्हा परिषद, चंद्रपूर
 All rights reserved.
