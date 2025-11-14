@@ -157,9 +157,12 @@ export const createInspection = async (inspectionData: Partial<Inspection>): Pro
   }
 
   try {
+    const inspectionNumber = `INS-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+
     const { data, error } = await supabase
       .from('fims_inspections')
       .insert({
+        inspection_number: inspectionNumber,
         category_id: inspectionData.category_id,
         inspector_id: inspectionData.inspector_id,
         filled_by_name: inspectionData.filled_by_name,

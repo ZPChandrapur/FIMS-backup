@@ -482,17 +482,18 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: 'row',
-    gap: 12,
+    justifyContent: 'space-between',
   },
   button: {
     flex: 1,
+    marginHorizontal: 4,
   },
   submitButtons: {
     flexDirection: 'row',
     flex: 1,
-    gap: 12,
   },
   halfButton: {
     flex: 1,
+    marginHorizontal: 4,
   },
 });

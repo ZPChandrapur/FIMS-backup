@@ -108,8 +108,8 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' },
   label: { fontSize: 14, color: '#374151' },
   footer: { backgroundColor: '#ffffff', padding: 16, borderTopWidth: 1, borderTopColor: '#e5e7eb' },
-  buttonRow: { flexDirection: 'row', gap: 12 },
-  button: { flex: 1 },
-  submitButtons: { flexDirection: 'row', flex: 1, gap: 12 },
-  halfButton: { flex: 1 },
+  buttonRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  button: { flex: 1, marginHorizontal: 4 },
+  submitButtons: { flexDirection: 'row', flex: 1 },
+  halfButton: { flex: 1, marginHorizontal: 4 },
 });

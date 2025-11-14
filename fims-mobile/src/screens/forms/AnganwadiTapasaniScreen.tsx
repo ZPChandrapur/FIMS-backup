@@ -354,10 +354,12 @@ export default function AnganwadiTapasaniScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginHorizontal: 4,
     backgroundColor: '#f3f4f6',
   },
   content: {
     flex: 1,
+    marginHorizontal: 4,
   },
   contentContainer: {
     padding: 16,
@@ -385,6 +387,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#374151',
     flex: 1,
+    marginHorizontal: 4,
   },
   footer: {
     backgroundColor: '#ffffff',
@@ -394,17 +397,20 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: 'row',
-    gap: 12,
+    // gap removed - using marginHorizontal instead
   },
   button: {
     flex: 1,
+    marginHorizontal: 4,
   },
   submitButtons: {
     flexDirection: 'row',
     flex: 1,
-    gap: 12,
+    marginHorizontal: 4,
+    // gap removed - using marginHorizontal instead
   },
   halfButton: {
     flex: 1,
+    marginHorizontal: 4,
   },
 });
