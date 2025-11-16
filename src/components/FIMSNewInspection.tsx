@@ -313,7 +313,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
               </div>
               <div>
                 <h3 className="text-lg md:text-xl font-semibold text-gray-900">
-                  दफ्तर निरीक्षण प्रपत्र
+                  अंगणवाडी केंद्र तपासणी अहवाल
                 </h3>
                 <p className="text-sm md:text-base text-blue-700 font-medium">
                   दफ्तर निरीक्षण
@@ -379,15 +379,15 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
 
           {/* Placeholder cards for the remaining 12 forms */}
           {[
-            { key: 'Zilla Parishad Construction Progress Report Form', title: 'बांधकाम विभाग प्रपत्र-1', subtitle: 'Construction Department Form-1', color: 'orange', active: true },
-            { key: 'Zilla Parishad Construction Inspection Format', title: 'बांधकाम विभाग प्रपत्र-2', subtitle: 'Construction Department Form-2', color: 'teal', active: true },
-            { key: 'Monthly Report Submission Form', title: 'दर महिन्याला सादर करावयाचे प्रपत्र', subtitle: 'ZP Monthly Report Form', color: 'indigo', active: true },
+            { key: 'Zilla Parishad Construction Progress Report Form', title: 'प्रपत्र १: जिल्हा परिषद (बांधकाम विभाग) चंद्रपूर उपविभाग, चंद्रपूर कडील कामाची पहाणी अहवाल', subtitle: 'Construction Department Form-1', color: 'orange', active: true },
+            { key: 'Zilla Parishad Construction Inspection Format', title: 'प्रपत्र 2: जिल्हा परिषद (बांधकाम विभाग) चंद्रपूर उपविभाग, चंद्रपूर कडील कामाची पहाणी अहवाल', subtitle: 'Construction Department Form-2', color: 'teal', active: true },
+            { key: 'Monthly Report Submission Form', title: 'जिल्हा परिषद कार्यालयासाठी दर महिन्याला सादर करावयाचे प्रपत्र', subtitle: 'ZP Monthly Report Form', color: 'indigo', active: true },
             { key: 'State Level Quality Inspection Form', title: 'राज्य गुणवत्ता निरीक्षक तपासणी', subtitle: 'State Quality Inspector Inspection', color: 'emerald', active: true },
             { key: 'Mahatma Gandhi National Rural Employment Guarantee Scheme Inspection', title: 'महात्मा गांधी रोजगार हमी योजना', subtitle: 'MGNREGA Work Inspection Form', color: 'green', active: true },
-            { key: 'High Court Order Inspection Form', title: 'मुंबई न्यायालय तपासणी प्रपत्र', subtitle: 'Mumbai High Court School Inspection Form', color: 'red', active: true },
-            { key: 'Veterinary Institution Inspection', title: 'पशुवैद्यकीय संस्थांचे तांत्रिक निरीक्षण', subtitle: 'Veterinary Institution Technical Inspection Form', color: 'red', active: true },
+            { key: 'High Court Order Inspection Form', title: 'गठित जिल्हा समितीने प्रत्यक्ष भेटी दरम्यान शाळांची भौतिक सुधारणा तपासण्यासाठी तपासणीचा प्राथमिक नमुना', subtitle: 'Mumbai High Court School Inspection Form', color: 'red', active: true },
+            { key: 'Veterinary Institution Inspection', title: 'पशुवैद्यकीय संस्थांचे तांत्रिक निरीक्षण / तपासणी अहवाल (Technical inspection report)', subtitle: 'Veterinary Institution Technical Inspection Form', color: 'red', active: true },
             { key: 'Grampanchayat Inspection', title: 'ग्राम पंचायत सर्वसाधारण तपासणी', subtitle: 'Gram Panchayat General Inspection Form', color: 'teal', active: true },
-            { key: 'Health Inspection', title: 'आरोग्य केंद्र तपासणी प्रपत्र', subtitle: 'Zilhastariya-Adhikari-Tapasani-Suchi-Forms', color: 'indigo', active: true },
+            { key: 'Health Inspection', title: 'जिल्हास्तरीय अधिकारी/पर्यवेक्षक प्रा. आरोग्य केंद्र तपासणी प्रपत्र', subtitle: 'Zilhastariya-Adhikari-Tapasani-Suchi-Forms', color: 'indigo', active: true },
             { key: 'Sub Centre Monitoring', title: 'उपकेंद्र निरीक्षण यादी', subtitle: 'Sub Centre Monitoring Checklist', color: 'orange', active: true },
          //   { key: 'form_11', title: 'Form 11 Title', subtitle: 'Form 11 Description', color: 'violet' },
          //   { key: 'form_12', title: 'Form 12 Title', subtitle: 'Form 12 Description', color: 'lime' },
