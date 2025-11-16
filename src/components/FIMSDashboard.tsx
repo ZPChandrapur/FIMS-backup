@@ -576,22 +576,28 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
         ].map((card, idx) => (
           <div
             key={idx}
-            className={`group relative bg-white/70 backdrop-blur-xl border border-gray-200/50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 overflow-hidden`}
+            className="group relative bg-white/70 backdrop-blur-xl border border-gray-200/50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-3 overflow-hidden"
           >
-            <div className={`absolute inset-0 bg-gradient-to-br ${card.lightGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
-            <div className="relative">
-              <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 bg-gradient-to-br ${card.gradient} rounded-xl shadow-lg`}>
-                  <card.icon className="h-6 w-6 text-white" />
-                </div>
-                <TrendingUp className={`h-5 w-5 bg-gradient-to-br ${card.gradient} bg-clip-text text-transparent`} />
+            <div
+              className={`absolute inset-0 bg-gradient-to-br ${card.lightGradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+            ></div>
+
+            <div className="relative flex items-center gap-3">
+              {/* ICON */}
+              <div className={`p-2 bg-gradient-to-br ${card.gradient} rounded-xl shadow-lg`}>
+                <card.icon className="h-6 w-6 text-white" />
               </div>
-              <p className="text-sm font-semibold text-gray-600 mb-2">{card.title}</p>
-              <p className="text-4xl font-black text-gray-900">{card.value}</p>
+
+              {/* TEXT + VALUE */}
+              <div className="flex flex-col justify-center">
+                <p className="text-sm font-semibold text-gray-600 leading-tight">{card.title}</p>
+                <p className="text-xl font-black text-gray-900 leading-tight">{card.value}</p>
+              </div>
             </div>
           </div>
         ))}
       </div>
+
 
       {/* Quick Actions with Gradient Cards */}
       <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-xl border border-gray-200/50 p-6 md:p-8">
@@ -602,7 +608,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
           </h3>
         </div>
         
-        <div className={`grid grid-cols-1 ${userRole === 'developer' ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4`}>
+        <div className={`grid grid-cols-1 ${(userRole === 'developer' || userRole === 'super_admin') ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4`}>
           <button
             onClick={() => setActiveTab('newInspection')}
             className="group relative bg-gradient-to-br from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white p-6 rounded-2xl transition-all duration-300 flex items-center space-x-4 shadow-lg hover:shadow-2xl hover:scale-105 overflow-hidden"
@@ -625,7 +631,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
             <span className="relative font-bold text-lg">{t('fims.inspections')}</span>
           </button>
 
-          {userRole === 'developer' && (
+          {(userRole === 'developer' || userRole === 'super_admin') && (
             <button
               onClick={() => setActiveTab('analytics')}
               className="group relative bg-gradient-to-br from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white p-6 rounded-2xl transition-all duration-300 flex items-center space-x-4 shadow-lg hover:shadow-2xl hover:scale-105 overflow-hidden"
@@ -655,7 +661,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
               <tr>
                 {[
                   { key: 'inspectionNumber', label: t('fims.inspectionNumber'), width: '15%' },
-                  { key: 'location', label: t('fims.location'), width: '22%' },
+                  { key: 'location', label: t('fims.location'), width: '22%', maxWidth: '10px' },
                   { key: 'category', label: t('fims.category'), width: '22%' },
                   { key: 'status', label: t('fims.status'), width: '15%' },
                   { key: 'date', label: t('fims.date'), width: '13%' },
@@ -687,8 +693,12 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                     <td className="px-6 py-4 text-sm font-bold text-gray-900 truncate">
                       {inspection.inspection_number}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-700 truncate font-medium">
-                      {inspection.location_name}
+                    <td className="px-6 py-4 text-sm text-gray-700 font-medium">
+                      <div className="overflow-x-auto scrollbar-custom" style={{ maxWidth: '310px' }}>
+                        <div className="whitespace-nowrap">
+                          {inspection.location_name}
+                        </div>
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700 truncate">
                       {category ? t(`categories.${category.form_type}`, category.name) : '-'}
@@ -810,14 +820,14 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
             className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-all text-sm font-bold bg-white/80 backdrop-blur-sm"
           >
             <option value="">{t('fims.allStatuses')}</option>
-            <option value="planned">{t('statuses.planned','Planned')}</option>
+            {/* <option value="planned">{t('statuses.planned','Planned')}</option> */}
             <option value="in_progress">{t('statuses.in_progress','In Progress')}</option>
             <option value="draft">{t('statuses.draft','Draft')}</option>
             <option value="submitted">{t('statuses.submitted','Submitted')}</option>
             <option value="approved">{t('statuses.approved','Approved')}</option>
-            <option value="rejected">{t('statuses.rejected','Rejected')}</option>
-            <option value="reassigned">{t('statuses.reassigned','Reassigned')}</option>
-            <option value="under_review">{t('statuses.under_review','Under Review')}</option>
+            {/* <option value="rejected">{t('statuses.rejected','Rejected')}</option> */}
+            {/* <option value="reassigned">{t('statuses.reassigned','Reassigned')}</option> */}
+            {/* <option value="under_review">{t('statuses.under_review','Under Review')}</option> */}
           </select>
         </div>
       </div>
@@ -1091,7 +1101,7 @@ export const FIMSDashboard: React.FC<FIMSDashboardProps> = ({ user, onSignOut })
                   { id: 'dashboard', icon: Home, label: t('fims.dashboard'), gradient: 'from-violet-500 to-purple-500' },
                   { id: 'inspections', icon: FileText, label: t('fims.inspections'), gradient: 'from-blue-500 to-cyan-500' },
                   { id: 'newInspection', icon: Plus, label: t('fims.newInspection'), gradient: 'from-emerald-500 to-teal-500' },
-                  ...(userRole === 'developer' ? [{ id: 'analytics', icon: BarChart3, label: t('fims.analytics'), gradient: 'from-amber-500 to-orange-500' }] : [])
+                  ...((userRole === 'developer' || userRole === 'super_admin') ? [{ id: 'analytics', icon: BarChart3, label: t('fims.analytics'), gradient: 'from-amber-500 to-orange-500' }] : [])
                 ].map((item) => (
                   <button
                     key={item.id}
