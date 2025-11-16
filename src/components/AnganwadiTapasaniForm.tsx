@@ -431,7 +431,7 @@ export const AnganwadiTapasaniForm: React.FC<AnganwadiTapasaniFormProps> = ({
        },
       { 
         enableHighAccuracy: true, 
-        timeout: 15000, // Increased timeout for better GPS fix
+        timeout: 30000, // Increased timeout for better GPS fix
         maximumAge: 0 // Force fresh location, don't use cached data
       }
     );
@@ -870,7 +870,7 @@ const uploadPhotosToSupabase = async (inspectionId: string) => {
                 <button
                   type="button"
                   onClick={getCurrentLocation}
-                  disabled={isLoading}
+                  disabled={isGettingLocation || isViewMode}
                   className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
                 >
                   <MapPin className="h-4 w-4" />
