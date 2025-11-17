@@ -147,11 +147,11 @@ export const AnganwadiTapasaniForm: React.FC<AnganwadiTapasaniFormProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedPhotos, setUploadedPhotos] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
 
   // Check if we're in view mode
   const isViewMode = editingInspection?.mode === 'view';
@@ -372,69 +372,131 @@ export const AnganwadiTapasaniForm: React.FC<AnganwadiTapasaniFormProps> = ({
       return;
     }
 
-    // Clear any cached location data by requesting fresh location
-    // This forces the browser to get a new GPS fix instead of using cached data
     setIsGettingLocation(true);
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        const accuracy = position.coords.accuracy;
-        
-        // Get location name using reverse geocoding
-        try {
-          const response = await fetch(
-            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=${import.meta.env.VITE_GOOGLE_API_KEY}`
-          );
-          const data = await response.json();
-          
-          if (data.results && data.results.length > 0) {
-            const address = data.results[0].formatted_address;
-            
-            // Update all location data in a single state call
-            setInspectionData(prev => ({
-              ...prev,
-              latitude: lat,
-              longitude: lng,
-              location_accuracy: accuracy,
-              location_detected: address,
-              location_name: prev.location_name || address // Auto-fill if empty
-            }));
-          } else {
-            // No geocoding results, just update coordinates
-            setInspectionData(prev => ({
-              ...prev,
-              latitude: lat,
-              longitude: lng,
-              location_accuracy: accuracy,
-              location_detected: 'Location detected but address not found'
-            }));
-          }
-        } catch (error) {
-          console.error('Error getting location name:', error);
-          // Fallback: just update coordinates without address
+
+    let bestPosition: GeolocationPosition | null = null;
+    let watchId: number | null = null;
+    let attempts = 0;
+    const maxAttempts = 3;
+    const accuracyThreshold = 50; // meters - prefer accuracy better than 50m
+
+    // Function to process and save location
+    const processLocation = async (position: GeolocationPosition) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
+
+      // Get location name using reverse geocoding
+      try {
+        const response = await fetch(
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${import.meta.env.VITE_GOOGLE_API_KEY}`
+        );
+        const data = await response.json();
+
+        if (data.results && data.results.length > 0) {
+          const address = data.results[0].formatted_address;
+
           setInspectionData(prev => ({
             ...prev,
             latitude: lat,
             longitude: lng,
             location_accuracy: accuracy,
-            location_detected: 'Unable to get address'
+            location_detected: address,
+            location_name: prev.location_name || address
+          }));
+        } else {
+          setInspectionData(prev => ({
+            ...prev,
+            latitude: lat,
+            longitude: lng,
+            location_accuracy: accuracy,
+            location_detected: 'Location detected but address not found'
           }));
         }
-        
+      } catch (error) {
+        console.error('Error getting location name:', error);
+        setInspectionData(prev => ({
+          ...prev,
+          latitude: lat,
+          longitude: lng,
+          location_accuracy: accuracy,
+          location_detected: 'Unable to get address'
+        }));
+      }
+    };
+
+    // Success handler for position updates
+    const handlePosition = async (position: GeolocationPosition) => {
+      attempts++;
+      const accuracy = position.coords.accuracy;
+
+      // Keep track of best position (most accurate)
+      if (!bestPosition || accuracy < bestPosition.coords.accuracy) {
+        bestPosition = position;
+      }
+
+      // If we get good accuracy, use it immediately
+      if (accuracy <= accuracyThreshold) {
+        if (watchId !== null) {
+          navigator.geolocation.clearWatch(watchId);
+        }
+        await processLocation(position);
         setIsGettingLocation(false);
-       },
-       (error) => {
-         console.error('Error getting location:', error);
-         setIsGettingLocation(false);
-         alert(t('categories.geolocationError'));
-       },
-      { 
-        enableHighAccuracy: true, 
-        timeout: 30000, // Increased timeout for better GPS fix
+        return;
+      }
+
+      // After max attempts, use the best position we got
+      if (attempts >= maxAttempts) {
+        if (watchId !== null) {
+          navigator.geolocation.clearWatch(watchId);
+        }
+        if (bestPosition) {
+          await processLocation(bestPosition);
+        }
+        setIsGettingLocation(false);
+      }
+    };
+
+    // Error handler
+    const handleError = (error: GeolocationPositionError) => {
+      console.error('Error getting location:', error);
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+
+      // If we have a best position from previous attempts, use it
+      if (bestPosition) {
+        processLocation(bestPosition);
+      } else {
+        setIsGettingLocation(false);
+        alert(t('categories.geolocationError'));
+      }
+      setIsGettingLocation(false);
+    };
+
+    // Start watching position for continuous updates
+    watchId = navigator.geolocation.watchPosition(
+      handlePosition,
+      handleError,
+      {
+        enableHighAccuracy: true,
+        timeout: 30000, // 30 seconds timeout for each attempt
         maximumAge: 0 // Force fresh location, don't use cached data
       }
     );
+
+    // Fallback: Stop watching after 45 seconds and use best position
+    setTimeout(() => {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        if (bestPosition && attempts > 0) {
+          processLocation(bestPosition);
+        } else if (!bestPosition) {
+          alert('Unable to get location. Please try again or check your GPS settings.');
+        }
+        setIsGettingLocation(false);
+      }
+    }, 45000);
   };
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -870,7 +932,7 @@ const uploadPhotosToSupabase = async (inspectionId: string) => {
                 <button
                   type="button"
                   onClick={getCurrentLocation}
-                  disabled={isGettingLocation || isViewMode}
+                  disabled={isLoading}
                   className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
                 >
                   <MapPin className="h-4 w-4" />
@@ -879,12 +941,34 @@ const uploadPhotosToSupabase = async (inspectionId: string) => {
               )}
               {inspectionData.latitude && inspectionData.longitude && (
                 <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <p className="text-sm text-green-800 font-medium">{t('fims.locationCaptured')}</p>
+                  <div className="flex items-start justify-between mb-2">
+                    <p className="text-sm text-green-800 font-medium">{t('fims.locationCaptured')}</p>
+                    {inspectionData.location_accuracy && (
+                      <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                        inspectionData.location_accuracy <= 20
+                          ? 'bg-green-600 text-white'
+                          : inspectionData.location_accuracy <= 50
+                          ? 'bg-yellow-500 text-white'
+                          : 'bg-orange-500 text-white'
+                      }`}>
+                        {inspectionData.location_accuracy <= 20 ? 'Excellent' : inspectionData.location_accuracy <= 50 ? 'Good' : 'Fair'}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs text-green-600">
                     {t('fims.latitude')}: {inspectionData.latitude.toFixed(6)}<br />
-                    {t('fims.longitude')}: {inspectionData.longitude.toFixed(6)}<br />
-                    {t('fims.accuracy')}: {inspectionData.location_accuracy ? Math.round(inspectionData.location_accuracy) + 'm' : 'N/A'}
+                    {t('fims.longitude')}: {inspectionData.longitude.toFixed(6)}
                   </p>
+                  {inspectionData.location_accuracy && (
+                    <div className="mt-2 pt-2 border-t border-green-200">
+                      <p className="text-xs text-green-700 font-medium">
+                        {t('fims.accuracy')}: <span className="font-bold">{Math.round(inspectionData.location_accuracy)}m</span>
+                        <span className="text-green-600 ml-1">
+                          ({inspectionData.location_accuracy <= 20 ? '±20m - उत्कृष्ट' : inspectionData.location_accuracy <= 50 ? '±50m - चांगले' : '>50m - सामान्य'})
+                        </span>
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
