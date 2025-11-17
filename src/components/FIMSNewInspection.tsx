@@ -313,7 +313,7 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
               </div>
               <div>
                 <h3 className="text-lg md:text-xl font-semibold text-gray-900">
-                  अंगणवाडी केंद्र तपासणी अहवाल
+                  दफ्तर निरीक्षण प्रपत्र
                 </h3>
                 <p className="text-sm md:text-base text-blue-700 font-medium">
                   दफ्तर निरीक्षण
