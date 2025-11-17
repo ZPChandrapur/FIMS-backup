@@ -267,42 +267,117 @@ export const MahatmaGandhiRojgarHamiForm: React.FC<MahatmaGandhiRojgarHamiFormPr
     }
 
     setIsLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        setInspectionData(prev => ({
-          ...prev,
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          location_accuracy: position.coords.accuracy
-        }));
-        
-        // Get location name using reverse geocoding
-        try {
-          const response = await fetch(
-            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.coords.latitude},${position.coords.longitude}&key=${import.meta.env.VITE_GOOGLE_API_KEY}`
-          );
-          const data = await response.json();
-          
-          if (data.results && data.results.length > 0) {
-            const locationName = data.results[0].formatted_address;
-            setInspectionData(prev => ({
-              ...prev,
-              address: locationName
-            }));
-          }
-        } catch (error) {
-          console.error('Error getting location name:', error);
+
+    let bestPosition: GeolocationPosition | null = null;
+    let watchId: number | null = null;
+    let attempts = 0;
+    const maxAttempts = 3;
+    const accuracyThreshold = 50; // meters - prefer accuracy better than 50m
+
+    // Function to process and save location
+    const processLocation = async (position: GeolocationPosition) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
+
+      setInspectionData(prev => ({
+        ...prev,
+        latitude: lat,
+        longitude: lng,
+        location_accuracy: accuracy
+      }));
+
+      // Get location name using reverse geocoding
+      try {
+        const response = await fetch(
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${import.meta.env.VITE_GOOGLE_API_KEY}`
+        );
+        const data = await response.json();
+
+        if (data.results && data.results.length > 0) {
+          const locationName = data.results[0].formatted_address;
+          setInspectionData(prev => ({
+            ...prev,
+            address: locationName
+          }));
         }
-        
+      } catch (error) {
+        console.error('Error getting location name:', error);
+      }
+    };
+
+    // Success handler for position updates
+    const handlePosition = async (position: GeolocationPosition) => {
+      attempts++;
+      const accuracy = position.coords.accuracy;
+
+      // Keep track of best position (most accurate)
+      if (!bestPosition || accuracy < bestPosition.coords.accuracy) {
+        bestPosition = position;
+      }
+
+      // If we get good accuracy, use it immediately
+      if (accuracy <= accuracyThreshold) {
+        if (watchId !== null) {
+          navigator.geolocation.clearWatch(watchId);
+        }
+        await processLocation(position);
         setIsLoading(false);
-      },
-      (error) => {
-        console.error('Error getting location:', error);
+        return;
+      }
+
+      // After max attempts, use the best position we got
+      if (attempts >= maxAttempts) {
+        if (watchId !== null) {
+          navigator.geolocation.clearWatch(watchId);
+        }
+        if (bestPosition) {
+          await processLocation(bestPosition);
+        }
+        setIsLoading(false);
+      }
+    };
+
+    // Error handler
+    const handleError = (error: GeolocationPositionError) => {
+      console.error('Error getting location:', error);
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+
+      // If we have a best position from previous attempts, use it
+      if (bestPosition) {
+        processLocation(bestPosition);
+      } else {
+        setIsLoading(false);
         alert(t('fims.unableToGetLocation'));
-        setIsLoading(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+      }
+      setIsLoading(false);
+    };
+
+    // Start watching position for continuous updates
+    watchId = navigator.geolocation.watchPosition(
+      handlePosition,
+      handleError,
+      {
+        enableHighAccuracy: true,
+        timeout: 30000, // 30 seconds timeout for each attempt
+        maximumAge: 0 // Force fresh location, don't use cached data
+      }
     );
+
+    // Fallback: Stop watching after 45 seconds and use best position
+    setTimeout(() => {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        if (bestPosition && attempts > 0) {
+          processLocation(bestPosition);
+        } else if (!bestPosition) {
+          alert('Unable to get location. Please try again or check your GPS settings.');
+        }
+        setIsLoading(false);
+      }
+    }, 45000);
   };
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -799,13 +874,35 @@ export const MahatmaGandhiRojgarHamiForm: React.FC<MahatmaGandhiRojgarHamiFormPr
         </div>
 
         {inspectionData.latitude && inspectionData.longitude && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <p className="text-sm text-green-800 font-medium mb-2">स्थान कॅप्चर केले</p>
-            <div className="text-xs text-green-600 space-y-1">
-              <p>अक्षांश: {inspectionData.latitude.toFixed(6)}</p>
-              <p>रेखांश: {inspectionData.longitude.toFixed(6)}</p>
-              <p>अचूकता: {inspectionData.location_accuracy ? Math.round(inspectionData.location_accuracy) + 'm' : 'N/A'}</p>
+          <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex items-start justify-between mb-2">
+              <p className="text-sm text-green-800 font-medium">{t('fims.locationCaptured')}</p>
+              {inspectionData.location_accuracy && (
+                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                  inspectionData.location_accuracy <= 20
+                    ? 'bg-green-600 text-white'
+                    : inspectionData.location_accuracy <= 50
+                    ? 'bg-yellow-500 text-white'
+                    : 'bg-orange-500 text-white'
+                }`}>
+                  {inspectionData.location_accuracy <= 20 ? 'Excellent' : inspectionData.location_accuracy <= 50 ? 'Good' : 'Fair'}
+                </span>
+              )}
             </div>
+            <p className="text-xs text-green-600">
+              {t('fims.latitude')}: {inspectionData.latitude.toFixed(6)}<br />
+              {t('fims.longitude')}: {inspectionData.longitude.toFixed(6)}
+            </p>
+            {inspectionData.location_accuracy && (
+              <div className="mt-2 pt-2 border-t border-green-200">
+                <p className="text-xs text-green-700 font-medium">
+                  {t('fims.accuracy')}: <span className="font-bold">{Math.round(inspectionData.location_accuracy)}m</span>
+                  <span className="text-green-600 ml-1">
+                    ({inspectionData.location_accuracy <= 20 ? '±20m - उत्कृष्ट' : inspectionData.location_accuracy <= 50 ? '±50m - चांगले' : '>50m - सामान्य'})
+                  </span>
+                </p>
+              </div>
+            )}
           </div>
         )}
 
