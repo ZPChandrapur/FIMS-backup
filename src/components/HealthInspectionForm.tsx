@@ -270,62 +270,129 @@ export const HealthInspectionForm: React.FC<HealthInspectionFormProps> = ({
     }
 
     setIsGettingLocation(true);
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        const accuracy = position.coords.accuracy;
 
-        try {
-          const response = await fetch(
-            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${import.meta.env.VITE_GOOGLE_API_KEY}`
-          );
-          const data = await response.json();
+    let bestPosition: GeolocationPosition | null = null;
+    let watchId: number | null = null;
+    let attempts = 0;
+    const maxAttempts = 3;
+    const accuracyThreshold = 50; // meters - prefer accuracy better than 50m
 
-          if (data.results && data.results.length > 0) {
-            const address = data.results[0].formatted_address;
+    // Function to process and save location
+    const processLocation = async (position: GeolocationPosition) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
 
-            setInspectionData(prev => ({
-              ...prev,
-              latitude: lat,
-              longitude: lng,
-              location_accuracy: accuracy,
-              location_detected: address,
-              location_name: prev.location_name || address
-            }));
-          } else {
-            setInspectionData(prev => ({
-              ...prev,
-              latitude: lat,
-              longitude: lng,
-              location_accuracy: accuracy,
-              location_detected: 'Location detected but address not found'
-            }));
-          }
-        } catch (error) {
-          console.error('Error getting location name:', error);
+      try {
+        const response = await fetch(
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${import.meta.env.VITE_GOOGLE_API_KEY}`
+        );
+        const data = await response.json();
+
+        if (data.results && data.results.length > 0) {
+          const address = data.results[0].formatted_address;
+
           setInspectionData(prev => ({
             ...prev,
             latitude: lat,
             longitude: lng,
             location_accuracy: accuracy,
-            location_detected: 'Unable to get address'
+            location_detected: address,
+            location_name: prev.location_name || address
+          }));
+        } else {
+          setInspectionData(prev => ({
+            ...prev,
+            latitude: lat,
+            longitude: lng,
+            location_accuracy: accuracy,
+            location_detected: 'Location detected but address not found'
           }));
         }
+      } catch (error) {
+        console.error('Error getting location name:', error);
+        setInspectionData(prev => ({
+          ...prev,
+          latitude: lat,
+          longitude: lng,
+          location_accuracy: accuracy,
+          location_detected: 'Unable to get address'
+        }));
+      }
+    };
 
+    // Success handler for position updates
+    const handlePosition = async (position: GeolocationPosition) => {
+      attempts++;
+      const accuracy = position.coords.accuracy;
+
+      // Keep track of best position (most accurate)
+      if (!bestPosition || accuracy < bestPosition.coords.accuracy) {
+        bestPosition = position;
+      }
+
+      // If we get good accuracy, use it immediately
+      if (accuracy <= accuracyThreshold) {
+        if (watchId !== null) {
+          navigator.geolocation.clearWatch(watchId);
+        }
+        await processLocation(position);
         setIsGettingLocation(false);
-      },
-      (error) => {
-        console.error('Error getting location:', error);
+        return;
+      }
+
+      // After max attempts, use the best position we got
+      if (attempts >= maxAttempts) {
+        if (watchId !== null) {
+          navigator.geolocation.clearWatch(watchId);
+        }
+        if (bestPosition) {
+          await processLocation(bestPosition);
+        }
+        setIsGettingLocation(false);
+      }
+    };
+
+    // Error handler
+    const handleError = (error: GeolocationPositionError) => {
+      console.error('Error getting location:', error);
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+
+      // If we have a best position from previous attempts, use it
+      if (bestPosition) {
+        processLocation(bestPosition);
+      } else {
         setIsGettingLocation(false);
         alert('Error getting your location. Please enable GPS and try again.');
-      },
+      }
+      setIsGettingLocation(false);
+    };
+
+    // Start watching position for continuous updates
+    watchId = navigator.geolocation.watchPosition(
+      handlePosition,
+      handleError,
       {
         enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 0
+        timeout: 30000, // 30 seconds timeout for each attempt
+        maximumAge: 0 // Force fresh location, don't use cached data
       }
     );
+
+    // Fallback: Stop watching after 45 seconds and use best position
+    setTimeout(() => {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        if (bestPosition && attempts > 0) {
+          processLocation(bestPosition);
+        } else if (!bestPosition) {
+          alert('Unable to get location. Please try again or check your GPS settings.');
+        }
+        setIsGettingLocation(false);
+      }
+    }, 45000);
   };
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
