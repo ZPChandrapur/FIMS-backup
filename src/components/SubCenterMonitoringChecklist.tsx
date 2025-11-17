@@ -637,5 +637,7 @@ export const SubCenterMonitoringChecklist: React.FC<SubCenterFormProps> = ({
       alert('Error submitting form: ' + error.message);
     } finally {
       setIsLoading(false);
-    };
+    }
+  }
+};
   
