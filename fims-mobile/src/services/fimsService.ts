@@ -146,13 +146,18 @@ export const createInspection = async (inspectionData: Partial<Inspection>): Pro
     return {
       id: offlineInspection.id,
       category_id: offlineInspection.category_id,
+      category_name: undefined,
+      category_name_marathi: undefined,
+      form_type: undefined,
       status: offlineInspection.status,
-      location_name: null,
+      location_name: inspectionData.location_name,
       location_latitude: offlineInspection.location_latitude,
       location_longitude: offlineInspection.location_longitude,
       location_address: offlineInspection.location_address,
       inspector_id: offlineInspection.inspector_id,
       filled_by_name: offlineInspection.filled_by_name,
+      assigned_by: null,
+      notes: null,
       created_at: offlineInspection.created_at,
       updated_at: offlineInspection.created_at,
       photos: [],
@@ -170,7 +175,7 @@ export const createInspection = async (inspectionData: Partial<Inspection>): Pro
         inspector_id: inspectionData.inspector_id,
         filled_by_name: inspectionData.filled_by_name,
         status: inspectionData.status || 'draft',
-        location_name: inspectionData.location_name,
+        location_name: inspectionData.location_name || null,
         latitude: inspectionData.location_latitude,
         longitude: inspectionData.location_longitude,
         address: inspectionData.location_address,
@@ -184,6 +189,9 @@ export const createInspection = async (inspectionData: Partial<Inspection>): Pro
     return {
       id: data.id,
       category_id: data.category_id,
+      category_name: undefined,
+      category_name_marathi: undefined,
+      form_type: undefined,
       status: data.status,
       location_name: data.location_name,
       location_latitude: data.latitude,
@@ -231,6 +239,9 @@ export const updateInspection = async (id: string, updates: Partial<Inspection>)
     return {
       id: data.id,
       category_id: data.category_id,
+      category_name: undefined,
+      category_name_marathi: undefined,
+      form_type: undefined,
       status: data.status,
       location_name: data.location_name,
       location_latitude: data.latitude,
@@ -242,6 +253,7 @@ export const updateInspection = async (id: string, updates: Partial<Inspection>)
       notes: data.review_comments,
       created_at: data.created_at,
       updated_at: data.updated_at,
+      photos: [],
     };
   } catch (error) {
     console.error('Error updating inspection:', error);
