@@ -167,6 +167,7 @@ export const createInspection = async (inspectionData: Partial<Inspection>): Pro
         inspector_id: inspectionData.inspector_id,
         filled_by_name: inspectionData.filled_by_name,
         status: inspectionData.status || 'draft',
+        location_name: inspectionData.location_name,
         latitude: inspectionData.location_latitude,
         longitude: inspectionData.location_longitude,
         address: inspectionData.location_address,

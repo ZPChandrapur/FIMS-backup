@@ -24,6 +24,7 @@ export interface Inspection {
   category_name_marathi?: string;
   form_type?: string;
   status: 'draft' | 'in_progress' | 'submitted' | 'approved' | 'rejected' | 'revisit';
+  location_name?: string | null;
   location_latitude: number | null;
   location_longitude: number | null;
   location_address: string | null;
