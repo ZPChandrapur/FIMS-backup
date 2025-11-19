@@ -8,7 +8,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   Switch,
+  Dimensions,
 } from 'react-native';
+
+//import { Dimensions } from 'react-native';
+
+
 import { useTranslation } from 'react-i18next';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -24,28 +29,106 @@ import LocationPicker from '../../components/LocationPicker';
 
 type RouteParams = RouteProp<FormsStackParamList, 'AnganwadiTapasani'>;
 type NavigationProp = StackNavigationProp<FormsStackParamList, 'AnganwadiTapasani'>;
+const { width } = Dimensions.get('window');
+const isSmallDevice = width < 375;
 
-const STEPS = ['Basic Info', 'Facilities', 'Equipment', 'Children', 'Location', 'Photos'];
+const STEPS = ['Basic', 'Facilities', 'Equipment', 'Records', 'Schedule', 'Nutrition', 'Health', 'Community', 'Children', 'Location', 'Photos'];
 
 interface AnganwadiFormData {
+  // Basic Information
   anganwadi_name: string;
   anganwadi_number: string;
   supervisor_name: string;
   helper_name: string;
   village_name: string;
+
+  // Building and Facilities
   building_type: string;
   room_availability: boolean;
   toilet_facility: boolean;
   drinking_water: boolean;
   electricity: boolean;
+  kitchen_garden: boolean;
+  independent_kitchen: boolean;
+  women_health_checkup_space: boolean;
+
+  // Equipment and Materials - Weighing Scales
   weighing_machine: boolean;
+  baby_weighing_scale: boolean;
+  hammock_weighing_scale: boolean;
+  adult_weighing_scale: boolean;
+  height_measuring_scale: boolean;
+
+  // Equipment and Materials - General
   first_aid_kit: boolean;
   teaching_materials: boolean;
   toys_available: boolean;
+  cooking_utensils: boolean;
+  water_storage_containers: boolean;
+  medicine_kits: boolean;
+  pre_school_kit: boolean;
+
+  // Records and Documentation
+  attendance_register: boolean;
+  growth_chart_updated: boolean;
+  vaccination_records: boolean;
+  nutrition_records: boolean;
+  all_registers: boolean;
+  monthly_progress_reports: boolean;
+
+  // Schedule and Operations
+  timetable_available: boolean;
+  timetable_followed: boolean;
+  supervisor_regular_attendance: boolean;
+
+  // Children Information
   total_registered_children: string;
   children_present_today: string;
+  children_0_3_years: string;
+  children_3_6_years: string;
+  preschool_education_registered: string;
+  preschool_education_present: string;
+
+  // Nutrition and Food Services
   hot_meal_served: boolean;
+  take_home_ration: boolean;
+  monthly_25_days_meals: boolean;
+  thr_provided_regularly: boolean;
+  food_provider: string;
+  supervisor_participation: string;
+  food_distribution_decentralized: boolean;
+  children_food_taste_preference: string;
+  prescribed_protein_calories: boolean;
+  prescribed_weight_food: boolean;
+  lab_sample_date: string;
+
+  // Health Services
+  health_checkup_conducted: boolean;
+  immunization_updated: boolean;
+  vitamin_a_given: boolean;
+  iron_tablets_given: boolean;
+  regular_weighing: boolean;
+  growth_chart_accuracy: boolean;
+  vaccination_health_checkup_regular: boolean;
+  vaccination_schedule_awareness: boolean;
+
+  // Community Participation
+  village_health_nutrition_planning: string;
+  children_attendance_comparison: string;
+  preschool_programs_conducted: string;
+  community_participation: string;
+  committee_member_participation: string;
+  home_visits_guidance: string;
+  public_opinion_improvement: string;
+
+  // Final Details
   general_observations: string;
+  recommendations: string;
+  action_required: string;
+  suggestions: string;
+  visit_date: string;
+  inspector_designation: string;
+  inspector_name: string;
 }
 
 export default function AnganwadiTapasaniScreen() {
@@ -71,14 +154,69 @@ export default function AnganwadiTapasaniScreen() {
     toilet_facility: false,
     drinking_water: false,
     electricity: false,
+    kitchen_garden: false,
+    independent_kitchen: false,
+    women_health_checkup_space: false,
     weighing_machine: false,
+    baby_weighing_scale: false,
+    hammock_weighing_scale: false,
+    adult_weighing_scale: false,
+    height_measuring_scale: false,
     first_aid_kit: false,
     teaching_materials: false,
     toys_available: false,
+    cooking_utensils: false,
+    water_storage_containers: false,
+    medicine_kits: false,
+    pre_school_kit: false,
+    attendance_register: false,
+    growth_chart_updated: false,
+    vaccination_records: false,
+    nutrition_records: false,
+    all_registers: false,
+    monthly_progress_reports: false,
+    timetable_available: false,
+    timetable_followed: false,
+    supervisor_regular_attendance: false,
     total_registered_children: '',
     children_present_today: '',
+    children_0_3_years: '',
+    children_3_6_years: '',
+    preschool_education_registered: '',
+    preschool_education_present: '',
     hot_meal_served: false,
+    take_home_ration: false,
+    monthly_25_days_meals: false,
+    thr_provided_regularly: false,
+    food_provider: '',
+    supervisor_participation: '',
+    food_distribution_decentralized: false,
+    children_food_taste_preference: '',
+    prescribed_protein_calories: false,
+    prescribed_weight_food: false,
+    lab_sample_date: '',
+    health_checkup_conducted: false,
+    immunization_updated: false,
+    vitamin_a_given: false,
+    iron_tablets_given: false,
+    regular_weighing: false,
+    growth_chart_accuracy: false,
+    vaccination_health_checkup_regular: false,
+    vaccination_schedule_awareness: false,
+    village_health_nutrition_planning: '',
+    children_attendance_comparison: '',
+    preschool_programs_conducted: '',
+    community_participation: '',
+    committee_member_participation: '',
+    home_visits_guidance: '',
+    public_opinion_improvement: '',
     general_observations: '',
+    recommendations: '',
+    action_required: '',
+    suggestions: '',
+    visit_date: '',
+    inspector_designation: '',
+    inspector_name: '',
   });
 
   const updateFormData = (field: keyof AnganwadiFormData, value: any) => {
@@ -93,7 +231,7 @@ export default function AnganwadiTapasaniScreen() {
       }
     }
 
-    if (currentStep === 4) {
+    if (currentStep === 9) {
       if (!location) {
         Alert.alert(t('common.error'), 'Please capture location');
         return;
@@ -119,7 +257,6 @@ export default function AnganwadiTapasaniScreen() {
         inspector_id: user?.id,
         filled_by_name: formData.supervisor_name,
         status: 'draft',
-        location_name: location?.address || 'Unknown Location',
         location_latitude: location?.latitude,
         location_longitude: location?.longitude,
         location_address: location?.address || null,
@@ -146,7 +283,6 @@ export default function AnganwadiTapasaniScreen() {
         inspector_id: user?.id,
         filled_by_name: formData.supervisor_name,
         status: 'submitted',
-        location_name: location?.address || 'Unknown Location',
         location_latitude: location?.latitude,
         location_longitude: location?.longitude,
         location_address: location?.address || null,
@@ -186,35 +322,35 @@ export default function AnganwadiTapasaniScreen() {
             <Text style={styles.sectionSubtitle}>Anganwadi Information</Text>
 
             <Input
-              label="अंगणवाडीचे नाव / Anganwadi Name *"
+              label="अंगणवाडीचे नाव *"
               value={formData.anganwadi_name}
               onChangeText={(text) => updateFormData('anganwadi_name', text)}
               placeholder="Enter anganwadi name"
             />
 
             <Input
-              label="अंगणवाडी क्रमांक / Anganwadi Number"
+              label="अंगणवाडी क्रमांक"
               value={formData.anganwadi_number}
               onChangeText={(text) => updateFormData('anganwadi_number', text)}
               placeholder="Enter number"
             />
 
             <Input
-              label="पर्यवेक्षकाचे नाव / Supervisor Name *"
+              label="पर्यवेक्षकाचे नाव *"
               value={formData.supervisor_name}
               onChangeText={(text) => updateFormData('supervisor_name', text)}
               placeholder="Enter supervisor name"
             />
 
             <Input
-              label="सहायकाचे नाव / Helper Name"
+              label="सहायकाचे नाव"
               value={formData.helper_name}
               onChangeText={(text) => updateFormData('helper_name', text)}
               placeholder="Enter helper name"
             />
 
             <Input
-              label="गावाचे नाव / Village Name"
+              label="गावाचे नाव"
               value={formData.village_name}
               onChangeText={(text) => updateFormData('village_name', text)}
               placeholder="Enter village name"
@@ -225,29 +361,218 @@ export default function AnganwadiTapasaniScreen() {
       case 1:
         return (
           <View>
-            <Text style={styles.sectionTitle}>सुविधा / Facilities</Text>
+            <Text style={styles.sectionTitle}>सुविधा</Text>
+            <Text style={styles.sectionSubtitle}>Facilities Available</Text>
 
-            {renderSwitchRow('खोली उपलब्ध / Room Available', formData.room_availability, 'room_availability')}
-            {renderSwitchRow('शौचालय सुविधा / Toilet Facility', formData.toilet_facility, 'toilet_facility')}
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>अंगणवाडी इमारत</Text>
+              <Text style={styles.inputHint}>[स्वतःची/ भाड्याची/ मोफत/ इमारत नाही]</Text>
+              <View style={styles.pickerContainer}>
+                {['own', 'rented', 'free', 'no_building'].map((type) => (
+                  <Button
+                    key={type}
+                    title={type === 'own' ? 'स्वतःची' : type === 'rented' ? 'भाड्याची' : type === 'free' ? 'मोफत' : 'इमारत नाही'}
+                    onPress={() => updateFormData('building_type', type)}
+                    variant={formData.building_type === type ? 'primary' : 'outline'}
+                    style={styles.pickerButton}
+                  />
+                ))}
+              </View>
+            </View>
+
+
+            {renderSwitchRow('शौचालय', formData.toilet_facility, 'toilet_facility')}
+            {renderSwitchRow('स्वतंत्र बंदिस्त किचन / Independent Kitchen', formData.independent_kitchen, 'independent_kitchen')}
+            {renderSwitchRow('महिला आरोग्य तपासणी जागा / Women Health Checkup Space', formData.women_health_checkup_space, 'women_health_checkup_space')}
+            {renderSwitchRow('विद्युत पुरवठा / Electricity', formData.electricity, 'electricity')}
             {renderSwitchRow('पिण्याचे पाणी / Drinking Water', formData.drinking_water, 'drinking_water')}
-            {renderSwitchRow('वीज / Electricity', formData.electricity, 'electricity')}
+            {renderSwitchRow('किचन गार्डन / Kitchen Garden', formData.kitchen_garden, 'kitchen_garden')}
           </View>
         );
 
       case 2:
         return (
           <View>
-            <Text style={styles.sectionTitle}>उपकरणे / Equipment</Text>
+            <Text style={styles.sectionTitle}>२. वजनकाटे उपलब्ध</Text>
+            <Text style={styles.sectionSubtitle}>Weighing Scales Available</Text>
 
-            {renderSwitchRow('वजन यंत्र / Weighing Machine', formData.weighing_machine, 'weighing_machine')}
-            {renderSwitchRow('प्रथमोपचार पेटी / First Aid Kit', formData.first_aid_kit, 'first_aid_kit')}
+            {renderSwitchRow('बेबी वजनकाटे / Baby Weighing Scale', formData.baby_weighing_scale, 'baby_weighing_scale')}
+            {renderSwitchRow('हॅमॉक [झोळीचे] वजनकाटे / Hammock Scale', formData.hammock_weighing_scale, 'hammock_weighing_scale')}
+            {renderSwitchRow('प्रौढांसाठीचे वजनकाटे / Adult Weighing Scale', formData.adult_weighing_scale, 'adult_weighing_scale')}
+            {renderSwitchRow('उंची मापन यंत्र / Height Measuring Scale', formData.height_measuring_scale, 'height_measuring_scale')}
+
+            <Text style={[styles.sectionTitle, styles.marginTop]}>३. अंगणवाडीतील साहित्य उपलब्धता</Text>
+            <Text style={styles.sectionSubtitle}>Materials Availability</Text>
+
+            {renderSwitchRow('स्वयंपाकाची भांडी / Cooking Utensils', formData.cooking_utensils, 'cooking_utensils')}
+            {renderSwitchRow('पिण्याचे पाणी ठेवण्यासाठी भांडी / Water Storage', formData.water_storage_containers, 'water_storage_containers')}
+            {renderSwitchRow('मेडिसिन किट्स / Medicine Kits', formData.medicine_kits, 'medicine_kits')}
+            {renderSwitchRow('पूर्व शाले संच / Pre School Kit', formData.pre_school_kit, 'pre_school_kit')}
             {renderSwitchRow('शिकवण साहित्य / Teaching Materials', formData.teaching_materials, 'teaching_materials')}
             {renderSwitchRow('खेळणी / Toys Available', formData.toys_available, 'toys_available')}
-            {renderSwitchRow('गरम जेवण / Hot Meal Served', formData.hot_meal_served, 'hot_meal_served')}
           </View>
         );
 
       case 3:
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>नोंदी आणि दस्तऐवज</Text>
+            <Text style={styles.sectionSubtitle}>Records and Documentation</Text>
+
+            {renderSwitchRow('विहित रजिस्टर (सर्व) / All Registers', formData.all_registers, 'all_registers')}
+            {renderSwitchRow('छापील मासिक प्रगती अहवाल / Monthly Progress Reports', formData.monthly_progress_reports, 'monthly_progress_reports')}
+            {renderSwitchRow('उपस्थिती रजिस्टर / Attendance Register', formData.attendance_register, 'attendance_register')}
+            {renderSwitchRow('वृद्धि चार्ट अद्यतनित / Growth Chart Updated', formData.growth_chart_updated, 'growth_chart_updated')}
+            {renderSwitchRow('लसीकरण नोंदी / Vaccination Records', formData.vaccination_records, 'vaccination_records')}
+            {renderSwitchRow('पोषण नोंदी / Nutrition Records', formData.nutrition_records, 'nutrition_records')}
+          </View>
+        );
+
+      case 4:
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>४. अंगणवाडी केंद्राचे वेळापत्रक</Text>
+            <Text style={styles.sectionSubtitle}>Schedule and Operations</Text>
+
+            {renderSwitchRow('अंगणवाडी केंद्राचे वेळापत्रक आहे काय? / Timetable Available?', formData.timetable_available, 'timetable_available')}
+            {renderSwitchRow(' नियमितपणे पाळले जाते काय? / Timetable Followed?', formData.timetable_followed, 'timetable_followed')}
+            {renderSwitchRow('सेविका नियमितपणे हजर राहते काय? / Supervisor Regular Attendance?', formData.supervisor_regular_attendance, 'supervisor_regular_attendance')}
+          </View>
+        );
+
+      case 5:
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>५. आहाराविषयी</Text>
+            <Text style={styles.sectionSubtitle}>Nutrition and Food Services</Text>
+
+            {renderSwitchRow('१] अंगणवाडी केंद्रात प्रत्येक महिन्याला २५ दिवस सकाळचा नाश्ता व पूरक पोषण आहार पुरविण्यात येतो काय? / 25 Days Meals Per Month', formData.monthly_25_days_meals, 'monthly_25_days_meals')}
+            {renderSwitchRow('२] ०–३ वर्षांची बालके, गर्भवती-स्तनदा माता, व तीव्र कमी वजनाच्या बालकांना THR नियमितपणे दिला जातो काय?/ THR Provided Regularly', formData.thr_provided_regularly, 'thr_provided_regularly')}
+            {renderSwitchRow('गरम जेवण दिले जाते / Hot Meal Served', formData.hot_meal_served, 'hot_meal_served')}
+            {renderSwitchRow('घरगुती शिधा / Take Home Ration', formData.take_home_ration, 'take_home_ration')}
+
+            <Input
+              label="आहार कोणाकडून दिला जातो / Food Provider"
+              value={formData.food_provider}
+              onChangeText={(text) => updateFormData('food_provider', text)}
+              placeholder="Enter food provider details"
+              multiline
+              numberOfLines={2}
+            />
+
+            <Input
+              label="सेविकेचा सहभाग / Supervisor Participation"
+              value={formData.supervisor_participation}
+              onChangeText={(text) => updateFormData('supervisor_participation', text)}
+              placeholder="Enter supervisor participation details"
+              multiline
+              numberOfLines={2}
+            />
+
+            {renderSwitchRow('आहार वाटप विकेंद्रित / Food Distribution Decentralized', formData.food_distribution_decentralized, 'food_distribution_decentralized')}
+
+            <Input
+              label="मुलांना आहार आवडतो काय? / Children Food Preference"
+              value={formData.children_food_taste_preference}
+              onChangeText={(text) => updateFormData('children_food_taste_preference', text)}
+              placeholder="Enter children's food preference"
+              multiline
+              numberOfLines={2}
+            />
+
+            {renderSwitchRow('निर्धारीत प्रथीणे व उष्मांक असलेला आहार मिळतो काय? / Prescribed Protein & Calories', formData.prescribed_protein_calories, 'prescribed_protein_calories')}
+            {renderSwitchRow('निर्धारीत वजनाचा आहार मिळतो काय? / Prescribed Weight Food', formData.prescribed_weight_food, 'prescribed_weight_food')}
+
+            <Input
+              label="प्रयोगशाळा नमुना तारीख / Lab Sample Date"
+              value={formData.lab_sample_date}
+              onChangeText={(text) => updateFormData('lab_sample_date', text)}
+              placeholder="Enter date"
+            />
+          </View>
+        );
+
+      case 6:
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>९. आरोग्य सेवा</Text>
+            <Text style={styles.sectionSubtitle}>Health Services</Text>
+
+            {renderSwitchRow('बालकांचे वजने नियमित वजने घेतली जातात किंवा कसे? / Regular Weighing', formData.regular_weighing, 'regular_weighing')}
+            {renderSwitchRow('(वृद्धिपत्रक तपासून) वय व वजन यांची नोंद तपासून पोषण श्रेणी योग्य प्रमाणे दर्शविलेली आहे काय? काही मुलांची प्रत्यक्ष वजने घेऊन तपासणी व खात्री करावी. तसेच वृद्धिपत्रकातील नोंद तपासावी. / Growth Chart Accuracy', formData.growth_chart_accuracy, 'growth_chart_accuracy')}
+            {renderSwitchRow('लसीकरण व आरोग्य तपासणी नियमितपणे होते काय? (मागील दोन महिन्याचे रेकॉर्ड तपासावे.) / Vaccination Regular', formData.vaccination_health_checkup_regular, 'vaccination_health_checkup_regular')}
+            {renderSwitchRow('लसीकरण दिवसाची माहिती लाभार्थी पालकांना आहे काय? (एक-दोन घरी जाऊन तपासावे) / Vaccination Schedule Awareness', formData.vaccination_schedule_awareness, 'vaccination_schedule_awareness')}
+            {renderSwitchRow('आरोग्य तपासणी / Health Checkup Conducted', formData.health_checkup_conducted, 'health_checkup_conducted')}
+            {renderSwitchRow('लसीकरण अद्ययावत / Immunization Updated', formData.immunization_updated, 'immunization_updated')}
+            {renderSwitchRow('व्हिटॅमिन A दिले / Vitamin A Given', formData.vitamin_a_given, 'vitamin_a_given')}
+            {renderSwitchRow('लोह गोळ्या दिल्या / Iron Tablets Given', formData.iron_tablets_given, 'iron_tablets_given')}
+          </View>
+        );
+
+      case 7:
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>१०. समुदायिक सहभाग</Text>
+            <Text style={styles.sectionSubtitle}>Community Participation</Text>
+
+            <Input
+              label="गावातील आरोग्य व पोषण नियोजनात सहभाग / Village Health & Nutrition Planning"
+              value={formData.village_health_nutrition_planning}
+              onChangeText={(text) => updateFormData('village_health_nutrition_planning', text)}
+              placeholder="Enter details"
+              multiline
+              numberOfLines={3}
+            />
+
+            <Input
+              label="मुलांच्या उपस्थितीची तुलना / Children Attendance Comparison"
+              value={formData.children_attendance_comparison}
+              onChangeText={(text) => updateFormData('children_attendance_comparison', text)}
+              placeholder="Enter comparison details"
+              multiline
+              numberOfLines={3}
+            />
+
+            <Input
+              label="समुदायाचा सहभाग / Community Participation"
+              value={formData.community_participation}
+              onChangeText={(text) => updateFormData('community_participation', text)}
+              placeholder="Enter community participation details"
+              multiline
+              numberOfLines={3}
+            />
+
+            <Input
+              label="समिती सदस्य सहभाग / Committee Member Participation"
+              value={formData.committee_member_participation}
+              onChangeText={(text) => updateFormData('committee_member_participation', text)}
+              placeholder="Enter committee participation"
+              multiline
+              numberOfLines={3}
+            />
+
+            <Input
+              label="घरभेटी मार्गदर्शन / Home Visits Guidance"
+              value={formData.home_visits_guidance}
+              onChangeText={(text) => updateFormData('home_visits_guidance', text)}
+              placeholder="Enter home visit details"
+              multiline
+              numberOfLines={3}
+            />
+
+            <Input
+              label="लोक मत सुधारणा / Public Opinion Improvement"
+              value={formData.public_opinion_improvement}
+              onChangeText={(text) => updateFormData('public_opinion_improvement', text)}
+              placeholder="Enter public opinion details"
+              multiline
+              numberOfLines={3}
+            />
+          </View>
+        );
+
+      case 8:
         return (
           <View>
             <Text style={styles.sectionTitle}>मुलांची माहिती</Text>
@@ -270,6 +595,71 @@ export default function AnganwadiTapasaniScreen() {
             />
 
             <Input
+              label="०-३ वर्षांची बालके / Children 0-3 Years"
+              value={formData.children_0_3_years}
+              onChangeText={(text) => updateFormData('children_0_3_years', text)}
+              placeholder="Enter number"
+              keyboardType="number-pad"
+            />
+
+            <Input
+              label="३-६ वर्षांची बालके / Children 3-6 Years"
+              value={formData.children_3_6_years}
+              onChangeText={(text) => updateFormData('children_3_6_years', text)}
+              placeholder="Enter number"
+              keyboardType="number-pad"
+            />
+
+            <Input
+              label="पूर्वशालेय नोंदणी / Preschool Registered"
+              value={formData.preschool_education_registered}
+              onChangeText={(text) => updateFormData('preschool_education_registered', text)}
+              placeholder="Enter number"
+              keyboardType="number-pad"
+            />
+
+            <Input
+              label="पूर्वशालेय उपस्थित / Preschool Present"
+              value={formData.preschool_education_present}
+              onChangeText={(text) => updateFormData('preschool_education_present', text)}
+              placeholder="Enter number"
+              keyboardType="number-pad"
+            />
+
+            <Input
+              label="पूर्वशालेय कार्यक्रम / Preschool Programs Conducted"
+              value={formData.preschool_programs_conducted}
+              onChangeText={(text) => updateFormData('preschool_programs_conducted', text)}
+              placeholder="Enter program details"
+              multiline
+              numberOfLines={3}
+            />
+
+            <Text style={[styles.sectionTitle, styles.marginTop]}>तपासणी अधिकारी माहिती</Text>
+            <Text style={styles.sectionSubtitle}>Inspector Information</Text>
+
+            <Input
+              label="भेटीची तारीख / Visit Date"
+              value={formData.visit_date}
+              onChangeText={(text) => updateFormData('visit_date', text)}
+              placeholder="DD/MM/YYYY"
+            />
+
+            <Input
+              label="तपासणी अधिकारीचे नाव / Inspector Name"
+              value={formData.inspector_name}
+              onChangeText={(text) => updateFormData('inspector_name', text)}
+              placeholder="Enter inspector name"
+            />
+
+            <Input
+              label="तपासणी अधिकारीचे पदनाम / Inspector Designation"
+              value={formData.inspector_designation}
+              onChangeText={(text) => updateFormData('inspector_designation', text)}
+              placeholder="Enter designation"
+            />
+
+            <Input
               label="सामान्य निरीक्षणे / General Observations"
               value={formData.general_observations}
               onChangeText={(text) => updateFormData('general_observations', text)}
@@ -277,10 +667,28 @@ export default function AnganwadiTapasaniScreen() {
               multiline
               numberOfLines={4}
             />
+
+            <Input
+              label="शिफारसी / Recommendations"
+              value={formData.recommendations}
+              onChangeText={(text) => updateFormData('recommendations', text)}
+              placeholder="Enter recommendations"
+              multiline
+              numberOfLines={4}
+            />
+
+            <Input
+              label="सूचना / Suggestions"
+              value={formData.suggestions}
+              onChangeText={(text) => updateFormData('suggestions', text)}
+              placeholder="Enter suggestions"
+              multiline
+              numberOfLines={4}
+            />
           </View>
         );
 
-      case 4:
+      case 9:
         return (
           <View>
             <Text style={styles.sectionTitle}>{t('fims.locationDetails')}</Text>
@@ -288,7 +696,7 @@ export default function AnganwadiTapasaniScreen() {
           </View>
         );
 
-      case 5:
+      case 10:
         return (
           <View>
             <Text style={styles.sectionTitle}>{t('fims.photosSubmit')}</Text>
@@ -319,7 +727,7 @@ export default function AnganwadiTapasaniScreen() {
               title={t('common.previous')}
               onPress={handlePrevious}
               variant="outline"
-              style={styles.button}
+              style={styles.navigationButton}
               disabled={loading}
             />
           )}
@@ -327,7 +735,7 @@ export default function AnganwadiTapasaniScreen() {
             <Button
               title={t('common.next')}
               onPress={handleNext}
-              style={styles.button}
+              style={styles.navigationButton}
               disabled={loading}
             />
           ) : (
@@ -336,13 +744,13 @@ export default function AnganwadiTapasaniScreen() {
                 title={t('fims.saveAsDraft')}
                 onPress={handleSaveAsDraft}
                 variant="outline"
-                style={styles.button}
+                style={styles.submitButton}
                 loading={loading}
               />
               <Button
                 title={t('fims.submitInspection')}
                 onPress={handleSubmit}
-                style={styles.button}
+                style={styles.submitButton}
                 loading={loading}
               />
             </View>
@@ -356,63 +764,139 @@ export default function AnganwadiTapasaniScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginHorizontal: 4,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: '#f9fafb',
   },
   content: {
     flex: 1,
-    marginHorizontal: 4,
   },
   contentContainer: {
-    padding: 16,
+    padding: isSmallDevice ? 12 : 16,
+    paddingBottom: 24,
+  },
+  card: {
+    padding: isSmallDevice ? 12 : 16,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1f2937',
+    fontSize: isSmallDevice ? 18 : 20,
+    fontWeight: '700',
+    color: '#111827',
     marginBottom: 4,
+    lineHeight: 28,
   },
   sectionSubtitle: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#6b7280',
-    marginBottom: 16,
+    marginBottom: 20,
+    fontWeight: '500',
+  },
+  subsection: {
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  subsectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 12,
+    marginTop: 8,
   },
   switchRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 12,
+    paddingHorizontal: 4,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: '#f3f4f6',
+    minHeight: 52,
   },
   switchLabel: {
     fontSize: 14,
-    color: '#374151',
+    color: '#1f2937',
     flex: 1,
-    marginHorizontal: 4,
+    marginRight: 16,
+    lineHeight: 20,
   },
   footer: {
     backgroundColor: '#ffffff',
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderTopWidth: 1,
     borderTopColor: '#e5e7eb',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 8,
   },
   buttonRow: {
     flexDirection: 'row',
-    // gap removed - using marginHorizontal instead
+    gap: 10,
   },
-  button: {
+  navigationButton: {
     flex: 1,
-    marginHorizontal: 4,
+    minHeight: 44,
   },
   submitButtons: {
     flexDirection: 'row',
     flex: 1,
-    marginHorizontal: 4,
-    // gap removed - using marginHorizontal instead
+    gap: 10,
   },
-  halfButton: {
+  submitButton: {
     flex: 1,
-    marginHorizontal: 4,
+    minHeight: 44,
+  },
+  inputGroup: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 10,
+  },
+  inputHint: {
+    fontSize: 13,
+    color: '#6b7280',
+    marginBottom: 12,
+  },
+  chipContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  chipWrapper: {
+    width: '48%',
+  },
+  chipButton: {
+    minHeight: 40,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  pickerContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  pickerButton: {
+    flex: 1,
+    minWidth: '45%',
+    minHeight: 40,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#e5e7eb',
+    marginVertical: 20,
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 4,
+  },
+  gridItem: {
+    flex: 1,
+  },
+  marginTop: {
+    marginTop: 24,
   },
 });
