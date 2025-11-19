@@ -254,7 +254,7 @@ export default function AnganwadiTapasaniScreen() {
     try {
       setLoading(true);
       const inspection = await createInspection({
-        category_id: categoryId,
+        category_id: categoryId.toString(),
         inspector_id: user?.id,
         filled_by_name: formData.supervisor_name,
         status: 'draft',
@@ -292,7 +292,7 @@ export default function AnganwadiTapasaniScreen() {
     try {
       setLoading(true);
       const inspection = await createInspection({
-        category_id: categoryId,
+        category_id: categoryId.toString(),
         inspector_id: user?.id,
         filled_by_name: formData.supervisor_name,
         status: 'submitted',
