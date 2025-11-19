@@ -301,13 +301,13 @@ export const uploadPhoto = async (inspectionId: string, photoUri: string, photoN
     const filePath = `inspections/${inspectionId}/${Date.now()}_${photoName}`;
 
     const { error: uploadError } = await supabase.storage
-      .from('fims-photos')
+      .from('field-visit-images')
       .upload(filePath, blob);
 
     if (uploadError) throw uploadError;
 
     const { data: { publicUrl } } = supabase.storage
-      .from('fims-photos')
+      .from('field-visit-images')
       .getPublicUrl(filePath);
 
     const { error: dbError } = await supabase
