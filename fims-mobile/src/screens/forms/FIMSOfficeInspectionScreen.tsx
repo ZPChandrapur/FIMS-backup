@@ -15,6 +15,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { FormsStackParamList, LocationData } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
 import { createInspection, updateInspection, uploadPhoto } from '../../services/fimsService';
+import { supabase } from '../../services/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Stepper from '../../components/common/Stepper';
 import Input from '../../components/common/Input';
@@ -151,10 +152,53 @@ export default function FIMSOfficeInspectionScreen() {
         inspector_id: user?.id,
         filled_by_name: formData.employee_name,
         status: 'draft',
+        location_name: location?.address || 'Unknown Location',
         location_latitude: location?.latitude,
         location_longitude: location?.longitude,
         location_address: location?.address || null,
       });
+
+      const { error: formError } = await supabase
+        .from('fims_office_inspection_forms')
+        .insert({
+          inspection_id: inspection.id,
+          filled_by_name: formData.employee_name || '',
+          department_name: formData.department_name,
+          employee_name: formData.employee_name,
+          designation: formData.designation,
+          table_number: formData.table_number,
+          date_of_joining: formData.date_of_joining || null,
+          work_nature: formData.work_nature,
+          letter_received_logged: formData.letter_received_logged,
+          letter_priority_disposed: formData.letter_priority_disposed,
+          weekly_report_created: formData.weekly_report_created,
+          pending_register_maintained: formData.pending_register_maintained,
+          reminders_sent_in_time: formData.reminders_sent_in_time,
+          letters_bound_with_permission: formData.letters_bound_with_permission,
+          class_d_letters_destroyed: formData.class_d_letters_destroyed,
+          long_pending_cases: formData.long_pending_cases,
+          required_registers: formData.required_registers,
+          updated_registers: formData.updated_registers,
+          registers_submitted_on_time: formData.registers_submitted_on_time,
+          file_structure_six_bundle: formData.file_structure_six_bundle,
+          post_disposal_bundling: formData.post_disposal_bundling,
+          periodic_statements_submitted: formData.periodic_statements_submitted,
+          permanent_instruction_available: formData.permanent_instruction_available,
+          indexed_instruction_complete: formData.indexed_instruction_complete,
+          updated_by_gov_circular: formData.updated_by_gov_circular,
+          files_classified: formData.files_classified,
+          binding_and_submission: formData.binding_and_submission,
+          disposal_speed_satisfactory: formData.disposal_speed_satisfactory,
+          inspection_issues_json: formData.inspection_issues_json || [],
+          evaluation_score: formData.evaluation_score || null,
+          work_quality: formData.work_quality || null,
+          inspector_name: formData.inspector_name,
+          inspector_designation: formData.inspector_designation,
+          supervisor_remarks: formData.supervisor_remarks,
+          supervisor_signature: formData.supervisor_signature,
+        });
+
+      if (formError) throw formError;
 
       await saveLocally(inspection.id, { formData, location, photos });
 
@@ -182,10 +226,53 @@ export default function FIMSOfficeInspectionScreen() {
         inspector_id: user?.id,
         filled_by_name: formData.employee_name,
         status: 'submitted',
+        location_name: location?.address || 'Unknown Location',
         location_latitude: location?.latitude,
         location_longitude: location?.longitude,
         location_address: location?.address || null,
       });
+
+      const { error: formError } = await supabase
+        .from('fims_office_inspection_forms')
+        .insert({
+          inspection_id: inspection.id,
+          filled_by_name: formData.employee_name || '',
+          department_name: formData.department_name,
+          employee_name: formData.employee_name,
+          designation: formData.designation,
+          table_number: formData.table_number,
+          date_of_joining: formData.date_of_joining || null,
+          work_nature: formData.work_nature,
+          letter_received_logged: formData.letter_received_logged,
+          letter_priority_disposed: formData.letter_priority_disposed,
+          weekly_report_created: formData.weekly_report_created,
+          pending_register_maintained: formData.pending_register_maintained,
+          reminders_sent_in_time: formData.reminders_sent_in_time,
+          letters_bound_with_permission: formData.letters_bound_with_permission,
+          class_d_letters_destroyed: formData.class_d_letters_destroyed,
+          long_pending_cases: formData.long_pending_cases,
+          required_registers: formData.required_registers,
+          updated_registers: formData.updated_registers,
+          registers_submitted_on_time: formData.registers_submitted_on_time,
+          file_structure_six_bundle: formData.file_structure_six_bundle,
+          post_disposal_bundling: formData.post_disposal_bundling,
+          periodic_statements_submitted: formData.periodic_statements_submitted,
+          permanent_instruction_available: formData.permanent_instruction_available,
+          indexed_instruction_complete: formData.indexed_instruction_complete,
+          updated_by_gov_circular: formData.updated_by_gov_circular,
+          files_classified: formData.files_classified,
+          binding_and_submission: formData.binding_and_submission,
+          disposal_speed_satisfactory: formData.disposal_speed_satisfactory,
+          inspection_issues_json: formData.inspection_issues_json || [],
+          evaluation_score: formData.evaluation_score || null,
+          work_quality: formData.work_quality || null,
+          inspector_name: formData.inspector_name,
+          inspector_designation: formData.inspector_designation,
+          supervisor_remarks: formData.supervisor_remarks,
+          supervisor_signature: formData.supervisor_signature,
+        });
+
+      if (formError) throw formError;
 
       await saveLocally(inspection.id, { formData, location, photos });
 
