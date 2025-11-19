@@ -49,7 +49,7 @@ export default function ZPDarMahinyalaScreen() {
   const handleSaveAsDraft = async () => {
     try {
       setLoading(true);
-      await createInspection({ category_id: categoryId, inspector_id: user?.id, filled_by_name: formData.officer_name || user?.email || '', status: 'draft', location_latitude: location?.latitude, location_longitude: location?.longitude, location_address: location?.address || null });
+      await createInspection({ category_id: categoryId, inspector_id: user?.id, filled_by_name: formData.officer_name || user?.email || '', status: 'draft', location_name: location?.address || 'Unknown Location', location_latitude: location?.latitude, location_longitude: location?.longitude, location_address: location?.address || null });
       Alert.alert(t('common.success'), t('fims.inspectionSaved'));
       navigation.goBack();
     } catch (error) { Alert.alert(t('common.error'), 'Failed'); } finally { setLoading(false); }
@@ -59,7 +59,7 @@ export default function ZPDarMahinyalaScreen() {
     if (photos.length === 0) { Alert.alert(t('common.error'), 'Add photo'); return; }
     try {
       setLoading(true);
-      const inspection = await createInspection({ category_id: categoryId, inspector_id: user?.id, filled_by_name: formData.officer_name || user?.email || '', status: 'submitted', location_latitude: location?.latitude, location_longitude: location?.longitude, location_address: location?.address || null });
+      const inspection = await createInspection({ category_id: categoryId, inspector_id: user?.id, filled_by_name: formData.officer_name || user?.email || '', status: 'submitted', location_name: location?.address || 'Unknown Location', location_latitude: location?.latitude, location_longitude: location?.longitude, location_address: location?.address || null });
       for (let i = 0; i < photos.length; i++) { await uploadPhoto(inspection.id, photos[i], `photo${i + 1}.jpg`, i + 1); }
       Alert.alert(t('common.success'), t('fims.inspectionSubmitted'));
       navigation.navigate('CategorySelection');
