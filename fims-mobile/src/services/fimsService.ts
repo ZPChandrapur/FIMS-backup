@@ -150,7 +150,7 @@ export const createInspection = async (inspectionData: Partial<Inspection>): Pro
       category_name_marathi: undefined,
       form_type: undefined,
       status: offlineInspection.status,
-      location_name: inspectionData.location_name,
+      location_name: inspectionData.location_name || null,
       location_latitude: offlineInspection.location_latitude,
       location_longitude: offlineInspection.location_longitude,
       location_address: offlineInspection.location_address,
