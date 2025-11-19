@@ -1,44 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import {  
-  ArrowLeft,
-  Plus,
-  FileText,
-  Camera,
-  MapPin,
-  Building2,
-  Save,
-  Send,
-  CheckCircle,
-  AlertCircle,
-  Calendar,
-  Building,
-  Users,
-  BookOpen,
-  FolderOpen,
-  Search,
-  Home,
-  Heart,
-  Scale,
-  Utensils,
-  Clock,
-  Baby,
-  Stethoscope,
-  UserCheck,
-  Phone,
-  Lightbulb,
-  MessageSquare
-} from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import type { User as SupabaseUser } from '@supabase/supabase-js';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Switch,
+  Dimensions,
+} from 'react-native';
 
-interface AnganwadiTapasaniFormProps {
-  user: SupabaseUser;
-  onBack: () => void;
-  categories: any[];
-  onInspectionCreated: () => void;
-  editingInspection?: any;
-}
+//import { Dimensions } from 'react-native';
+
+
+import { useTranslation } from 'react-i18next';
+import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { FormsStackParamList, LocationData } from '../../types';
+import { useAuth } from '../../hooks/useAuth';
+import { createInspection, uploadPhoto } from '../../services/fimsService';
+import { supabase } from '../../services/supabase';
+import Stepper from '../../components/common/Stepper';
+import Input from '../../components/common/Input';
+import Button from '../../components/common/Button';
+import Card from '../../components/common/Card';
+import PhotoUpload from '../../components/PhotoUpload';
+import LocationPicker from '../../components/LocationPicker';
+
+type RouteParams = RouteProp<FormsStackParamList, 'AnganwadiTapasani'>;
+type NavigationProp = StackNavigationProp<FormsStackParamList, 'AnganwadiTapasani'>;
+const { width } = Dimensions.get('window');
+const isSmallDevice = width < 375;
+
+const STEPS = ['Basic', 'Facilities', 'Equipment', 'Records', 'Schedule', 'Nutrition', 'Health', 'Community', 'Children', 'Location', 'Photos'];
 
 interface AnganwadiFormData {
   // Basic Information
@@ -47,7 +42,7 @@ interface AnganwadiFormData {
   supervisor_name: string;
   helper_name: string;
   village_name: string;
-  
+
   // Building and Facilities
   building_type: string;
   room_availability: boolean;
@@ -57,13 +52,15 @@ interface AnganwadiFormData {
   kitchen_garden: boolean;
   independent_kitchen: boolean;
   women_health_checkup_space: boolean;
-  
-  // Equipment and Materials
+
+  // Equipment and Materials - Weighing Scales
   weighing_machine: boolean;
   baby_weighing_scale: boolean;
   hammock_weighing_scale: boolean;
   adult_weighing_scale: boolean;
   height_measuring_scale: boolean;
+
+  // Equipment and Materials - General
   first_aid_kit: boolean;
   teaching_materials: boolean;
   toys_available: boolean;
@@ -71,7 +68,7 @@ interface AnganwadiFormData {
   water_storage_containers: boolean;
   medicine_kits: boolean;
   pre_school_kit: boolean;
-  
+
   // Records and Documentation
   attendance_register: boolean;
   growth_chart_updated: boolean;
@@ -79,21 +76,21 @@ interface AnganwadiFormData {
   nutrition_records: boolean;
   all_registers: boolean;
   monthly_progress_reports: boolean;
-  
+
   // Schedule and Operations
   timetable_available: boolean;
   timetable_followed: boolean;
   supervisor_regular_attendance: boolean;
-  
+
   // Children Information
-  total_registered_children: number;
-  children_present_today: number;
-  children_0_3_years: number;
-  children_3_6_years: number;
-  preschool_education_registered: number;
-  preschool_education_present: number;
-  
-  // Nutrition and Health Services
+  total_registered_children: string;
+  children_present_today: string;
+  children_0_3_years: string;
+  children_3_6_years: string;
+  preschool_education_registered: string;
+  preschool_education_present: string;
+
+  // Nutrition and Food Services
   hot_meal_served: boolean;
   take_home_ration: boolean;
   monthly_25_days_meals: boolean;
@@ -105,7 +102,7 @@ interface AnganwadiFormData {
   prescribed_protein_calories: boolean;
   prescribed_weight_food: boolean;
   lab_sample_date: string;
-  
+
   // Health Services
   health_checkup_conducted: boolean;
   immunization_updated: boolean;
@@ -115,7 +112,7 @@ interface AnganwadiFormData {
   growth_chart_accuracy: boolean;
   vaccination_health_checkup_regular: boolean;
   vaccination_schedule_awareness: boolean;
-  
+
   // Community Participation
   village_health_nutrition_planning: string;
   children_attendance_comparison: string;
@@ -124,7 +121,7 @@ interface AnganwadiFormData {
   committee_member_participation: string;
   home_visits_guidance: string;
   public_opinion_improvement: string;
-  
+
   // Final Details
   general_observations: string;
   recommendations: string;
@@ -135,47 +132,25 @@ interface AnganwadiFormData {
   inspector_name: string;
 }
 
-export const AnganwadiTapasaniForm: React.FC<AnganwadiTapasaniFormProps> = ({
-  user,
-  onBack,
-  categories,
-  onInspectionCreated,
-  editingInspection
-}) => {
+export default function AnganwadiTapasaniScreen() {
   const { t } = useTranslation();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [uploadedPhotos, setUploadedPhotos] = useState<File[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
-  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
-  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
-  const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const route = useRoute<RouteParams>();
+  const navigation = useNavigation<NavigationProp>();
+  const { user } = useAuth();
+  const { categoryId } = route.params;
 
-  // Check if we're in view mode
-  const isViewMode = editingInspection?.mode === 'view';
-  const isEditMode = editingInspection?.mode === 'edit';
+  const [currentStep, setCurrentStep] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [photos, setPhotos] = useState<string[]>([]);
+  const [location, setLocation] = useState<LocationData | null>(null);
 
-  // Basic inspection data
-  const [inspectionData, setInspectionData] = useState({
-    category_id: '',
-    location_name: '',
-    planned_date: '',
-    latitude: null as number | null,
-    longitude: null as number | null,
-    location_accuracy: null as number | null,
-    location_detected: ''
-  });
-
-  // Anganwadi form data
-  const [anganwadiFormData, setAnganwadiFormData] = useState<AnganwadiFormData>({
+  const [formData, setFormData] = useState<AnganwadiFormData>({
     anganwadi_name: '',
     anganwadi_number: '',
     supervisor_name: '',
     helper_name: '',
     village_name: '',
-    building_type: '',
+    building_type: 'own',
     room_availability: false,
     toilet_facility: false,
     drinking_water: false,
@@ -204,12 +179,12 @@ export const AnganwadiTapasaniForm: React.FC<AnganwadiTapasaniFormProps> = ({
     timetable_available: false,
     timetable_followed: false,
     supervisor_regular_attendance: false,
-    total_registered_children: 0,
-    children_present_today: 0,
-    children_0_3_years: 0,
-    children_3_6_years: 0,
-    preschool_education_registered: 0,
-    preschool_education_present: 0,
+    total_registered_children: '',
+    children_present_today: '',
+    children_0_3_years: '',
+    children_3_6_years: '',
+    preschool_education_registered: '',
+    preschool_education_present: '',
     hot_meal_served: false,
     take_home_ration: false,
     monthly_25_days_meals: false,
@@ -242,1560 +217,710 @@ export const AnganwadiTapasaniForm: React.FC<AnganwadiTapasaniFormProps> = ({
     suggestions: '',
     visit_date: '',
     inspector_designation: '',
-    inspector_name: ''
+    inspector_name: '',
   });
 
-  // Get anganwadi inspection category
-  const anganwadiCategory = categories.find(cat => cat.form_type === 'anganwadi');
+  const updateFormData = (field: keyof AnganwadiFormData, value: any) => {
+    setFormData({ ...formData, [field]: value });
+  };
 
-  useEffect(() => {
-    if (anganwadiCategory) {
-      setInspectionData(prev => ({
-        ...prev,
-        category_id: anganwadiCategory.id
-      }));
-    }
-  }, [anganwadiCategory]);
-
-  // Load existing inspection data when editing
-  useEffect(() => {
-    if (editingInspection && editingInspection.id) {
-      console.log('Loading existing inspection data:', editingInspection);
-      
-      // Load basic inspection data
-      setInspectionData({
-        category_id: editingInspection.category_id || '',
-        location_name: editingInspection.location_name || '',
-        planned_date: editingInspection.planned_date ? editingInspection.planned_date.split('T')[0] : '',
-        latitude: editingInspection.latitude,
-        longitude: editingInspection.longitude,
-        location_accuracy: editingInspection.location_accuracy,
-        location_detected: editingInspection.location_detected || ''
-      });
-
-      // Load anganwadi form data if it exists
-      let formDataToLoad = null;
-      
-      // Try to get data from fims_anganwadi_forms table first
-      if (editingInspection.fims_anganwadi_forms && editingInspection.fims_anganwadi_forms.length > 0) {
-        formDataToLoad = editingInspection.fims_anganwadi_forms[0];
-        console.log('Loading from fims_anganwadi_forms:', formDataToLoad);
-      } else {
-        // Fallback to form_data JSON field
-        formDataToLoad = editingInspection.form_data;
-        console.log('Loading from form_data JSON:', formDataToLoad);
-      }
-
-      if (formDataToLoad) {
-        setAnganwadiFormData({
-          anganwadi_name: formDataToLoad.anganwadi_name || '',
-          anganwadi_number: formDataToLoad.anganwadi_number || '',
-          supervisor_name: formDataToLoad.supervisor_name || '',
-          helper_name: formDataToLoad.helper_name || '',
-          village_name: formDataToLoad.village_name || '',
-          building_type: formDataToLoad.building_type || '',
-          room_availability: formDataToLoad.room_availability || false,
-          toilet_facility: formDataToLoad.toilet_facility || false,
-          drinking_water: formDataToLoad.drinking_water || false,
-          electricity: formDataToLoad.electricity || false,
-          kitchen_garden: formDataToLoad.kitchen_garden || false,
-          independent_kitchen: formDataToLoad.independent_kitchen || false,
-          women_health_checkup_space: formDataToLoad.women_health_checkup_space || false,
-          weighing_machine: formDataToLoad.weighing_machine || false,
-          baby_weighing_scale: formDataToLoad.baby_weighing_scale || false,
-          hammock_weighing_scale: formDataToLoad.hammock_weighing_scale || false,
-          adult_weighing_scale: formDataToLoad.adult_weighing_scale || false,
-          height_measuring_scale: formDataToLoad.height_measuring_scale || false,
-          first_aid_kit: formDataToLoad.first_aid_kit || false,
-          teaching_materials: formDataToLoad.teaching_materials || false,
-          toys_available: formDataToLoad.toys_available || false,
-          cooking_utensils: formDataToLoad.cooking_utensils || false,
-          water_storage_containers: formDataToLoad.water_storage_containers || false,
-          medicine_kits: formDataToLoad.medicine_kits || false,
-          pre_school_kit: formDataToLoad.pre_school_kit || false,
-          attendance_register: formDataToLoad.attendance_register || false,
-          growth_chart_updated: formDataToLoad.growth_chart_updated || false,
-          vaccination_records: formDataToLoad.vaccination_records || false,
-          nutrition_records: formDataToLoad.nutrition_records || false,
-          all_registers: formDataToLoad.all_registers || false,
-          monthly_progress_reports: formDataToLoad.monthly_progress_reports || false,
-          timetable_available: formDataToLoad.timetable_available || false,
-          timetable_followed: formDataToLoad.timetable_followed || false,
-          supervisor_regular_attendance: formDataToLoad.supervisor_regular_attendance || false,
-          total_registered_children: formDataToLoad.total_registered_children || 0,
-          children_present_today: formDataToLoad.children_present_today || 0,
-          children_0_3_years: formDataToLoad.children_0_3_years || 0,
-          children_3_6_years: formDataToLoad.children_3_6_years || 0,
-          preschool_education_registered: formDataToLoad.preschool_education_registered || 0,
-          preschool_education_present: formDataToLoad.preschool_education_present || 0,
-          hot_meal_served: formDataToLoad.hot_meal_served || false,
-          take_home_ration: formDataToLoad.take_home_ration || false,
-          monthly_25_days_meals: formDataToLoad.monthly_25_days_meals || false,
-          thr_provided_regularly: formDataToLoad.thr_provided_regularly || false,
-          food_provider: formDataToLoad.food_provider || '',
-          supervisor_participation: formDataToLoad.supervisor_participation || '',
-          food_distribution_decentralized: formDataToLoad.food_distribution_decentralized || false,
-          children_food_taste_preference: formDataToLoad.children_food_taste_preference || '',
-          prescribed_protein_calories: formDataToLoad.prescribed_protein_calories || false,
-          prescribed_weight_food: formDataToLoad.prescribed_weight_food || false,
-          lab_sample_date: formDataToLoad.lab_sample_date || '',
-          health_checkup_conducted: formDataToLoad.health_checkup_conducted || false,
-          immunization_updated: formDataToLoad.immunization_updated || false,
-          vitamin_a_given: formDataToLoad.vitamin_a_given || false,
-          iron_tablets_given: formDataToLoad.iron_tablets_given || false,
-          regular_weighing: formDataToLoad.regular_weighing || false,
-          growth_chart_accuracy: formDataToLoad.growth_chart_accuracy || false,
-          vaccination_health_checkup_regular: formDataToLoad.vaccination_health_checkup_regular || false,
-          vaccination_schedule_awareness: formDataToLoad.vaccination_schedule_awareness || false,
-          village_health_nutrition_planning: formDataToLoad.village_health_nutrition_planning || '',
-          children_attendance_comparison: formDataToLoad.children_attendance_comparison || '',
-          preschool_programs_conducted: formDataToLoad.preschool_programs_conducted || '',
-          community_participation: formDataToLoad.community_participation || '',
-          committee_member_participation: formDataToLoad.committee_member_participation || '',
-          home_visits_guidance: formDataToLoad.home_visits_guidance || '',
-          public_opinion_improvement: formDataToLoad.public_opinion_improvement || '',
-          general_observations: formDataToLoad.general_observations || '',
-          recommendations: formDataToLoad.recommendations || '',
-          action_required: formDataToLoad.action_required || '',
-          suggestions: formDataToLoad.suggestions || '',
-          visit_date: formDataToLoad.visit_date || '',
-          inspector_designation: formDataToLoad.inspector_designation || '',
-          inspector_name: formDataToLoad.inspector_name || ''
-        });
-      }
-    }
-  }, [editingInspection]);
-
-  const getCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      alert(t('categories.geolocationNotSupported'));
-      return;
-    }
-
-    setIsGettingLocation(true);
-
-    let bestPosition: GeolocationPosition | null = null;
-    let watchId: number | null = null;
-    let attempts = 0;
-    const maxAttempts = 3;
-    const accuracyThreshold = 50; // meters - prefer accuracy better than 50m
-
-    // Function to process and save location
-    const processLocation = async (position: GeolocationPosition) => {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-      const accuracy = position.coords.accuracy;
-
-      // Get location name using reverse geocoding
-      try {
-        const response = await fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${import.meta.env.VITE_GOOGLE_API_KEY}`
-        );
-        const data = await response.json();
-
-        if (data.results && data.results.length > 0) {
-          const address = data.results[0].formatted_address;
-
-          setInspectionData(prev => ({
-            ...prev,
-            latitude: lat,
-            longitude: lng,
-            location_accuracy: accuracy,
-            location_detected: address,
-            location_name: prev.location_name || address
-          }));
-        } else {
-          setInspectionData(prev => ({
-            ...prev,
-            latitude: lat,
-            longitude: lng,
-            location_accuracy: accuracy,
-            location_detected: 'Location detected but address not found'
-          }));
-        }
-      } catch (error) {
-        console.error('Error getting location name:', error);
-        setInspectionData(prev => ({
-          ...prev,
-          latitude: lat,
-          longitude: lng,
-          location_accuracy: accuracy,
-          location_detected: 'Unable to get address'
-        }));
-      }
-    };
-
-    // Success handler for position updates
-    const handlePosition = async (position: GeolocationPosition) => {
-      attempts++;
-      const accuracy = position.coords.accuracy;
-
-      // Keep track of best position (most accurate)
-      if (!bestPosition || accuracy < bestPosition.coords.accuracy) {
-        bestPosition = position;
-      }
-
-      // If we get good accuracy, use it immediately
-      if (accuracy <= accuracyThreshold) {
-        if (watchId !== null) {
-          navigator.geolocation.clearWatch(watchId);
-        }
-        await processLocation(position);
-        setIsGettingLocation(false);
+  const handleNext = () => {
+    if (currentStep === 0) {
+      if (!formData.anganwadi_name || !formData.supervisor_name) {
+        Alert.alert(t('common.error'), 'Please fill in required fields');
         return;
       }
-
-      // After max attempts, use the best position we got
-      if (attempts >= maxAttempts) {
-        if (watchId !== null) {
-          navigator.geolocation.clearWatch(watchId);
-        }
-        if (bestPosition) {
-          await processLocation(bestPosition);
-        }
-        setIsGettingLocation(false);
-      }
-    };
-
-    // Error handler
-    const handleError = (error: GeolocationPositionError) => {
-      console.error('Error getting location:', error);
-      if (watchId !== null) {
-        navigator.geolocation.clearWatch(watchId);
-      }
-
-      // If we have a best position from previous attempts, use it
-      if (bestPosition) {
-        processLocation(bestPosition);
-      } else {
-        setIsGettingLocation(false);
-        alert(t('categories.geolocationError'));
-      }
-      setIsGettingLocation(false);
-    };
-
-    // Start watching position for continuous updates
-    watchId = navigator.geolocation.watchPosition(
-      handlePosition,
-      handleError,
-      {
-        enableHighAccuracy: true,
-        timeout: 30000, // 30 seconds timeout for each attempt
-        maximumAge: 0 // Force fresh location, don't use cached data
-      }
-    );
-
-    // Fallback: Stop watching after 45 seconds and use best position
-    setTimeout(() => {
-      if (watchId !== null) {
-        navigator.geolocation.clearWatch(watchId);
-        if (bestPosition && attempts > 0) {
-          processLocation(bestPosition);
-        } else if (!bestPosition) {
-          alert('Unable to get location. Please try again or check your GPS settings.');
-        }
-        setIsGettingLocation(false);
-      }
-    }, 45000);
-  };
-
-  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-  const files = Array.from(event.target.files || []);
-  if (uploadedPhotos.length + files.length > 5) {
-    alert('Maximum 5 photos allowed');
-    return;
-  }
-  setUploadedPhotos(prev => [...prev, ...files]);
-};
-
-
-  const handlePlaceSelect = (event: any) => {
-    if (!event.detail) {
-      console.warn('Place picker event does not contain place data');
-      return;
-    }
-    
-    const place = event.detail?.place;
-    if (!place) {
-      return;
-    }
-    
-    // Handle place selection logic here
-  };
-
-  const handleFileUpload = (files: File[]) => {
-    if (uploadedPhotos.length + files.length > 5) {
-      alert(t('fims.maxPhotosAllowed'));
-      return;
     }
 
-    // Filter out files that are too large (>10MB) or invalid formats
-    const validFiles = files.filter(file => {
-      if (file.size > 10 * 1024 * 1024) { // 10MB limit
-        console.warn(`File ${file.name} is too large (${(file.size / 1024 / 1024).toFixed(2)}MB)`);
-        return false;
+    if (currentStep === 9) {
+      if (!location) {
+        Alert.alert(t('common.error'), 'Please capture location');
+        return;
       }
-      if (!file.type.startsWith('image/')) {
-        console.warn(`File ${file.name} is not an image`);
-        return false;
-      }
-      return true;
-    });
-
-    if (validFiles.length !== files.length) {
-      alert('Some files were skipped. Only image files under 10MB are allowed.');
     }
 
-    if (validFiles.length > 0) {
-      setUploadedPhotos(prev => [...prev, ...validFiles]);
+    if (currentStep < STEPS.length - 1) {
+      setCurrentStep(currentStep + 1);
     }
   };
 
-const removePhoto = (index: number) => {
-  setUploadedPhotos(prev => prev.filter((_, i) => i !== index));
-};
-
-
-  // Clean up preview URLs when component unmounts
-  useEffect(() => {
-    return () => {
-      photoPreviews.forEach(url => URL.revokeObjectURL(url));
-    };
-  }, []);
-
-const uploadPhotosToSupabase = async (inspectionId: string) => {
-
-  if (uploadedPhotos.length === 0) return;
- 
-  setIsUploading(true);
-
-  try {
-
-    for (let i = 0; i < uploadedPhotos.length; i++) {
-
-      const file = uploadedPhotos[i];
-
-      const fileExt = file.name.split('.').pop();
-
-      const fileName = `anganwadi_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
- 
-      const { data: uploadData, error: uploadError } = await supabase.storage
-
-        .from('field-visit-images')
-
-        .upload(fileName, file);
- 
-      if (uploadError) throw uploadError;
- 
-      const { data: { publicUrl } } = supabase.storage
-
-        .from('field-visit-images')
-
-        .getPublicUrl(fileName);
- 
-      const { error: dbError } = await supabase
-
-        .from('fims_inspection_photos')
-
-        .insert({
-
-          inspection_id: inspectionId,
-
-          photo_url: publicUrl,
-
-          photo_name: file.name,
-
-          description: `Anganwadi inspection photo ${i + 1}`,
-
-          photo_order: i + 1,
-
-        });
- 
-      if (dbError) throw dbError;
-
+  const handlePrevious = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
     }
-
-  } catch (error) {
-
-    console.error('Error uploading photos:', error);
-
-    throw error;
-
-  } finally {
-
-    setIsUploading(false);
-
-  }
-
-};
-
- 
-  const generateInspectionNumber = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const time = String(now.getTime()).slice(-6);
-    return `AWC-${year}${month}${day}-${time}`;
   };
 
-  const handleSubmit = async (isDraft: boolean = false) => {
+  const handleSaveAsDraft = async () => {
     try {
-      setIsLoading(true);
+      setLoading(true);
+      const inspection = await createInspection({
+        category_id: categoryId.toString(),
+        inspector_id: user?.id,
+        filled_by_name: formData.supervisor_name,
+        status: 'draft',
+        location_name: location?.address || 'Unknown Location',
+        location_latitude: location?.latitude,
+        location_longitude: location?.longitude,
+        location_address: location?.address || null,
+      });
 
-      // Convert empty date strings to null for database compatibility
-      const sanitizedInspectionData = {
-        ...inspectionData,
-        planned_date: inspectionData.planned_date || null
-      };
+      const { error: formError } = await supabase
+        .from('fims_anganwadi_forms')
+        .insert({
+          inspection_id: inspection.id,
+          filled_by_name: formData.supervisor_name || '',
+          ...formData
+        });
 
-      let inspectionResult;
+      if (formError) throw formError;
 
-      if (editingInspection && editingInspection.id) {
-        // Update existing inspection
-        const { data: updateResult, error: updateError } = await supabase
-          .from('fims_inspections')
-          .update({
-            location_name: sanitizedInspectionData.location_name,
-            latitude: sanitizedInspectionData.latitude,
-            longitude: sanitizedInspectionData.longitude,
-            location_accuracy: sanitizedInspectionData.location_accuracy,
-            location_detected: sanitizedInspectionData.location_detected,
-            address: sanitizedInspectionData.address,
-            planned_date: sanitizedInspectionData.planned_date,
-            inspection_date: new Date().toISOString(),
-            status: isDraft ? 'draft' : 'submitted',
-            form_data: anganwadiFormData
-          })
-          .eq('id', editingInspection.id)
-          .select()
-          .single();
-
-        if (updateError) throw updateError;
-        inspectionResult = updateResult;
-
-        // Update anganwadi form record
-        const { error: formError } = await supabase
-          .from('fims_anganwadi_forms')
-          .update({
-            ...anganwadiFormData
-          })
-          .eq('inspection_id', editingInspection.id);
-
-        if (formError) throw formError;
-      } else {
-        // Create new inspection
-        const inspectionNumber = generateInspectionNumber();
-
-        const { data: createResult, error: createError } = await supabase
-          .from('fims_inspections')
-          .insert({
-            inspection_number: inspectionNumber,
-            category_id: sanitizedInspectionData.category_id,
-            inspector_id: user.id,
-            location_name: sanitizedInspectionData.location_name,
-            latitude: sanitizedInspectionData.latitude,
-            longitude: sanitizedInspectionData.longitude,
-            location_accuracy: sanitizedInspectionData.location_accuracy,
-            location_detected: sanitizedInspectionData.location_detected,
-            address: sanitizedInspectionData.address,
-            planned_date: sanitizedInspectionData.planned_date,
-            inspection_date: new Date().toISOString(),
-            status: isDraft ? 'draft' : 'submitted',
-            form_data: anganwadiFormData
-          })
-          .select()
-          .single();
-
-        if (createError) throw createError;
-        inspectionResult = createResult;
-
-        // Create anganwadi form record
-        const { error: formError } = await supabase
-          .from('fims_anganwadi_forms')
-          .insert({
-            inspection_id: inspectionResult.id,
-            ...anganwadiFormData
-          });
-
-        if (formError) throw formError;
-      }
-
-      // Upload photos if any
-      if (uploadedPhotos.length > 0) {
-        await uploadPhotosToSupabase(inspectionResult.id);
-      }
-
-      const isUpdate = editingInspection && editingInspection.id;
-      const message = isDraft 
-        ? (isUpdate ? t('fims.inspectionUpdatedAsDraft') : t('fims.inspectionSavedAsDraft'))
-        : (isUpdate ? t('fims.inspectionUpdatedSuccessfully') : t('fims.inspectionSubmittedSuccessfully'));
-      
-      alert(message);
-      onInspectionCreated();
-      onBack();
-
+      Alert.alert(t('common.success'), t('fims.inspectionSaved'));
+      navigation.goBack();
     } catch (error) {
-      console.error('Error saving inspection:', error);
-      alert('Error saving inspection: ' + error.message);
+      Alert.alert(t('common.error'), 'Failed to save inspection');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const renderStepIndicator = () => (
-    <div className="flex items-center justify-center mb-8">
-      {[1, 2, 3].map((step) => (
-        <div key={step} className="flex items-center">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-            currentStep >= step 
-              ? 'bg-purple-600 text-white' 
-              : 'bg-gray-200 text-gray-600'
-          }`}>
-            {step}
-          </div>
-          {step < 3 && (
-            <div className={`w-16 h-1 mx-2 ${
-              currentStep > step ? 'bg-purple-600' : 'bg-gray-200'
-            }`} />
-          )}
-        </div>
-      ))}
-    </div>
+  const handleSubmit = async () => {
+    if (photos.length === 0) {
+      Alert.alert(t('common.error'), 'Please add at least one photo');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const inspection = await createInspection({
+        category_id: categoryId.toString(),
+        inspector_id: user?.id,
+        filled_by_name: formData.supervisor_name,
+        status: 'submitted',
+        location_name: location?.address || 'Unknown Location',
+        location_latitude: location?.latitude,
+        location_longitude: location?.longitude,
+        location_address: location?.address || null,
+      });
+
+      const { error: formError } = await supabase
+        .from('fims_anganwadi_forms')
+        .insert({
+          inspection_id: inspection.id,
+          filled_by_name: formData.supervisor_name || '',
+          ...formData
+        });
+
+      if (formError) throw formError;
+
+      for (let i = 0; i < photos.length; i++) {
+        await uploadPhoto(inspection.id, photos[i], `photo_${i + 1}.jpg`, i + 1);
+      }
+
+      Alert.alert(t('common.success'), t('fims.inspectionSubmitted'));
+      navigation.navigate('CategorySelection');
+    } catch (error) {
+      Alert.alert(t('common.error'), 'Failed to submit inspection');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderSwitchRow = (label: string, value: boolean, field: keyof AnganwadiFormData) => (
+    <View style={styles.switchRow}>
+      <Text style={styles.switchLabel}>{label}</Text>
+      <Switch
+        value={value}
+        onValueChange={(val) => updateFormData(field, val)}
+        trackColor={{ false: '#d1d5db', true: '#93c5fd' }}
+        thumbColor={value ? '#2563eb' : '#f3f4f6'}
+      />
+    </View>
   );
 
-  const YesNoRadio = ({ name, value, onChange, question }: { 
-    name: string; 
-    value: string; 
-    onChange: (value: string) => void;
-    question: string;
-  }) => (
-    <div className="mb-6 p-6 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-gray-200 hover:shadow-md transition-all duration-300">
-      <p className="mb-4 text-gray-800 font-medium leading-relaxed text-lg">{question}</p>
-      <div className="flex gap-8 pl-4">
-        <label className="flex items-center cursor-pointer group">
-          <input
-            type="radio"
-            name={name}
-            value="होय"
-            checked={value === 'होय'}
-            onChange={(e) => onChange(e.target.value)}
-            disabled={isViewMode}
-            className="mr-3 w-5 h-5 text-green-600 border-2 border-gray-300 focus:ring-green-500 focus:ring-2 group-hover:border-green-400 transition-colors"
-          />
-          <span className="text-green-700 font-semibold group-hover:text-green-800 transition-colors text-lg">होय</span>
-        </label>
-        <label className="flex items-center cursor-pointer group">
-          <input
-            type="radio"
-            name={name}
-            value="नाही"
-            checked={value === 'नाही'}
-            onChange={(e) => onChange(e.target.value)}
-            disabled={isViewMode}
-            className="mr-3 w-5 h-5 text-red-600 border-2 border-gray-300 focus:ring-red-500 focus:ring-2 group-hover:border-red-400 transition-colors"
-          />
-          <span className="text-red-700 font-semibold group-hover:text-red-800 transition-colors text-lg">नाही</span>
-        </label>
-      </div>
-    </div>
-  );
+  const renderStep = () => {
+    switch (currentStep) {
+      case 0:
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>अंगणवाडी माहिती</Text>
+            <Text style={styles.sectionSubtitle}>Anganwadi Information</Text>
 
-  const renderBasicDetailsAndLocation = () => (
-    <div className="space-y-8">
-      {/* Basic Information Section */}
-      <section className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-        <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-8 py-6">
-          <div className="flex items-center text-white">
-            <Building2 className="w-8 h-8 mr-4" />
-            <h3 className="text-2xl font-bold">मूलभूत माहिती (Basic Information)</h3>
-          </div>
-        </div>
-        <div className="p-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('fims.anganwadiName')} *
-              </label>
-              <input
-                type="text"
-                value={anganwadiFormData.anganwadi_name}
-                onChange={(e) => setAnganwadiFormData(prev => ({...prev, anganwadi_name: e.target.value}))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                placeholder={t('fims.enterAnganwadiName')}
-                required
-                disabled={isViewMode}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('fims.anganwadiNumber')}
-              </label>
-              <input
-                type="text"
-                value={anganwadiFormData.anganwadi_number}
-                onChange={(e) => setAnganwadiFormData(prev => ({...prev, anganwadi_number: e.target.value}))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                placeholder={t('fims.enterAnganwadiNumber')}
-                disabled={isViewMode}
-              />
-            </div>
+            <Input
+              label="अंगणवाडीचे नाव *"
+              value={formData.anganwadi_name}
+              onChangeText={(text) => updateFormData('anganwadi_name', text)}
+              placeholder="Enter anganwadi name"
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('fims.supervisorName')}
-              </label>
-              <input
-                type="text"
-                value={anganwadiFormData.supervisor_name}
-                onChange={(e) => setAnganwadiFormData(prev => ({...prev, supervisor_name: e.target.value}))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                placeholder={t('fims.enterSupervisorName')}
-                disabled={isViewMode}
-              />
-            </div>
+            <Input
+              label="अंगणवाडी क्रमांक"
+              value={formData.anganwadi_number}
+              onChangeText={(text) => updateFormData('anganwadi_number', text)}
+              placeholder="Enter number"
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('fims.helperName')}
-              </label>
-              <input
-                type="text"
-                value={anganwadiFormData.helper_name}
-                onChange={(e) => setAnganwadiFormData(prev => ({...prev, helper_name: e.target.value}))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                placeholder={t('fims.enterHelperName')}
-                disabled={isViewMode}
-              />
-            </div>
+            <Input
+              label="पर्यवेक्षकाचे नाव *"
+              value={formData.supervisor_name}
+              onChangeText={(text) => updateFormData('supervisor_name', text)}
+              placeholder="Enter supervisor name"
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('fims.villageName')}
-              </label>
-              <input
-                type="text"
-                value={anganwadiFormData.village_name}
-                onChange={(e) => setAnganwadiFormData(prev => ({...prev, village_name: e.target.value}))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                placeholder={t('fims.enterVillageName')}
-                disabled={isViewMode}
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+            <Input
+              label="सहायकाचे नाव"
+              value={formData.helper_name}
+              onChangeText={(text) => updateFormData('helper_name', text)}
+              placeholder="Enter helper name"
+            />
 
-      {/* Location Information Section */}
-      <section className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-        <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-8 py-6">
-          <div className="flex items-center text-white">
-            <MapPin className="w-8 h-8 mr-4" />
-            <h3 className="text-2xl font-bold">स्थान माहिती (Location Information)</h3>
-          </div>
-        </div>
-        <div className="p-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('fims.locationName')} *
-              </label>
-              <input
-                type="text"
-                value={inspectionData.location_name}
-                onChange={(e) => setInspectionData(prev => ({...prev, location_name: e.target.value}))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={t('fims.enterLocationName')}
-                required
-                disabled={isViewMode}
-              />
-            </div>
+            <Input
+              label="गावाचे नाव"
+              value={formData.village_name}
+              onChangeText={(text) => updateFormData('village_name', text)}
+              placeholder="Enter village name"
+            />
+          </View>
+        );
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t('fims.plannedDate')}
-              </label>
-              <input
-                type="date"
-                value={inspectionData.planned_date}
-                onChange={(e) => setInspectionData(prev => ({...prev, planned_date: e.target.value}))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                disabled={isViewMode}
-              />
-            </div>
+      case 1:
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>सुविधा</Text>
+            <Text style={styles.sectionSubtitle}>Facilities Available</Text>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                GPS Location
-              </label>
-              {!isViewMode && (
-                <button
-                  type="button"
-                  onClick={getCurrentLocation}
-                  disabled={isLoading}
-                  className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
-                >
-                  <MapPin className="h-4 w-4" />
-                  <span>{isGettingLocation ? t('fims.gettingLocation') : t('fims.getCurrentLocation')}</span>
-                </button>
-              )}
-              {inspectionData.latitude && inspectionData.longitude && (
-                <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <div className="flex items-start justify-between mb-2">
-                    <p className="text-sm text-green-800 font-medium">{t('fims.locationCaptured')}</p>
-                    {inspectionData.location_accuracy && (
-                      <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                        inspectionData.location_accuracy <= 20
-                          ? 'bg-green-600 text-white'
-                          : inspectionData.location_accuracy <= 50
-                          ? 'bg-yellow-500 text-white'
-                          : 'bg-orange-500 text-white'
-                      }`}>
-                        {inspectionData.location_accuracy <= 20 ? 'Excellent' : inspectionData.location_accuracy <= 50 ? 'Good' : 'Fair'}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-green-600">
-                    {t('fims.latitude')}: {inspectionData.latitude.toFixed(6)}<br />
-                    {t('fims.longitude')}: {inspectionData.longitude.toFixed(6)}
-                  </p>
-                  {inspectionData.location_accuracy && (
-                    <div className="mt-2 pt-2 border-t border-green-200">
-                      <p className="text-xs text-green-700 font-medium">
-                        {t('fims.accuracy')}: <span className="font-bold">{Math.round(inspectionData.location_accuracy)}m</span>
-                        <span className="text-green-600 ml-1">
-                          ({inspectionData.location_accuracy <= 20 ? '±20m - उत्कृष्ट' : inspectionData.location_accuracy <= 50 ? '±50m - चांगले' : '>50m - सामान्य'})
-                        </span>
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
 
-            <div className="md:col-span-2">
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                शोधलेले स्थान (Location Detected)
-              </label>
-              <input
-                type="text"
-                value={inspectionData.location_detected}
-                onChange={(e) => setInspectionData(prev => ({...prev, location_detected: e.target.value}))}
-                className="w-full px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:border-transparent text-xs"
-                placeholder="GPS द्वारे शोधलेले स्थान येथे दिसेल"
-                readOnly={isViewMode}
-              />
-            </div>
-            {/* Google Maps Place Picker for manual location selection - only show if location not detected */}
-            {!inspectionData.location_detected && (
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  स्थान शोधा (Search Location)
-                </label>
-                <div style={{ width: '100%', padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: '8px' }}>
-                  <gmpx-place-picker 
-                    placeholder="पत्ता किंवा स्थान शोधा"
-                  ></gmpx-place-picker>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-
-  const renderAnganwadiInspectionForm = () => (
-    <div className="space-y-8">
-      <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 mb-10 overflow-hidden">
-        <div className="bg-gradient-to-r from-blue-600 via-indigo-700 to-purple-800 px-8 py-16 text-white relative">
-          <div className="absolute inset-0 bg-black/10"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
-          <div className="relative z-10 text-center">
-            <div className="flex justify-center mb-8">
-              <div className="bg-white/20 backdrop-blur-sm rounded-full p-6 shadow-lg">
-                <FileText className="w-16 h-16 text-white" />
-              </div>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight tracking-wide">
-              अंगणवाडी केंद्र तपासणी अहवाल (नमुना)
-            </h1>
-            <div className="bg-white/20 backdrop-blur-sm rounded-xl px-8 py-4 inline-block shadow-lg border border-white/30">
-              <p className="text-sm font-medium">
-                (केंद्र शासनाचे पत्र क्र. F.No.१६-३/२००४-ME (P+) दि. २२ ऑक्टोबर२०१०.)
-              </p>
-              {inspectionData.location_detected && (
-                <p className="text-sm text-green-700 mt-1">
-                  <strong>स्थान:</strong> {inspectionData.location_detected}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Section 1 - Facilities */}
-      <section className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden transform hover:scale-[1.01] transition-transform duration-300">
-        <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-8 py-6">
-          <div className="flex items-center text-white">
-            <Home className="w-8 h-8 mr-4" />
-            <h3 className="text-2xl font-bold">१. अंगणवाडी केंद्रातील उपलब्ध सुविधा:</h3>
-          </div>
-        </div>
-        <div className="p-10">
-          <div className="space-y-8">
-            <div>
-              <label className="block mb-4 text-lg font-bold text-gray-700">अंगणवाडी इमारत [स्वतःची/ भाड्याची/ मोफत/ इमारत नाही]</label>
-              <select
-                value={anganwadiFormData.building_type}
-                onChange={(e) => setAnganwadiFormData(prev => ({...prev, building_type: e.target.value}))}
-                className="w-full p-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-300 bg-gray-50 hover:bg-white text-lg shadow-sm"
-                disabled={isViewMode}
-              >
-                <option value="">निवडा</option>
-                <option value="own">स्वतःची</option>
-                <option value="rented">भाड्याची</option>
-                <option value="free">मोफत</option>
-                <option value="no_building">इमारत नाही</option>
-              </select>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[
-                { key: 'toilet_facility', label: 'शौचालय' },
-                { key: 'independent_kitchen', label: 'स्वतंत्र बंदिस्त किचन व्यवस्था' },
-                { key: 'women_health_checkup_space', label: 'महिलांच्या आरोग्य तपासणीसाठी जागा' },
-                { key: 'electricity', label: 'विद्युत पुरवठा' },
-                { key: 'drinking_water', label: 'पिण्याचे पाणी' },
-              ].map(({ key, label }) => (
-                <label key={key} className="flex items-center p-6 bg-gradient-to-r from-gray-50 to-emerald-50 rounded-2xl hover:from-emerald-50 hover:to-emerald-100 transition-all duration-300 cursor-pointer group border border-gray-200 hover:border-emerald-300 shadow-sm hover:shadow-md">
-                  <input
-                    type="checkbox"
-                    checked={anganwadiFormData[key as keyof AnganwadiFormData] as boolean}
-                    onChange={(e) => setAnganwadiFormData(prev => ({...prev, [key]: e.target.checked}))}
-                    className="mr-5 w-6 h-6 text-emerald-600 border-2 border-gray-300 rounded-lg focus:ring-emerald-500 focus:ring-2 group-hover:border-emerald-400 transition-colors"
-                    disabled={isViewMode}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>अंगणवाडी इमारत</Text>
+              <Text style={styles.inputHint}>[स्वतःची/ भाड्याची/ मोफत/ इमारत नाही]</Text>
+              <View style={styles.pickerContainer}>
+                {['own', 'rented', 'free', 'no_building'].map((type) => (
+                  <Button
+                    key={type}
+                    title={type === 'own' ? 'स्वतःची' : type === 'rented' ? 'भाड्याची' : type === 'free' ? 'मोफत' : 'इमारत नाही'}
+                    onPress={() => updateFormData('building_type', type)}
+                    variant={formData.building_type === type ? 'primary' : 'outline'}
+                    style={styles.pickerButton}
                   />
-                  <span className="text-gray-700 group-hover:text-emerald-800 font-semibold text-lg">{label}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-{/* Section 2 - Weighing Scales */}
-      <section className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden transform hover:scale-[1.01] transition-transform duration-300">
-        <div className="bg-gradient-to-r from-purple-500 to-pink-600 px-8 py-6">
-          <div className="flex items-center text-white">
-            <Scale className="w-8 h-8 mr-4" />
-            <h3 className="text-2xl font-bold">२. वजनकाटे उपलब्ध:</h3>
-          </div>
-        </div>
-        <div className="p-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { key: 'baby_weighing_scale', label: 'बेबी वजनकाटे' },
-              { key: 'hammock_weighing_scale', label: 'हॅमॉक [झोळीचे] वजनकाटे' },
-              { key: 'adult_weighing_scale', label: 'प्रौढांसाठीचे वजनकाटे' },
-            ].map(({ key, label }) => (
-              <label key={key} className="flex items-center p-6 bg-gradient-to-r from-gray-50 to-purple-50 rounded-2xl hover:from-purple-50 hover:to-purple-100 transition-all duration-300 cursor-pointer group border border-gray-200 hover:border-purple-300 shadow-sm hover:shadow-md">
-                <input
-                  type="checkbox"
-                  checked={anganwadiFormData[key as keyof AnganwadiFormData] as boolean}
-                  onChange={(e) => setAnganwadiFormData(prev => ({...prev, [key]: e.target.checked}))}
-                  className="mr-5 w-6 h-6 text-purple-600 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:ring-2 group-hover:border-purple-400 transition-colors"
-                  disabled={isViewMode}
-                />
-                <span className="text-gray-700 group-hover:text-purple-800 font-semibold text-lg">{label}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-      </section>
-{/* Section 3 - Materials */}
-      <section className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden transform hover:scale-[1.01] transition-transform duration-300">
-        <div className="bg-gradient-to-r from-orange-500 to-red-600 px-8 py-6">
-          <div className="flex items-center text-white">
-            <BookOpen className="w-8 h-8 mr-4" />
-            <h3 className="text-2xl font-bold">३. अंगणवाडीतील साहित्य उपलब्धता:</h3>
-          </div>
-        </div>
-        <div className="p-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[
-              { key: 'cooking_utensils', label: 'स्वयंपाकाची भांडी' },
-              { key: 'water_storage_containers', label: 'पिण्याचे पाणी ठेवण्यासाठी भांडी' },
-              { key: 'medicine_kits', label: 'मेडिसिन किट्स' },
-              { key: 'pre_school_kit', label: 'पूर्व शाले संच' },
-              { key: 'all_registers', label: 'विहित नमुन्यातील रजिस्टर (सर्व)' },
-              { key: 'monthly_progress_reports', label: 'छापील मासिक प्रगती अहवाल' },
-            ].map(({ key, label }) => (
-              <label key={key} className="flex items-center p-6 bg-gradient-to-r from-gray-50 to-orange-50 rounded-2xl hover:from-orange-50 hover:to-orange-100 transition-all duration-300 cursor-pointer group border border-gray-200 hover:border-orange-300 shadow-sm hover:shadow-md">
-                <input
-                  type="checkbox"
-                  checked={anganwadiFormData[key as keyof AnganwadiFormData] as boolean}
-                  onChange={(e) => setAnganwadiFormData(prev => ({...prev, [key]: e.target.checked}))}
-                  className="mr-5 w-6 h-6 text-orange-600 border-2 border-gray-300 rounded-lg focus:ring-orange-500 focus:ring-2 group-hover:border-orange-400 transition-colors"
-                  disabled={isViewMode}
-                />
-                <span className="text-gray-700 group-hover:text-orange-800 font-semibold text-lg">{label}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-      </section>
-{/* Section 4 - Schedule */}
-      <section className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden transform hover:scale-[1.01] transition-transform duration-300">
-        <div className="bg-gradient-to-r from-indigo-500 to-blue-600 px-8 py-6">
-          <div className="flex items-center text-white">
-            <Calendar className="w-8 h-8 mr-4" />
-            <h3 className="text-2xl font-bold">४. अंगणवाडी केंद्राचे वेळापत्रक:</h3>
-          </div>
-        </div>
-        <div className="p-10">
-          <div className="space-y-6">
-            <YesNoRadio
-              name="timetable_available"
-              value={anganwadiFormData.timetable_available ? 'होय' : anganwadiFormData.timetable_available === false ? 'नाही' : ''}
-              onChange={(value) => setAnganwadiFormData(prev => ({...prev, timetable_available: value === 'होय'}))}
-              question="१] अंगणवाडी केंद्राचे वेळापत्रक आहे काय?"
-            />
-            <YesNoRadio
-              name="timetable_followed"
-              value={anganwadiFormData.timetable_followed ? 'होय' : anganwadiFormData.timetable_followed === false ? 'नाही' : ''}
-              onChange={(value) => setAnganwadiFormData(prev => ({...prev, timetable_followed: value === 'होय'}))}
-              question="२] नियमितपणे पाळले जाते काय?"
-            />
-            <YesNoRadio
-              name="supervisor_regular_attendance"
-              value={anganwadiFormData.supervisor_regular_attendance ? 'होय' : anganwadiFormData.supervisor_regular_attendance === false ? 'नाही' : ''}
-              onChange={(value) => setAnganwadiFormData(prev => ({...prev, supervisor_regular_attendance: value === 'होय'}))}
-              question="३] सेविका नियमितपणे हजर राहते काय?"
-            />
-          </div>
-        </div>
-      </section>
-
-{/* Section 5 - Food */}
-      <section className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden transform hover:scale-[1.01] transition-transform duration-300">
-        <div className="bg-gradient-to-r from-green-500 to-emerald-600 px-8 py-6">
-          <div className="flex items-center text-white">
-            <Heart className="w-8 h-8 mr-4" />
-            <h3 className="text-2xl font-bold">५. आहाराविषयी:</h3>
-          </div>
-        </div>
-        <div className="p-10">
-          <div className="space-y-6">
-            <YesNoRadio
-              name="monthly_25_days_meals"
-              value={anganwadiFormData.monthly_25_days_meals ? 'होय' : anganwadiFormData.monthly_25_days_meals === false ? 'नाही' : ''}
-              onChange={(value) => setAnganwadiFormData(prev => ({...prev, monthly_25_days_meals: value === 'होय'}))}
-              question="१] अंगणवाडी केंद्रात प्रत्येक महिन्याला २५ दिवस सकाळचा नाश्ता व पूरक पोषण आहार पुरविण्यात येतो काय?"
-            />
-            <YesNoRadio
-              name="thr_provided_regularly"
-              value={anganwadiFormData.thr_provided_regularly ? 'होय' : anganwadiFormData.thr_provided_regularly === false ? 'नाही' : ''}
-              onChange={(value) => setAnganwadiFormData(prev => ({...prev, thr_provided_regularly: value === 'होय'}))}
-              question="२] ०–३ वर्षांची बालके, गर्भवती-स्तनदा माता, व तीव्र कमी वजनाच्या बालकांना THR नियमितपणे दिला जातो काय?"
-            />
-          </div>
-        </div>
-      </section>
-
-{/* Section 6 - Self-help Groups */}
-      <section className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden transform hover:scale-[1.01] transition-transform duration-300">
-        <div className="bg-gradient-to-r from-teal-500 to-cyan-600 px-8 py-6">
-          <div className="flex items-center text-white">
-            <Users className="w-8 h-8 mr-4" />
-            <h3 className="text-2xl font-bold">६. स्वयंसहाय्यता बचत गटांच्या/महिला मंडळाबाबत:</h3>
-          </div>
-        </div>
-        <div className="p-10">
-          <div className="space-y-8">
-            <div>
-              <label className="block mb-4 text-lg font-bold text-gray-700">१] अंगणवाडीतील आहार कोणाकडून दिला जातो?</label>
-              <input
-                type="text"
-                value={anganwadiFormData.food_provider}
-                onChange={(e) => setAnganwadiFormData(prev => ({...prev, food_provider: e.target.value}))}
-                className="w-full p-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-300 bg-gray-50 hover:bg-white text-lg shadow-sm"
-                disabled={isViewMode}
-              />
-            </div>
-            <div>
-              <label className="block mb-4 text-lg font-bold text-gray-700">२] यातील अंगणवाडी सेविकेच्या असलेला सहभाग.</label>
-              <input
-                type="text"
-                value={anganwadiFormData.supervisor_participation}
-                onChange={(e) => setAnganwadiFormData(prev => ({...prev, supervisor_participation: e.target.value}))}
-                className="w-full p-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-300 bg-gray-50 hover:bg-white text-lg shadow-sm"
-                disabled={isViewMode}
-              />
-            </div>
-            <YesNoRadio
-              name="food_distribution_decentralized"
-              value={anganwadiFormData.food_distribution_decentralized ? 'होय' : anganwadiFormData.food_distribution_decentralized === false ? 'नाही' : ''}
-              onChange={(value) => setAnganwadiFormData(prev => ({...prev, food_distribution_decentralized: value === 'होय'}))}
-              question="३] आहार वाटपाचे काम विकेंद्रित केले आहे काय?"
-            />
-          </div>
-        </div>
-      </section>
-{/* Section 7 - Children's Food Preference */}
-      <section className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden transform hover:scale-[1.01] transition-transform duration-300">
-        <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-8 py-6">
-          <div className="flex items-center text-white">
-            <MapPin className="w-8 h-8 mr-4" />
-            <h3 className="text-2xl font-bold">७. मुलांना आहाराची चव व दर्जा आवडतो की कसे?:</h3>
-          </div>
-        </div>
-        <div className="p-10">
-          <div>
-            <label className="block mb-4 text-lg font-bold text-gray-700">मुलांना आहार आवडतो काय?</label>
-            <input
-              type="text"
-              value={anganwadiFormData.children_food_taste_preference}
-              onChange={(e) => setAnganwadiFormData(prev => ({...prev, children_food_taste_preference: e.target.value}))}
-              className="w-full p-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 bg-gray-50 hover:bg-white text-lg shadow-sm"
-              placeholder="मुलांच्या आहाराची आवड नमूद करा"
-              disabled={isViewMode}
-            />
-          </div>
-        </div>
-      </section>
-{/* Section 8 - Food Quality */}
-      <section className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden transform hover:scale-[1.01] transition-transform duration-300">
-        <div className="bg-gradient-to-r from-amber-500 to-yellow-600 px-8 py-6">
-          <div className="flex items-center text-white">
-            <CheckCircle className="w-8 h-8 mr-4" />
-            <h3 className="text-2xl font-bold">८. आहार दर्जा:</h3>
-          </div>
-        </div>
-        <div className="p-10">
-          <div className="space-y-6">
-            <YesNoRadio
-              name="prescribed_protein_calories"
-              value={anganwadiFormData.prescribed_protein_calories ? 'होय' : anganwadiFormData.prescribed_protein_calories === false ? 'नाही' : ''}
-              onChange={(value) => setAnganwadiFormData(prev => ({...prev, prescribed_protein_calories: value === 'होय'}))}
-              question="१] निर्धारीत प्रथीणे व उष्मांक असलेला आहार मिळतो काय?"
-            />
-            <YesNoRadio
-              name="prescribed_weight_food"
-              value={anganwadiFormData.prescribed_weight_food ? 'होय' : anganwadiFormData.prescribed_weight_food === false ? 'नाही' : ''}
-              onChange={(value) => setAnganwadiFormData(prev => ({...prev, prescribed_weight_food: value === 'होय'}))}
-              question="२] निर्धारीत वजनाचा आहार मिळतो काय?"
-            />
-            <div>
-              <label className="block mb-4 text-lg font-bold text-gray-700">३] आहार नमुने प्रयोगशाळेत पाठवले जातात काय?</label>
-              <input
-                type="text"
-                value={anganwadiFormData.lab_sample_date}
-                onChange={(e) => setAnganwadiFormData(prev => ({...prev, lab_sample_date: e.target.value}))}
-                className="w-full p-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-300 bg-gray-50 hover:bg-white text-lg shadow-sm"
-                disabled={isViewMode}
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-{/* Section 9 - Health Services */}
-      <section className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden transform hover:scale-[1.01] transition-transform duration-300">
-        <div className="bg-gradient-to-r from-red-500 to-pink-600 px-8 py-6">
-          <div className="flex items-center text-white">
-            <Stethoscope className="w-8 h-8 mr-4" />
-            <h3 className="text-2xl font-bold">९. आरोग्य सेवा:</h3>
-          </div>
-        </div>
-        <div className="p-10">
-          <div className="space-y-6">
-            <YesNoRadio
-              name="regular_weighing"
-              value={anganwadiFormData.regular_weighing ? 'होय' : anganwadiFormData.regular_weighing === false ? 'नाही' : ''}
-              onChange={(value) => setAnganwadiFormData(prev => ({...prev, regular_weighing: value === 'होय'}))}
-              question="१]  बालकांचे वजने नियमित वजने घेतली जातात किंवा कसे?"
-            />
-            <YesNoRadio
-              name="growth_chart_accuracy"
-              value={anganwadiFormData.growth_chart_accuracy ? 'होय' : anganwadiFormData.growth_chart_accuracy === false ? 'नाही' : ''}
-              onChange={(value) => setAnganwadiFormData(prev => ({...prev, growth_chart_accuracy: value === 'होय'}))}
-              question="२] (वृद्धिपत्रक तपासून) वय व वजन यांची नोंद तपासून पोषण श्रेणी योग्य प्रमाणे दर्शविलेली आहे काय? काही मुलांची प्रत्यक्ष वजने घेऊन तपासणी व खात्री करावी. तसेच वृद्धिपत्रकातील नोंद तपासावी."
-            />
-            <YesNoRadio
-              name="vaccination_health_checkup_regular"
-              value={anganwadiFormData.vaccination_health_checkup_regular ? 'होय' : anganwadiFormData.vaccination_health_checkup_regular === false ? 'नाही' : ''}
-              onChange={(value) => setAnganwadiFormData(prev => ({...prev, vaccination_health_checkup_regular: value === 'होय'}))}
-              question="३] लसीकरण व आरोग्य तपासणी नियमितपणे होते काय? (मागील दोन महिन्याचे रेकॉर्ड तपासावे.)"
-            />
-            <YesNoRadio
-              name="vaccination_schedule_awareness"
-              value={anganwadiFormData.vaccination_schedule_awareness ? 'होय' : anganwadiFormData.vaccination_schedule_awareness === false ? 'नाही' : ''}
-              onChange={(value) => setAnganwadiFormData(prev => ({...prev, vaccination_schedule_awareness: value === 'होय'}))}
-              question="४] लसीकरण दिवसाची माहिती लाभार्थी पालकांना आहे काय? (एक-दोन घरी जाऊन तपासावे)"
-            />
-          </div>
-        </div>
-      </section>
-
-{/* Section 10 - Community Participation */}
-      <section className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden transform hover:scale-[1.01] transition-transform duration-300">
-        <div className="bg-gradient-to-r from-violet-500 to-purple-600 px-8 py-6">
-          <div className="flex items-center text-white">
-            <UserCheck className="w-8 h-8 mr-4" />
-            <h3 className="text-2xl font-bold">१०. समुदायिक सहभाग:</h3>
-          </div>
-        </div>
-        <div className="p-10">
-          <div className="space-y-8">
-            <div>
-              <label className="block mb-4 text-lg font-bold text-gray-700">१] गावातील आरोग्य व पोषण नियोजनात सहभाग</label>
-              <input
-                type="text"
-                value={anganwadiFormData.village_health_nutrition_planning}
-                onChange={(e) => setAnganwadiFormData(prev => ({...prev, village_health_nutrition_planning: e.target.value}))}
-                className="w-full p-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-violet-500/20 focus:border-violet-500 transition-all duration-300 bg-gray-50 hover:bg-white text-lg shadow-sm"
-                disabled={isViewMode}
-              />
-            </div>
-            <div>
-              <label className="block mb-4 text-lg font-bold text-gray-700">२] मुलांच्या उपस्थितीची तुलना</label>
-              <input
-                type="text"
-                value={anganwadiFormData.children_attendance_comparison}
-                onChange={(e) => setAnganwadiFormData(prev => ({...prev, children_attendance_comparison: e.target.value}))}
-                className="w-full p-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-violet-500/20 focus:border-violet-500 transition-all duration-300 bg-gray-50 hover:bg-white text-lg shadow-sm"
-                disabled={isViewMode}
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-{/* Additional Sections */}
-      <section className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-8 py-6">
-          <div className="flex items-center text-white">
-            <Users className="w-8 h-8 mr-4" />
-            <h3 className="text-2xl font-bold">अतिरिक्त तपशील:</h3>
-          </div>
-        </div>
-        <div className="p-10">
-          <div className="space-y-8">
-            <div>
-              <YesNoRadio
-                name="village_health_nutrition_micro_planning"
-                value={anganwadiFormData.village_health_nutrition_micro_planning}
-                onChange={(value) => setAnganwadiFormData(prev => ({...prev, village_health_nutrition_micro_planning: value}))}
-                question="११. ग्राम आरोग्य व पोषण दिवसाचे गावनिहाय सूक्ष्म नियोजन केले आहे काय?"
-              />
-            </div>
-        
-            <div>
-              <h4 className="font-semibold mb-4 text-lg text-gray-700">१२. भेटीच्या दिवशी प्रत्यक्ष उपस्थित असलेली बालके व नोंदविलेल्या बालकांपैकी त्या दिवशी प्रत्यक्ष हजर असलेली बालके. (मागील आठवड्यातील सरासरी आकडेवारीची ही संख्या पडताळून पहावी.):</h4>
-              <input
-                type="text"
-                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
-                disabled={isViewMode}
-              />
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-4 text-lg text-gray-700">१३. पूर्व शालेय शिक्षण:</h4>
-              <div className="space-y-4 pl-6">
-                <div>
-                  <label className="block mb-2 font-medium">१] पूर्वशालेय शिक्षणासाठी नोंदवलेली बालके</label>
-                  <input
-                    type="number"
-                    value={anganwadiFormData.preschool_education_registered}
-                    onChange={(e) => setAnganwadiFormData(prev => ({...prev, preschool_education_registered: parseInt(e.target.value) || 0}))}
-                    className="w-full p-3 border-2 border-gray-200 rounded-lg"
-                    disabled={isViewMode}
-                  />
-                </div>
-                <div>
-                  <label className="block mb-2 font-medium">२] भेटीची वेळी प्रत्यक्ष हजर बालके</label>
-                  <input
-                    type="number"
-                    value={anganwadiFormData.preschool_education_present}
-                    onChange={(e) => setAnganwadiFormData(prev => ({...prev, preschool_education_present: parseInt(e.target.value) || 0}))}
-                    className="w-full p-3 border-2 border-gray-200 rounded-lg"
-                    disabled={isViewMode}
-                  />
-                </div>
-                <div>
-                  <label className="block mb-2 font-medium">३] भेटीचे दिवशी कोणकोणते कार्यक्रम घेतले</label>
-                  <input
-                    type="text"
-                    value={anganwadiFormData.preschool_programs_conducted}
-                    onChange={(e) => setAnganwadiFormData(prev => ({...prev, preschool_programs_conducted: e.target.value}))}
-                    className="w-full p-3 border-2 border-gray-200 rounded-lg"
-                    disabled={isViewMode}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <section className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-              <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-8 py-6">
-                <div className="flex items-center text-white">
-                  <Users className="w-8 h-8 mr-4" />
-                  <h3 className="text-2xl font-bold">१४. लोकसहभाग:</h3>
-                </div>
-              </div>
-              <div className="p-10">
-                <div className="space-y-8">
-                  <div>
-                    <YesNoRadio
-                      name="village_health_nutrition_micro_planning"
-                      value={anganwadiFormData.village_health_nutrition_micro_planning}
-                      onChange={(value) => setAnganwadiFormData(prev => ({...prev, village_health_nutrition_micro_planning: value}))}
-                      question="१] अंगणवाडी केंद्राला गावातील लोकांचे सहकार्य मिळते काय? मिळत नसेल तर का?(याबाबत ग्राम समिती अथवा ग्राम पंचायत सदस्य यांचेशी चर्चा करावी.)"
-                    />
-                  </div>
-                  <div>
-                    <label className="block mb-2 font-medium">२] यामध्ये ग्राम समिती सदस्य/ ग्राम पंचायत सदस्य/ आरोग्य सेविका/ इतर उपस्थिती कशी होती?</label>
-                    <textarea
-                      value={anganwadiFormData.committee_member_participation}
-                      onChange={(e) => setAnganwadiFormData(prev => ({...prev, committee_member_participation: e.target.value}))}
-                      className="w-full p-3 border-2 border-gray-200 rounded-lg"
-                      rows={3}
-                      disabled={isViewMode}
-                    />
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <YesNoRadio
-              name="home_visits_guidance"
-              value={anganwadiFormData.home_visits_guidance}
-              onChange={(value) => setAnganwadiFormData(prev => ({...prev, home_visits_guidance: value}))}
-              question="१५. गरोदर महिला, आजारी असलेली बालके यांचे घरी अंगणवाडी सेविका नियमित भेट देऊन त्यांना मार्गदर्शन व सल्ला देण्याचे काम करते किंवा कसे? (काही घरी भेट देऊन याबाबत पडताळणी करावी.)"
-            />
-
-            <YesNoRadio
-              name="public_opinion_improvement"
-              value={anganwadiFormData.public_opinion_improvement}
-              onChange={(value) => setAnganwadiFormData(prev => ({...prev, public_opinion_improvement: value}))}
-              question="१६. अंगणवाडी क्षेत्रातील लोकांचे अंगणवाडीचे कामकाजाबाबत सर्वसाधारण मत कसे आहे? तसेच मागील २–३ वर्षाचे कालावधीत काही सुधारणा झालेल्या आहेत काय?"
-            />
-
-            
-
-            <div>
-              <h4 className="font-semibold mb-4 text-lg text-gray-700">१७. काही सूचना असल्यास-</h4>
-              <textarea
-                value={anganwadiFormData.suggestions}
-                onChange={(e) => setAnganwadiFormData(prev => ({...prev, suggestions: e.target.value}))}
-                className="w-full p-3 border-2 border-gray-200 rounded-lg"
-                rows={3}
-                disabled={isViewMode}
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-
-{/* Final Section - Inspector Details */}
-      <section className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden transform hover:scale-[1.01] transition-transform duration-300">
-        <div className="bg-gradient-to-r from-gray-600 to-gray-800 px-8 py-6">
-          <div className="flex items-center text-white">
-            <FileText className="w-8 h-8 mr-4" />
-            <h3 className="text-2xl font-bold">तपासणी अधिकारी माहिती:</h3>
-          </div>
-        </div>
-        <div className="p-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block mb-4 text-lg font-bold text-gray-700">भेटीची तारीख</label>
-              <input
-  type="date"
-  value={anganwadiFormData.visit_date}
-  onChange={(e) =>
-    setAnganwadiFormData((prev) => ({ ...prev, visit_date: e.target.value }))
-  }
-  className="w-full p-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-gray-500/20 focus:border-gray-500 transition-all duration-300 bg-gray-50 hover:bg-white text-lg shadow-sm"
-  disabled={isViewMode}
-/>
-
-            </div>
-            <div>
-              <label className="block mb-4 text-lg font-bold text-gray-700">तपासणी अधिकारीचे नाव</label>
-              <input
-                type="text"
-                value={anganwadiFormData.inspector_name}
-                onChange={(e) => setAnganwadiFormData(prev => ({...prev, inspector_name: e.target.value}))}
-                className="w-full p-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-gray-500/20 focus:border-gray-500 transition-all duration-300 bg-gray-50 hover:bg-white text-lg shadow-sm"
-                disabled={isViewMode}
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block mb-4 text-lg font-bold text-gray-700">तपासणी अधिकारीचे पदनाम</label>
-              <input
-                type="text"
-                value={anganwadiFormData.inspector_designation}
-                onChange={(e) => setAnganwadiFormData(prev => ({...prev, inspector_designation: e.target.value}))}
-                className="w-full p-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-gray-500/20 focus:border-gray-500 transition-all duration-300 bg-gray-50 hover:bg-white text-lg shadow-sm"
-                disabled={isViewMode}
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block mb-4 text-lg font-bold text-gray-700">सामान्य निरीक्षणे</label>
-              <textarea
-                value={anganwadiFormData.general_observations}
-                onChange={(e) => setAnganwadiFormData(prev => ({...prev, general_observations: e.target.value}))}
-                className="w-full p-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-gray-500/20 focus:border-gray-500 transition-all duration-300 bg-gray-50 hover:bg-white text-lg shadow-sm"
-                rows={3}
-                disabled={isViewMode}
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block mb-4 text-lg font-bold text-gray-700">शिफारसी</label>
-              <textarea
-                value={anganwadiFormData.recommendations}
-                onChange={(e) => setAnganwadiFormData(prev => ({...prev, recommendations: e.target.value}))}
-                className="w-full p-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-gray-500/20 focus:border-gray-500 transition-all duration-300 bg-gray-50 hover:bg-white text-lg shadow-sm"
-                rows={3}
-                disabled={isViewMode}
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block mb-4 text-lg font-bold text-gray-700">सूचना</label>
-              <textarea
-                value={anganwadiFormData.suggestions}
-                onChange={(e) => setAnganwadiFormData(prev => ({...prev, suggestions: e.target.value}))}
-                className="w-full p-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-gray-500/20 focus:border-gray-500 transition-all duration-300 bg-gray-50 hover:bg-white text-lg shadow-sm"
-                rows={3}
-                disabled={isViewMode}
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-
-const renderPhotosAndSubmit = () => (
-  <div className="space-y-8">
-
-    {/* Photo Upload Section */}
-    <section className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-8 py-6">
-        <div className="flex items-center text-white">
-          <Camera className="w-8 h-8 mr-4" />
-          <h3 className="text-2xl font-bold">फोटो अपलोड करा</h3>
-        </div>
-      </div>
-
-      <div className="p-10">
-        <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            फोटो दस्तऐवजीकरण
-          </h3>
-
-          {/* Photo Upload Area */}
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-purple-400 transition-colors duration-200">
-            <Camera className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h4 className="text-lg font-medium text-gray-900 mb-2">अंगणवाडी फोटो अपलोड करा</h4>
-            <p className="text-gray-600 mb-4">
-              {uploadedPhotos.length > 0
-                ? `${uploadedPhotos.length}/5 फोटो निवडले आहेत`
-                : 'फोटो निवडा (जास्तीत जास्त 5)'}
-            </p>
-
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handlePhotoUpload}
-              disabled={isViewMode || uploadedPhotos.length >= 5}
-              id="photo-upload"
-              style={{ display: 'none' }}
-            />
-
-            <label
-              htmlFor="photo-upload"
-              className={`inline-flex items-center px-4 py-2 rounded-lg cursor-pointer transition-colors duration-200 ${
-                isViewMode || uploadedPhotos.length >= 5
-                  ? 'bg-gray-400 cursor-not-allowed text-white'
-                  : 'bg-purple-600 hover:bg-purple-700 text-white'
-              }`}
-            >
-              <Camera className="h-4 w-4 mr-2" />
-              {uploadedPhotos.length >= 5 ? 'जास्तीत जास्त फोटो पोहोचले' : 'फोटो निवडा'}
-            </label>
-          </div>
-
-          {/* Photo Previews */}
-          {uploadedPhotos.length > 0 && (
-            <div className="mt-6">
-              <h4 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                <Camera className="h-5 w-5 mr-2 text-purple-600" />
-                निवडलेले फोटो ({uploadedPhotos.length}/5)
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {uploadedPhotos.map((file, index) => (
-                  <div
-                    key={index}
-                    className="relative bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-shadow duration-200"
-                  >
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt={`Preview ${index + 1}`}
-                      className="w-full h-40 object-cover"
-                    />
-
-                    {!isViewMode && (
-                      <button
-                        onClick={() => removePhoto(index)}
-                        className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-lg transition-colors duration-200"
-                      >
-                        <span className="text-sm font-bold">×</span>
-                      </button>
-                    )}
-
-                    <div className="p-3">
-                      <p className="text-sm font-medium text-gray-800 truncate mb-1">{file.name}</p>
-                      <p className="text-xs text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                    </div>
-                  </div>
                 ))}
-              </div>
-            </div>
-          )}
-
-          {/* Upload Progress */}
-          {isUploading && (
-            <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-blue-800">फोटो अपलोड करत आहे...</span>
-                <span className="text-sm text-blue-600">{uploadProgress}%</span>
-              </div>
-              <div className="w-full bg-blue-200 rounded-full h-2">
-                <div
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
-              </div>
-            </div>
-          )}
-
-          {/* Display existing photos when viewing */}
-          {isViewMode &&
-            editingInspection?.fims_inspection_photos &&
-            editingInspection.fims_inspection_photos.length > 0 && (
-              <div className="mt-6">
-                <h4 className="text-md font-medium text-gray-900 mb-3">
-                  तपासणी फोटो ({editingInspection.fims_inspection_photos.length})
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {editingInspection.fims_inspection_photos.map((photo, index) => (
-                    <div
-                      key={photo.id}
-                      className="relative bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden"
-                    >
-                      <img
-                        src={photo.photo_url}
-                        alt={photo.description || `Anganwadi photo ${index + 1}`}
-                        className="w-full h-40 object-cover"
-                      />
-                      <div className="p-3">
-                        <p className="text-sm font-medium text-gray-800 truncate mb-1">
-                          {photo.photo_name || `Photo ${index + 1}`}
-                        </p>
-                        {photo.description && (
-                          <p className="text-xs text-gray-500 truncate">{photo.description}</p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-          {/* No photos message for view mode */}
-          {isViewMode &&
-            (!editingInspection?.fims_inspection_photos ||
-              editingInspection.fims_inspection_photos.length === 0) && (
-              <div className="text-center py-8 text-gray-500">
-                <Camera className="h-12 w-12 text-gray-300 mx-auto mb-2" />
-                <p>कोणतेही फोटो सापडले नाहीत</p>
-              </div>
-            )}
-        </div>
-      </div>
-    </section>
-
-    {/* Submit Buttons */}
-    {!isViewMode && (
-      <div className="flex justify-center space-x-4">
-        <button
-          type="button"
-          onClick={() => handleSubmit(true)}
-          disabled={isLoading || isUploading}
-          className="px-8 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors duration-200 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Save className="h-5 w-5" />
-          <span>{isLoading ? 'सेव्ह करत आहे...' : 'मसुदा म्हणून जतन करा'}</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => handleSubmit(false)}
-          disabled={isLoading || isUploading}
-          className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Send className="h-5 w-5" />
-          <span>{isLoading ? 'सबमिट करत आहे...' : 'तपासणी सबमिट करा'}</span>
-        </button>
-      </div>
-    )}
-  </div>
-);
+              </View>
+            </View>
 
 
- 
+            {renderSwitchRow('शौचालय', formData.toilet_facility, 'toilet_facility')}
+            {renderSwitchRow('स्वतंत्र बंदिस्त किचन / Independent Kitchen', formData.independent_kitchen, 'independent_kitchen')}
+            {renderSwitchRow('महिला आरोग्य तपासणी जागा / Women Health Checkup Space', formData.women_health_checkup_space, 'women_health_checkup_space')}
+            {renderSwitchRow('विद्युत पुरवठा / Electricity', formData.electricity, 'electricity')}
+            {renderSwitchRow('पिण्याचे पाणी / Drinking Water', formData.drinking_water, 'drinking_water')}
+            {renderSwitchRow('किचन गार्डन / Kitchen Garden', formData.kitchen_garden, 'kitchen_garden')}
+          </View>
+        );
+
+      case 2:
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>२. वजनकाटे उपलब्ध</Text>
+            <Text style={styles.sectionSubtitle}>Weighing Scales Available</Text>
+
+            {renderSwitchRow('बेबी वजनकाटे / Baby Weighing Scale', formData.baby_weighing_scale, 'baby_weighing_scale')}
+            {renderSwitchRow('हॅमॉक [झोळीचे] वजनकाटे / Hammock Scale', formData.hammock_weighing_scale, 'hammock_weighing_scale')}
+            {renderSwitchRow('प्रौढांसाठीचे वजनकाटे / Adult Weighing Scale', formData.adult_weighing_scale, 'adult_weighing_scale')}
+            {renderSwitchRow('उंची मापन यंत्र / Height Measuring Scale', formData.height_measuring_scale, 'height_measuring_scale')}
+
+            <Text style={[styles.sectionTitle, styles.marginTop]}>३. अंगणवाडीतील साहित्य उपलब्धता</Text>
+            <Text style={styles.sectionSubtitle}>Materials Availability</Text>
+
+            {renderSwitchRow('स्वयंपाकाची भांडी / Cooking Utensils', formData.cooking_utensils, 'cooking_utensils')}
+            {renderSwitchRow('पिण्याचे पाणी ठेवण्यासाठी भांडी / Water Storage', formData.water_storage_containers, 'water_storage_containers')}
+            {renderSwitchRow('मेडिसिन किट्स / Medicine Kits', formData.medicine_kits, 'medicine_kits')}
+            {renderSwitchRow('पूर्व शाले संच / Pre School Kit', formData.pre_school_kit, 'pre_school_kit')}
+            {renderSwitchRow('शिकवण साहित्य / Teaching Materials', formData.teaching_materials, 'teaching_materials')}
+            {renderSwitchRow('खेळणी / Toys Available', formData.toys_available, 'toys_available')}
+          </View>
+        );
+
+      case 3:
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>नोंदी आणि दस्तऐवज</Text>
+            <Text style={styles.sectionSubtitle}>Records and Documentation</Text>
+
+            {renderSwitchRow('विहित रजिस्टर (सर्व) / All Registers', formData.all_registers, 'all_registers')}
+            {renderSwitchRow('छापील मासिक प्रगती अहवाल / Monthly Progress Reports', formData.monthly_progress_reports, 'monthly_progress_reports')}
+            {renderSwitchRow('उपस्थिती रजिस्टर / Attendance Register', formData.attendance_register, 'attendance_register')}
+            {renderSwitchRow('वृद्धि चार्ट अद्यतनित / Growth Chart Updated', formData.growth_chart_updated, 'growth_chart_updated')}
+            {renderSwitchRow('लसीकरण नोंदी / Vaccination Records', formData.vaccination_records, 'vaccination_records')}
+            {renderSwitchRow('पोषण नोंदी / Nutrition Records', formData.nutrition_records, 'nutrition_records')}
+          </View>
+        );
+
+      case 4:
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>४. अंगणवाडी केंद्राचे वेळापत्रक</Text>
+            <Text style={styles.sectionSubtitle}>Schedule and Operations</Text>
+
+            {renderSwitchRow('अंगणवाडी केंद्राचे वेळापत्रक आहे काय? / Timetable Available?', formData.timetable_available, 'timetable_available')}
+            {renderSwitchRow(' नियमितपणे पाळले जाते काय? / Timetable Followed?', formData.timetable_followed, 'timetable_followed')}
+            {renderSwitchRow('सेविका नियमितपणे हजर राहते काय? / Supervisor Regular Attendance?', formData.supervisor_regular_attendance, 'supervisor_regular_attendance')}
+          </View>
+        );
+
+      case 5:
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>५. आहाराविषयी</Text>
+            <Text style={styles.sectionSubtitle}>Nutrition and Food Services</Text>
+
+            {renderSwitchRow('१] अंगणवाडी केंद्रात प्रत्येक महिन्याला २५ दिवस सकाळचा नाश्ता व पूरक पोषण आहार पुरविण्यात येतो काय? / 25 Days Meals Per Month', formData.monthly_25_days_meals, 'monthly_25_days_meals')}
+            {renderSwitchRow('२] ०–३ वर्षांची बालके, गर्भवती-स्तनदा माता, व तीव्र कमी वजनाच्या बालकांना THR नियमितपणे दिला जातो काय?/ THR Provided Regularly', formData.thr_provided_regularly, 'thr_provided_regularly')}
+            {renderSwitchRow('गरम जेवण दिले जाते / Hot Meal Served', formData.hot_meal_served, 'hot_meal_served')}
+            {renderSwitchRow('घरगुती शिधा / Take Home Ration', formData.take_home_ration, 'take_home_ration')}
+
+            <Input
+              label="आहार कोणाकडून दिला जातो / Food Provider"
+              value={formData.food_provider}
+              onChangeText={(text) => updateFormData('food_provider', text)}
+              placeholder="Enter food provider details"
+              multiline
+              numberOfLines={2}
+            />
+
+            <Input
+              label="सेविकेचा सहभाग / Supervisor Participation"
+              value={formData.supervisor_participation}
+              onChangeText={(text) => updateFormData('supervisor_participation', text)}
+              placeholder="Enter supervisor participation details"
+              multiline
+              numberOfLines={2}
+            />
+
+            {renderSwitchRow('आहार वाटप विकेंद्रित / Food Distribution Decentralized', formData.food_distribution_decentralized, 'food_distribution_decentralized')}
+
+            <Input
+              label="मुलांना आहार आवडतो काय? / Children Food Preference"
+              value={formData.children_food_taste_preference}
+              onChangeText={(text) => updateFormData('children_food_taste_preference', text)}
+              placeholder="Enter children's food preference"
+              multiline
+              numberOfLines={2}
+            />
+
+            {renderSwitchRow('निर्धारीत प्रथीणे व उष्मांक असलेला आहार मिळतो काय? / Prescribed Protein & Calories', formData.prescribed_protein_calories, 'prescribed_protein_calories')}
+            {renderSwitchRow('निर्धारीत वजनाचा आहार मिळतो काय? / Prescribed Weight Food', formData.prescribed_weight_food, 'prescribed_weight_food')}
+
+            <Input
+              label="प्रयोगशाळा नमुना तारीख / Lab Sample Date"
+              value={formData.lab_sample_date}
+              onChangeText={(text) => updateFormData('lab_sample_date', text)}
+              placeholder="Enter date"
+            />
+          </View>
+        );
+
+      case 6:
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>९. आरोग्य सेवा</Text>
+            <Text style={styles.sectionSubtitle}>Health Services</Text>
+
+            {renderSwitchRow('बालकांचे वजने नियमित वजने घेतली जातात किंवा कसे? / Regular Weighing', formData.regular_weighing, 'regular_weighing')}
+            {renderSwitchRow('(वृद्धिपत्रक तपासून) वय व वजन यांची नोंद तपासून पोषण श्रेणी योग्य प्रमाणे दर्शविलेली आहे काय? काही मुलांची प्रत्यक्ष वजने घेऊन तपासणी व खात्री करावी. तसेच वृद्धिपत्रकातील नोंद तपासावी. / Growth Chart Accuracy', formData.growth_chart_accuracy, 'growth_chart_accuracy')}
+            {renderSwitchRow('लसीकरण व आरोग्य तपासणी नियमितपणे होते काय? (मागील दोन महिन्याचे रेकॉर्ड तपासावे.) / Vaccination Regular', formData.vaccination_health_checkup_regular, 'vaccination_health_checkup_regular')}
+            {renderSwitchRow('लसीकरण दिवसाची माहिती लाभार्थी पालकांना आहे काय? (एक-दोन घरी जाऊन तपासावे) / Vaccination Schedule Awareness', formData.vaccination_schedule_awareness, 'vaccination_schedule_awareness')}
+            {renderSwitchRow('आरोग्य तपासणी / Health Checkup Conducted', formData.health_checkup_conducted, 'health_checkup_conducted')}
+            {renderSwitchRow('लसीकरण अद्ययावत / Immunization Updated', formData.immunization_updated, 'immunization_updated')}
+            {renderSwitchRow('व्हिटॅमिन A दिले / Vitamin A Given', formData.vitamin_a_given, 'vitamin_a_given')}
+            {renderSwitchRow('लोह गोळ्या दिल्या / Iron Tablets Given', formData.iron_tablets_given, 'iron_tablets_given')}
+          </View>
+        );
+
+      case 7:
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>१०. समुदायिक सहभाग</Text>
+            <Text style={styles.sectionSubtitle}>Community Participation</Text>
+
+            <Input
+              label="गावातील आरोग्य व पोषण नियोजनात सहभाग / Village Health & Nutrition Planning"
+              value={formData.village_health_nutrition_planning}
+              onChangeText={(text) => updateFormData('village_health_nutrition_planning', text)}
+              placeholder="Enter details"
+              multiline
+              numberOfLines={3}
+            />
+
+            <Input
+              label="मुलांच्या उपस्थितीची तुलना / Children Attendance Comparison"
+              value={formData.children_attendance_comparison}
+              onChangeText={(text) => updateFormData('children_attendance_comparison', text)}
+              placeholder="Enter comparison details"
+              multiline
+              numberOfLines={3}
+            />
+
+            <Input
+              label="समुदायाचा सहभाग / Community Participation"
+              value={formData.community_participation}
+              onChangeText={(text) => updateFormData('community_participation', text)}
+              placeholder="Enter community participation details"
+              multiline
+              numberOfLines={3}
+            />
+
+            <Input
+              label="समिती सदस्य सहभाग / Committee Member Participation"
+              value={formData.committee_member_participation}
+              onChangeText={(text) => updateFormData('committee_member_participation', text)}
+              placeholder="Enter committee participation"
+              multiline
+              numberOfLines={3}
+            />
+
+            <Input
+              label="घरभेटी मार्गदर्शन / Home Visits Guidance"
+              value={formData.home_visits_guidance}
+              onChangeText={(text) => updateFormData('home_visits_guidance', text)}
+              placeholder="Enter home visit details"
+              multiline
+              numberOfLines={3}
+            />
+
+            <Input
+              label="लोक मत सुधारणा / Public Opinion Improvement"
+              value={formData.public_opinion_improvement}
+              onChangeText={(text) => updateFormData('public_opinion_improvement', text)}
+              placeholder="Enter public opinion details"
+              multiline
+              numberOfLines={3}
+            />
+          </View>
+        );
+
+      case 8:
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>मुलांची माहिती</Text>
+            <Text style={styles.sectionSubtitle}>Children Information</Text>
+
+            <Input
+              label="एकूण नोंदणीकृत मुले / Total Registered Children"
+              value={formData.total_registered_children}
+              onChangeText={(text) => updateFormData('total_registered_children', text)}
+              placeholder="Enter number"
+              keyboardType="number-pad"
+            />
+
+            <Input
+              label="आज उपस्थित / Present Today"
+              value={formData.children_present_today}
+              onChangeText={(text) => updateFormData('children_present_today', text)}
+              placeholder="Enter number"
+              keyboardType="number-pad"
+            />
+
+            <Input
+              label="०-३ वर्षांची बालके / Children 0-3 Years"
+              value={formData.children_0_3_years}
+              onChangeText={(text) => updateFormData('children_0_3_years', text)}
+              placeholder="Enter number"
+              keyboardType="number-pad"
+            />
+
+            <Input
+              label="३-६ वर्षांची बालके / Children 3-6 Years"
+              value={formData.children_3_6_years}
+              onChangeText={(text) => updateFormData('children_3_6_years', text)}
+              placeholder="Enter number"
+              keyboardType="number-pad"
+            />
+
+            <Input
+              label="पूर्वशालेय नोंदणी / Preschool Registered"
+              value={formData.preschool_education_registered}
+              onChangeText={(text) => updateFormData('preschool_education_registered', text)}
+              placeholder="Enter number"
+              keyboardType="number-pad"
+            />
+
+            <Input
+              label="पूर्वशालेय उपस्थित / Preschool Present"
+              value={formData.preschool_education_present}
+              onChangeText={(text) => updateFormData('preschool_education_present', text)}
+              placeholder="Enter number"
+              keyboardType="number-pad"
+            />
+
+            <Input
+              label="पूर्वशालेय कार्यक्रम / Preschool Programs Conducted"
+              value={formData.preschool_programs_conducted}
+              onChangeText={(text) => updateFormData('preschool_programs_conducted', text)}
+              placeholder="Enter program details"
+              multiline
+              numberOfLines={3}
+            />
+
+            <Text style={[styles.sectionTitle, styles.marginTop]}>तपासणी अधिकारी माहिती</Text>
+            <Text style={styles.sectionSubtitle}>Inspector Information</Text>
+
+            <Input
+              label="भेटीची तारीख / Visit Date"
+              value={formData.visit_date}
+              onChangeText={(text) => updateFormData('visit_date', text)}
+              placeholder="DD/MM/YYYY"
+            />
+
+            <Input
+              label="तपासणी अधिकारीचे नाव / Inspector Name"
+              value={formData.inspector_name}
+              onChangeText={(text) => updateFormData('inspector_name', text)}
+              placeholder="Enter inspector name"
+            />
+
+            <Input
+              label="तपासणी अधिकारीचे पदनाम / Inspector Designation"
+              value={formData.inspector_designation}
+              onChangeText={(text) => updateFormData('inspector_designation', text)}
+              placeholder="Enter designation"
+            />
+
+            <Input
+              label="सामान्य निरीक्षणे / General Observations"
+              value={formData.general_observations}
+              onChangeText={(text) => updateFormData('general_observations', text)}
+              placeholder="Enter observations"
+              multiline
+              numberOfLines={4}
+            />
+
+            <Input
+              label="शिफारसी / Recommendations"
+              value={formData.recommendations}
+              onChangeText={(text) => updateFormData('recommendations', text)}
+              placeholder="Enter recommendations"
+              multiline
+              numberOfLines={4}
+            />
+
+            <Input
+              label="सूचना / Suggestions"
+              value={formData.suggestions}
+              onChangeText={(text) => updateFormData('suggestions', text)}
+              placeholder="Enter suggestions"
+              multiline
+              numberOfLines={4}
+            />
+          </View>
+        );
+
+      case 9:
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>{t('fims.locationDetails')}</Text>
+            <LocationPicker location={location} onLocationChange={setLocation} />
+          </View>
+        );
+
+      case 10:
+        return (
+          <View>
+            <Text style={styles.sectionTitle}>{t('fims.photosSubmit')}</Text>
+            <PhotoUpload photos={photos} onPhotosChange={setPhotos} />
+          </View>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <button
-          onClick={onBack}
-          className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
-        >
-          <ArrowLeft className="h-5 w-5" />
-          <span>{t('common.back')}</span>
-        </button>
-      </div>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <Stepper steps={STEPS} currentStep={currentStep} />
 
-      {/* Step Indicator */}
-      {renderStepIndicator()}
+      <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
+        <Card>{renderStep()}</Card>
+      </ScrollView>
 
-      {/* Form Content */}
-      {currentStep === 1 && renderBasicDetailsAndLocation()}
-      {currentStep === 2 && renderAnganwadiInspectionForm()}
-      {currentStep === 3 && renderPhotosAndSubmit()}
-
-      {/* Navigation Buttons */}
-      <div className="flex justify-between mt-8">
-        <button
-          onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
-          disabled={currentStep === 1}
-          className="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-400 transition-colors"
-        >
-          {t('common.previous')}
-        </button>
-        
-        {currentStep < 3 && (
-          <button
-            onClick={() => setCurrentStep(Math.min(3, currentStep + 1))}
-            className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            {t('common.next')}
-          </button>
-        )}
-      </div>
-    </div>
+      <View style={styles.footer}>
+        <View style={styles.buttonRow}>
+          {currentStep > 0 && (
+            <Button
+              title={t('common.previous')}
+              onPress={handlePrevious}
+              variant="outline"
+              style={styles.navigationButton}
+              disabled={loading}
+            />
+          )}
+          {currentStep < STEPS.length - 1 ? (
+            <Button
+              title={t('common.next')}
+              onPress={handleNext}
+              style={styles.navigationButton}
+              disabled={loading}
+            />
+          ) : (
+            <View style={styles.submitButtons}>
+              <Button
+                title={t('fims.saveAsDraft')}
+                onPress={handleSaveAsDraft}
+                variant="outline"
+                style={styles.submitButton}
+                loading={loading}
+              />
+              <Button
+                title={t('fims.submitInspection')}
+                onPress={handleSubmit}
+                style={styles.submitButton}
+                loading={loading}
+              />
+            </View>
+          )}
+        </View>
+      </View>
+    </KeyboardAvoidingView>
   );
-};
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f9fafb',
+  },
+  content: {
+    flex: 1,
+  },
+  contentContainer: {
+    padding: isSmallDevice ? 12 : 16,
+    paddingBottom: 24,
+  },
+  card: {
+    padding: isSmallDevice ? 12 : 16,
+  },
+  sectionTitle: {
+    fontSize: isSmallDevice ? 18 : 20,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 4,
+    lineHeight: 28,
+  },
+  sectionSubtitle: {
+    fontSize: 13,
+    color: '#6b7280',
+    marginBottom: 20,
+    fontWeight: '500',
+  },
+  subsection: {
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  subsectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 12,
+    marginTop: 8,
+  },
+  switchRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+    minHeight: 52,
+  },
+  switchLabel: {
+    fontSize: 14,
+    color: '#1f2937',
+    flex: 1,
+    marginRight: 16,
+    lineHeight: 20,
+  },
+  footer: {
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 8,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  navigationButton: {
+    flex: 1,
+    minHeight: 44,
+  },
+  submitButtons: {
+    flexDirection: 'row',
+    flex: 1,
+    gap: 10,
+  },
+  submitButton: {
+    flex: 1,
+    minHeight: 44,
+  },
+  inputGroup: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 10,
+  },
+  inputHint: {
+    fontSize: 13,
+    color: '#6b7280',
+    marginBottom: 12,
+  },
+  chipContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  chipWrapper: {
+    width: '48%',
+  },
+  chipButton: {
+    minHeight: 40,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  pickerContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  pickerButton: {
+    flex: 1,
+    minWidth: '45%',
+    minHeight: 40,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#e5e7eb',
+    marginVertical: 20,
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 4,
+  },
+  gridItem: {
+    flex: 1,
+  },
+  marginTop: {
+    marginTop: 24,
+  },
+});
