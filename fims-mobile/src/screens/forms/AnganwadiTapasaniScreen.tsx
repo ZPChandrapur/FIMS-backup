@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+//import { fetchCategories } from '../../services/fimsService';
+
 import {
   View,
   Text,
@@ -19,7 +21,7 @@ import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { FormsStackParamList, LocationData } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
-import { createInspection, uploadPhoto } from '../../services/fimsService';
+import { createInspection, uploadPhoto, fetchCategories } from '../../services/fimsService';
 import { supabase } from '../../services/supabase';
 import Stepper from '../../components/common/Stepper';
 import Input from '../../components/common/Input';
@@ -32,6 +34,8 @@ type RouteParams = RouteProp<FormsStackParamList, 'AnganwadiTapasani'>;
 type NavigationProp = StackNavigationProp<FormsStackParamList, 'AnganwadiTapasani'>;
 const { width } = Dimensions.get('window');
 const isSmallDevice = width < 375;
+const [categoryUuid, setCategoryUuid] = useState<string | null>(null);
+
 
 const STEPS = ['Basic', 'Facilities', 'Equipment', 'Records', 'Schedule', 'Nutrition', 'Health', 'Community', 'Children', 'Location', 'Photos'];
 
@@ -269,14 +273,24 @@ export default function AnganwadiTapasaniScreen() {
         .insert({
           inspection_id: inspection.id,
           filled_by_name: formData.supervisor_name || '',
-          ...formData
+          ...formData,
+          total_registered_children: parseInt(formData.total_registered_children) || 0,
+          children_present_today: parseInt(formData.children_present_today) || 0,
+          children_0_3_years: parseInt(formData.children_0_3_years) || 0,
+          children_3_6_years: parseInt(formData.children_3_6_years) || 0,
+          preschool_education_registered: parseInt(formData.preschool_education_registered) || 0,
+          preschool_education_present: parseInt(formData.preschool_education_present) || 0,
         });
 
-      if (formError) throw formError;
+      if (formError) {
+        console.error('Form insert error:', formError);
+        throw formError;
+      }
 
       Alert.alert(t('common.success'), t('fims.inspectionSaved'));
       navigation.goBack();
     } catch (error) {
+      console.error('Save draft error:', error);
       Alert.alert(t('common.error'), 'Failed to save inspection');
     } finally {
       setLoading(false);
@@ -307,10 +321,19 @@ export default function AnganwadiTapasaniScreen() {
         .insert({
           inspection_id: inspection.id,
           filled_by_name: formData.supervisor_name || '',
-          ...formData
+          ...formData,
+          total_registered_children: parseInt(formData.total_registered_children) || 0,
+          children_present_today: parseInt(formData.children_present_today) || 0,
+          children_0_3_years: parseInt(formData.children_0_3_years) || 0,
+          children_3_6_years: parseInt(formData.children_3_6_years) || 0,
+          preschool_education_registered: parseInt(formData.preschool_education_registered) || 0,
+          preschool_education_present: parseInt(formData.preschool_education_present) || 0,
         });
 
-      if (formError) throw formError;
+      if (formError) {
+        console.error('Form insert error:', formError);
+        throw formError;
+      }
 
       for (let i = 0; i < photos.length; i++) {
         await uploadPhoto(inspection.id, photos[i], `photo_${i + 1}.jpg`, i + 1);
@@ -319,6 +342,7 @@ export default function AnganwadiTapasaniScreen() {
       Alert.alert(t('common.success'), t('fims.inspectionSubmitted'));
       navigation.navigate('CategorySelection');
     } catch (error) {
+      console.error('Submit error:', error);
       Alert.alert(t('common.error'), 'Failed to submit inspection');
     } finally {
       setLoading(false);
