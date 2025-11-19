@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Plus, FileText, Camera, MapPin, Building2, School, Users, BookOpen, GraduationCap, Building, UserCheck, ClipboardList, Award, Target, SquareCheck as CheckSquare, FileCheck, UserPlus, Settings, Activity } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { AnganwadiTapasaniForm } from './AnganwadiTapasaniForm';
+// import { AnganwadiTapasaniForm } from './AnganwadiTapasaniForm';
 import { FIMSOfficeInspection } from './FIMSOfficeInspection';
 import { RajyaShaishanikPrashikshanForm } from './RajyaShaishanikPrashikshanForm';
 import { BandhkamVibhag1Form } from './BandhkamVibhag1Form';
@@ -77,13 +77,9 @@ export const FIMSNewInspection: React.FC<FIMSNewInspectionProps> = ({
   const renderInspectionForm = () => {
     if (selectedInspectionType === 'anganwadi') {
       return (
-        <AnganwadiTapasaniForm
-          user={user}
-          onBack={handleBackToSelection}
-          categories={categories}
-          onInspectionCreated={onInspectionCreated}
-          editingInspection={editingInspection}
-        />
+        <div className="p-4 text-center text-gray-600">
+          Anganwadi form is only available in the mobile app
+        </div>
       );
     }
 

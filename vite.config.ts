@@ -15,6 +15,14 @@ export default defineConfig({
     port: 5173,
   },
   build: {
-    target: 'esnext'
+    target: 'esnext',
+    rollupOptions: {
+      external: [
+        'react-native',
+        '@react-navigation/native',
+        '@react-navigation/stack',
+        '@react-navigation/native-stack'
+      ]
+    }
   },
 });
