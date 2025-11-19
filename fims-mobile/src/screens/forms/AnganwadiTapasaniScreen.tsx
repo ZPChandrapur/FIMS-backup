@@ -20,6 +20,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { FormsStackParamList, LocationData } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
 import { createInspection, uploadPhoto } from '../../services/fimsService';
+import { supabase } from '../../services/supabase';
 import Stepper from '../../components/common/Stepper';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
@@ -252,15 +253,27 @@ export default function AnganwadiTapasaniScreen() {
   const handleSaveAsDraft = async () => {
     try {
       setLoading(true);
-      await createInspection({
+      const inspection = await createInspection({
         category_id: categoryId,
         inspector_id: user?.id,
         filled_by_name: formData.supervisor_name,
         status: 'draft',
+        location_name: location?.address || 'Unknown Location',
         location_latitude: location?.latitude,
         location_longitude: location?.longitude,
         location_address: location?.address || null,
       });
+
+      const { error: formError } = await supabase
+        .from('fims_anganwadi_forms')
+        .insert({
+          inspection_id: inspection.id,
+          filled_by_name: formData.supervisor_name || '',
+          ...formData
+        });
+
+      if (formError) throw formError;
+
       Alert.alert(t('common.success'), t('fims.inspectionSaved'));
       navigation.goBack();
     } catch (error) {
@@ -283,10 +296,21 @@ export default function AnganwadiTapasaniScreen() {
         inspector_id: user?.id,
         filled_by_name: formData.supervisor_name,
         status: 'submitted',
+        location_name: location?.address || 'Unknown Location',
         location_latitude: location?.latitude,
         location_longitude: location?.longitude,
         location_address: location?.address || null,
       });
+
+      const { error: formError } = await supabase
+        .from('fims_anganwadi_forms')
+        .insert({
+          inspection_id: inspection.id,
+          filled_by_name: formData.supervisor_name || '',
+          ...formData
+        });
+
+      if (formError) throw formError;
 
       for (let i = 0; i < photos.length; i++) {
         await uploadPhoto(inspection.id, photos[i], `photo_${i + 1}.jpg`, i + 1);

@@ -147,24 +147,7 @@ export default function PhotoUpload({
   };
 
   const showPhotoOptions = () => {
-    Alert.alert(
-      'Add Photo',
-      'Choose photo source',
-      [
-        {
-          text: t('fims.takePhoto'),
-          onPress: handleTakePhoto,
-        },
-        {
-          text: t('fims.chooseFromGallery'),
-          onPress: handleChooseFromGallery,
-        },
-        {
-          text: t('common.cancel'),
-          style: 'cancel',
-        },
-      ]
-    );
+    handleTakePhoto();
   };
 
   return (
@@ -199,9 +182,9 @@ export default function PhotoUpload({
           onPress={showPhotoOptions}
           disabled={uploading}
         >
-          <Icon name="camera-plus" size={32} color="#2563eb" />
+          <Icon name="camera" size={32} color="#2563eb" />
           <Text style={styles.addButtonText}>
-            {uploading ? 'Processing...' : 'Add Photo'}
+            {uploading ? 'Processing...' : 'Take Photo'}
           </Text>
         </TouchableOpacity>
       )}
