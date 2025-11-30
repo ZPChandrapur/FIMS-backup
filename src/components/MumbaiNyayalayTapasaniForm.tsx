@@ -1721,11 +1721,11 @@ encroachment_status: string;
               </div>
             </section>
 
-            {/* SECTION 6: संरक्षक भक्त */}
+            {/* SECTION 6: संरक्षक भिंत */}
             <section className="bg-orange-50 border-2 border-orange-200 rounded-xl p-5 md:p-6 space-y-5 mt-6 shadow-sm">
               <h2 className="text-base font-bold text-gray-900 bg-gradient-to-r from-orange-50 to-orange-100 px-4 py-3 rounded-lg shadow-sm border-l-4 border-orange-600 flex items-center gap-3">
                 <span className="bg-orange-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shadow-md">६</span>
-                <span>संरक्षक भक्त</span>
+                <span>संरक्षक भिंत/span>
               </h2>
               <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-200 space-y-5">
                 <div className="space-y-3">
@@ -1733,8 +1733,8 @@ encroachment_status: string;
                   <select value={formData.protection_devotee_type} onChange={e => updateField('protection_devotee_type', e.target.value)}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent" disabled={isViewMode}>
                     <option value="">-- निवडा --</option>
-                    <option value="पाकी भक्त">पाकी भक्त</option>
-                    <option value="तारेचे कंु">तारेचे कंु</option>
+                    <option value="पाकी भक्त">- पक्की भिंत </option>
+                    <option value="तारेचे कंु">- तारेचे कुंपण</option>
                     <option value="दोन्ही">दोन्ही</option>
                     <option value="नाही">नाही</option>
                   </select>
