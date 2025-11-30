@@ -386,9 +386,9 @@ encroachment_status: string;
     }
   };
 
-  const updateField = <K extends keyof MumbaiNyayalayTapasaniForm>(
+  const updateField = <K extends keyof MumbaiNyayalayFormData>(
     key: K,
-    value: MumbaiNyayalayTapasaniForm[K]
+    value: MumbaiNyayalayFormData[K]
   ) => {
     setFormData(prev => ({ ...prev, [key]: value }));
   };
