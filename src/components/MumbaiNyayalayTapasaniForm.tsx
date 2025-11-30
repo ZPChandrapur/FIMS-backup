@@ -523,6 +523,17 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
 
         if (updateError) throw updateError;
         inspectionResult = updateResult;
+
+        // Update mumbai high court form record
+        const { error: formUpdateError } = await supabase
+          .from('mumbai_high_court_school_inspection_form')
+          .update({
+            ...mumbaiNyayalayFormData,
+            filled_by_name: mumbaiNyayalayFormData.inspector_name || ''
+          })
+          .eq('inspection_id', editingInspection.id);
+
+        if (formUpdateError) throw formUpdateError;
       } else {
         // Create new inspection
         const inspectionNumber = generateInspectionNumber();
@@ -548,6 +559,17 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
 
         if (createError) throw createError;
         inspectionResult = createResult;
+
+        // Create mumbai high court form record
+        const { error: formError } = await supabase
+          .from('mumbai_high_court_school_inspection_form')
+          .insert({
+            inspection_id: inspectionResult.id,
+            filled_by_name: mumbaiNyayalayFormData.inspector_name || '',
+            ...mumbaiNyayalayFormData
+          });
+
+        if (formError) throw formError;
       }
 
       // Upload photos if any
