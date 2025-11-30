@@ -801,107 +801,114 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
         {currentStep === 3 && (
           <>
             {/* SECTION 1: इमारत */}
-            <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-              <h2 className="text-sm font-bold border-b pb-2">
-                १. शाळा इमारत बांधकाम
+            <section className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl p-5 md:p-6 space-y-5 mt-4 shadow-sm">
+              <h2 className="text-base font-bold text-gray-800 bg-white px-4 py-2.5 rounded-lg shadow-sm border-l-4 border-red-600 flex items-center gap-2">
+                <span className="bg-red-600 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm">१</span>
+                शाळा इमारत बांधकाम
               </h2>
 
-              <div className="grid md:grid-cols-3 gap-4">
-                <div className="space-y-1">
-                  <label className="block text-xs font-semibold">
-                    (अ) शाळा इमारत बांधकाम वर्ष
-                  </label>
-                  <input
-                    type="number"
-                    min={1900}
-                    max={2100}
-                    value={formData.building_year}
-                    onChange={e =>
-                      updateField('building_year', e.target.value.slice(0, 4))
-                    }
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-xs text-center font-mono"
-                    placeholder="उदा. 2025"
-                    disabled={isViewMode}
-                  />
-                </div>
+              <div className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <label className="block text-xs font-semibold text-gray-700">
+                      (अ) शाळा इमारत बांधकाम वर्ष
+                    </label>
+                    <input
+                      type="number"
+                      min={1900}
+                      max={2100}
+                      value={formData.building_year}
+                      onChange={e =>
+                        updateField('building_year', e.target.value.slice(0, 4))
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-center font-mono focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      placeholder="उदा. 2025"
+                      disabled={isViewMode}
+                    />
+                  </div>
 
-                <div className="space-y-1 md:col-span-2">
-                  <label className="block text-xs font-semibold">
-                    (ब) शाळा बांधकाम प्रकार
-                  </label>
-                  <select
-                    value={formData.building_type}
-                    onChange={e =>
-                      updateField('building_type', e.target.value)
-                    }
-                    className="w-full md:w-2/3 px-2 py-1 border border-gray-300 rounded text-xs bg-white"
-                    disabled={isViewMode}
-                  >
-                    <option value="">-- निवडा --</option>
-                    <option value="आर.सी.सी. बांधकाम">
-                      आर.सी.सी. बांधकाम
-                    </option>
-                    <option value="पक्के बांधकाम / कौला बांधकाम">
-                      पक्के बांधकाम / कौला बांधकाम
-                    </option>
-                  </select>
+                  <div className="space-y-1 md:col-span-2">
+                    <label className="block text-xs font-semibold text-gray-700">
+                      (ब) शाळा बांधकाम प्रकार
+                    </label>
+                    <select
+                      value={formData.building_type}
+                      onChange={e =>
+                        updateField('building_type', e.target.value)
+                      }
+                      className="w-full md:w-2/3 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      disabled={isViewMode}
+                    >
+                      <option value="">-- निवडा --</option>
+                      <option value="आर.सी.सी. बांधकाम">
+                        आर.सी.सी. बांधकाम
+                      </option>
+                      <option value="पक्के बांधकाम / कौला बांधकाम">
+                        पक्के बांधकाम / कौला बांधकाम
+                      </option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="text-xs font-semibold">
-                    (क) इमारत सुस्थितीत आहे का ?
-                  </p>
-                  <div className="flex gap-6 text-xs">
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="building_condition_ok"
-                        value="होय"
-                        checked={formData.building_condition_ok === 'होय'}
-                        onChange={e =>
-                          updateField('building_condition_ok', e.target.value)
-                        }
-                        disabled={isViewMode}
-                      />
-                      <span>होय</span>
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="building_condition_ok"
-                        value="नाही"
-                        checked={formData.building_condition_ok === 'नाही'}
-                        onChange={e =>
-                          updateField('building_condition_ok', e.target.value)
-                        }
-                        disabled={isViewMode}
-                      />
-                      <span>नाही</span>
-                    </label>
+              <div className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-gray-700">
+                      (क) इमारत सुस्थितीत आहे का ?
+                    </p>
+                    <div className="flex gap-6 text-sm">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="building_condition_ok"
+                          value="होय"
+                          checked={formData.building_condition_ok === 'होय'}
+                          onChange={e =>
+                            updateField('building_condition_ok', e.target.value)
+                          }
+                          disabled={isViewMode}
+                          className="w-4 h-4 text-red-600 focus:ring-red-500"
+                        />
+                        <span>होय</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="building_condition_ok"
+                          value="नाही"
+                          checked={formData.building_condition_ok === 'नाही'}
+                          onChange={e =>
+                            updateField('building_condition_ok', e.target.value)
+                          }
+                          disabled={isViewMode}
+                          className="w-4 h-4 text-red-600 focus:ring-red-500"
+                        />
+                        <span>नाही</span>
+                      </label>
+                    </div>
                   </div>
-                </div>
 
-                <div className="space-y-1">
-                  <p className="text-xs font-semibold">
-                    (ड) दुरुस्तीची गरज असल्यास प्रकार
-                  </p>
-                  <select
-                    value={formData.building_repair_level}
-                    onChange={e =>
-                      updateField('building_repair_level', e.target.value)
-                    }
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-white"
-                    disabled={isViewMode}
-                  >
-                    <option value="">-- निवडा --</option>
-                    <option value="सूक्ष्म दुरुस्ती">सूक्ष्म दुरुस्ती</option>
-                    <option value="मध्यम दुरुस्ती">मध्यम दुरुस्ती</option>
-                    <option value="पूर्ण दुरुस्ती / नवे बांधकाम">
-                      पूर्ण दुरुस्ती / नवे बांधकाम
-                    </option>
-                  </select>
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-gray-700">
+                      (ड) दुरुस्तीची गरज असल्यास प्रकार
+                    </p>
+                    <select
+                      value={formData.building_repair_level}
+                      onChange={e =>
+                        updateField('building_repair_level', e.target.value)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      disabled={isViewMode}
+                    >
+                      <option value="">-- निवडा --</option>
+                      <option value="सूक्ष्म दुरुस्ती">सूक्ष्म दुरुस्ती</option>
+                      <option value="मध्यम दुरुस्ती">मध्यम दुरुस्ती</option>
+                      <option value="पूर्ण दुरुस्ती / नवे बांधकाम">
+                        पूर्ण दुरुस्ती / नवे बांधकाम
+                      </option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -940,168 +947,179 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
             </section>
 
             {/* SECTION 2: वर्ग खोल्यांचा तपशील */}
-            <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-              <h2 className="text-sm font-bold border-b pb-2">
-                २. वर्ग खोल्यांचा तपशील
+            <section className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl p-5 md:p-6 space-y-5 mt-6 shadow-sm">
+              <h2 className="text-base font-bold text-gray-800 bg-white px-4 py-2.5 rounded-lg shadow-sm border-l-4 border-blue-600 flex items-center gap-2">
+                <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm">२</span>
+                वर्ग खोल्यांचा तपशील
               </h2>
 
-              <div className="space-y-2">
-                <p className="text-sm font-semibold">
-                  (अ) विद्यार्थ्यांच्या प्रमाणात वर्ग खोल्या आहेत का ?
-                </p>
-                <div className="flex gap-6 text-sm">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="classrooms_as_per_students"
-                      value="होय"
-                      checked={
-                        formData.classrooms_as_per_students === 'होय'
-                      }
-                      onChange={e =>
-                        updateField(
-                          'classrooms_as_per_students',
-                          e.target.value
-                        )
-                      }
-                      disabled={isViewMode}
-                    />
-                    <span>होय</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="classrooms_as_per_students"
-                      value="नाही"
-                      checked={
-                        formData.classrooms_as_per_students === 'नाही'
-                      }
-                      onChange={e =>
-                        updateField(
-                          'classrooms_as_per_students',
-                          e.target.value
-                        )
-                      }
-                      disabled={isViewMode}
-                    />
-                    <span>नाही</span>
-                  </label>
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-3 gap-4">
-                <div className="space-y-1">
-                  <label className="block text-xs font-semibold">
-                    १) आवश्यक खोल्यांची संख्या.
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    value={formData.required_rooms}
-                    onChange={e =>
-                      updateField('required_rooms', e.target.value)
-                    }
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-xs text-right"
-                    placeholder="0"
-                    disabled={isViewMode}
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="block text-xs font-semibold">
-                    २) उपलब्ध खोल्यांची संख्या.
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    value={formData.available_rooms}
-                    onChange={e =>
-                      updateField('available_rooms', e.target.value)
-                    }
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-xs text-right"
-                    placeholder="0"
-                    disabled={isViewMode}
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="block text-xs font-semibold">
-                    ३) नव्याने आवश्यक असणाऱ्या खोल्यांची संख्या.
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    value={formData.new_required_rooms}
-                    onChange={e =>
-                      updateField('new_required_rooms', e.target.value)
-                    }
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-xs text-right"
-                    placeholder="0"
-                    disabled={isViewMode}
-                  />
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <p className="text-xs font-semibold">
-                    ४) खोल्या सुस्थितीत आहेत का ?
+              <div className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold text-gray-700">
+                    (अ) विद्यार्थ्यांच्या प्रमाणात वर्ग खोल्या आहेत का ?
                   </p>
-                  <div className="flex gap-6 text-xs">
-                    <label className="flex items-center gap-2">
+                  <div className="flex gap-6 text-sm">
+                    <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="radio"
-                        name="rooms_good_condition"
+                        name="classrooms_as_per_students"
                         value="होय"
-                        checked={formData.rooms_good_condition === 'होय'}
+                        checked={
+                          formData.classrooms_as_per_students === 'होय'
+                        }
                         onChange={e =>
-                          updateField('rooms_good_condition', e.target.value)
+                          updateField(
+                            'classrooms_as_per_students',
+                            e.target.value
+                          )
                         }
                         disabled={isViewMode}
+                        className="w-4 h-4 text-blue-600 focus:ring-blue-500"
                       />
                       <span>होय</span>
                     </label>
-                    <label className="flex items-center gap-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="radio"
-                        name="rooms_good_condition"
+                        name="classrooms_as_per_students"
                         value="नाही"
-                        checked={formData.rooms_good_condition === 'नाही'}
+                        checked={
+                          formData.classrooms_as_per_students === 'नाही'
+                        }
                         onChange={e =>
-                          updateField('rooms_good_condition', e.target.value)
+                          updateField(
+                            'classrooms_as_per_students',
+                            e.target.value
+                          )
                         }
                         disabled={isViewMode}
+                        className="w-4 h-4 text-blue-600 focus:ring-blue-500"
                       />
                       <span>नाही</span>
                     </label>
                   </div>
                 </div>
+              </div>
 
-                <div className="space-y-2">
-                  <p className="text-xs font-semibold">
-                    ५) दुरुस्ती आवश्यक आहे का ? असल्‍यास काय दुरुस्ती ?
-                  </p>
-                  <select
-                    value={formData.rooms_repair_action}
-                    onChange={e =>
-                      updateField('rooms_repair_action', e.target.value)
-                    }
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-white"
-                    disabled={isViewMode}
-                  >
-                    <option value="">-- निवडा --</option>
-                    <option value="सूक्ष्म दुरुस्ती">सूक्ष्म दुरुस्ती</option>
-                    <option value="मध्यम दुरुस्ती">मध्यम दुरुस्ती</option>
-                    <option value="पूर्ण दुरुस्ती / नवे बांधकाम">
-                      पूर्ण दुरुस्ती / नवे बांधकाम
+              <div className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <label className="block text-xs font-semibold text-gray-700">
+                      १) आवश्यक खोल्यांची संख्या.
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={formData.required_rooms}
+                      onChange={e =>
+                        updateField('required_rooms', e.target.value)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-right focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0"
+                      disabled={isViewMode}
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-xs font-semibold text-gray-700">
+                      २) उपलब्ध खोल्यांची संख्या.
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={formData.available_rooms}
+                      onChange={e =>
+                        updateField('available_rooms', e.target.value)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-right focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0"
+                      disabled={isViewMode}
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-xs font-semibold text-gray-700">
+                      ३) नव्याने आवश्यक असणाऱ्या खोल्यांची संख्या.
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={formData.new_required_rooms}
+                      onChange={e =>
+                        updateField('new_required_rooms', e.target.value)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-right focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0"
+                      disabled={isViewMode}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-gray-700">
+                      ४) खोल्या सुस्थितीत आहेत का ?
+                    </p>
+                    <div className="flex gap-6 text-sm">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="rooms_good_condition"
+                          value="होय"
+                          checked={formData.rooms_good_condition === 'होय'}
+                          onChange={e =>
+                            updateField('rooms_good_condition', e.target.value)
+                          }
+                          disabled={isViewMode}
+                          className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span>होय</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="rooms_good_condition"
+                          value="नाही"
+                          checked={formData.rooms_good_condition === 'नाही'}
+                          onChange={e =>
+                            updateField('rooms_good_condition', e.target.value)
+                          }
+                          disabled={isViewMode}
+                          className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span>नाही</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-gray-700">
+                      ५) दुरुस्ती आवश्यक आहे का ? असल्‍यास काय दुरुस्ती ?
+                    </p>
+                    <select
+                      value={formData.rooms_repair_action}
+                      onChange={e =>
+                        updateField('rooms_repair_action', e.target.value)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      disabled={isViewMode}
+                    >
+                      <option value="">-- निवडा --</option>
+                      <option value="सूक्ष्म दुरुस्ती">सूक्ष्म दुरुस्ती</option>
+                      <option value="मध्यम दुरुस्ती">मध्यम दुरुस्ती</option>
+                      <option value="पूर्ण दुरुस्ती / नवे बांधकाम">
+                        पूर्ण दुरुस्ती / नवे बांधकाम
                     </option>
                   </select>
                 </div>
               </div>
+              </div>
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="block text-xs font-semibold">
+                  <label className="block text-sm font-semibold text-gray-700">
                     उपाययोजना
                   </label>
                   <textarea
@@ -1110,13 +1128,13 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
                     onChange={e =>
                       updateField('rooms_repair_measures', e.target.value)
                     }
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="खोल्यांसंबंधी करावयाच्या उपाययोजना"
                     disabled={isViewMode}
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="block text-xs font-semibold">
+                  <label className="block text-sm font-semibold text-gray-700">
                     अभिप्राय
                   </label>
                   <textarea
@@ -1125,7 +1143,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
                     onChange={e =>
                       updateField('rooms_repair_feedback', e.target.value)
                     }
-                    className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="खोल्यांविषयी निरीक्षकांचा अभिप्राय"
                     disabled={isViewMode}
                   />
