@@ -7,7 +7,8 @@ import {
   Send,
   School,
   MapPin,
-  Camera
+  Camera,
+  FileText
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
