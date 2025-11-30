@@ -326,7 +326,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
         kitchen_shed_cleanliness: formData.kitchen_shed_cleanliness === 'होय',
         ramp_available: formData.ramp_available === 'होय',
         ramp_ratio_ok: formData.ramp_ratio_ok === 'होय',
-        ramp_railings: formData.ramp_railings === 'होय'
+        ramp_railings: formData.ramp_railings === 'होय',
 
         // NEW PAYLOAD MAPPING (add to handleSave payload)
         electricity_available_all_rooms: formData.electricity_available_all_rooms === 'होय',
