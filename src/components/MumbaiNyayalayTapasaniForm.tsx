@@ -1740,7 +1740,7 @@ encroachment_status: string;
                   </select>
                 </div>
                 <div className="space-y-3">
-                  <p className="text-sm font-medium text-gray-800">(ब) संरक्षक भक्त सुस्थितीत आहे का?</p>
+                  <p className="text-sm font-medium text-gray-800">(ब) संरक्षक भिंत सुस्थितीत आहे का?</p>
                   <div className="flex gap-8 text-sm">
                     <label className="flex items-center gap-2 cursor-pointer hover:text-orange-600 transition-colors">
                       <input type="radio" name="protection_devotee_condition_ok" value="होय"
