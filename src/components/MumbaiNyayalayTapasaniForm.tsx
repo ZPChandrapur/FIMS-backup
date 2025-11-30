@@ -1588,10 +1588,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
                 </div>
               </div>
             </section>
-
-                          / JSX SECTIONS 11-16 (add to STEP 3)
-              
-              /* SECTION 11: शाळेमध्ये लाईटची सोय */
+              { /* SECTION 11: शाळेमध्ये लाईटची सोय */}
               <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
                 <h2 className="text-sm font-bold border-b pb-2">११. शाळेमध्ये लाईटची सोय आहे का ?</h2>
                 
