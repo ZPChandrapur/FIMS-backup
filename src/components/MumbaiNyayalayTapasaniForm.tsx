@@ -1572,221 +1572,221 @@ add pending
               </div>
             </section>
 
-            / JSX SECTIONS 11-16 (add to STEP 3)
-
-/* SECTION 11: शाळेमध्ये लाईटची सोय */
-<section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-  <h2 className="text-sm font-bold border-b pb-2">११. शाळेमध्ये लाईटची सोय आहे का ?</h2>
-  
-  <div className="space-y-2">
-    <p className="text-sm font-semibold">१. सर्व खोल्यांमध्ये वीज उपलब्ध आहे का ?</p>
-    <div className="flex gap-6 text-sm">
-      <label className="flex items-center gap-2">
-        <input type="radio" name="electricity_available_all_rooms" value="होय"
-          checked={formData.electricity_available_all_rooms === 'होय'}
-          onChange={e => updateField('electricity_available_all_rooms', e.target.value)} disabled={isViewMode} />
-        <span>होय</span>
-      </label>
-      <label className="flex items-center gap-2">
-        <input type="radio" name="electricity_available_all_rooms" value="नाही"
-          checked={formData.electricity_available_all_rooms === 'नाही'}
-          onChange={e => updateField('electricity_available_all_rooms', e.target.value)} disabled={isViewMode} />
-        <span>नाही</span>
-      </label>
-    </div>
-  </div>
-
-  <div className="space-y-2">
-    <p className="text-sm font-semibold">२. वीज बिल भरणा न केल्यामुळे बंद आहे का ?</p>
-    <div className="flex gap-6 text-sm">
-      <label className="flex items-center gap-2">
-        <input type="radio" name="electricity_disconnected_bill" value="होय"
-          checked={formData.electricity_disconnected_bill === 'होय'}
-          onChange={e => updateField('electricity_disconnected_bill', e.target.value)} disabled={isViewMode} />
-        <span>होय</span>
-      </label>
-      <label className="flex items-center gap-2">
-        <input type="radio" name="electricity_disconnected_bill" value="नाही"
-          checked={formData.electricity_disconnected_bill === 'नाही'}
-          onChange={e => updateField('electricity_disconnected_bill', e.target.value)} disabled={isViewMode} />
-        <span>नाही</span>
-      </label>
-    </div>
-  </div>
-
-  <div className="space-y-1">
-    <label className="block text-xs font-semibold">३. वीज जोडणी / दुरुस्ती आवश्यक असणाऱ्या खोल्यांची संख्या</label>
-    <input type="number" min={0} value={formData.electricity_needed_rooms_count}
-      onChange={e => updateField('electricity_needed_rooms_count', e.target.value)}
-      className="w-full px-2 py-1 border border-gray-300 rounded text-xs text-right" placeholder="0"
-      disabled={isViewMode} />
-  </div>
-
-  <div className="space-y-2">
-    <p className="text-sm font-semibold">४. शाळेत पंखा व लाईट्स सुस्थितीत आहेत का ?</p>
-    <div className="flex gap-6 text-sm">
-      <label className="flex items-center gap-2">
-        <input type="radio" name="fans_lights_condition_ok" value="होय"
-          checked={formData.fans_lights_condition_ok === 'होय'}
-          onChange={e => updateField('fans_lights_condition_ok', e.target.value)} disabled={isViewMode} />
-        <span>होय</span>
-      </label>
-      <label className="flex items-center gap-2">
-        <input type="radio" name="fans_lights_condition_ok" value="नाही"
-          checked={formData.fans_lights_condition_ok === 'नाही'}
-          onChange={e => updateField('fans_lights_condition_ok', e.target.value)} disabled={isViewMode} />
-        <span>नाही</span>
-      </label>
-    </div>
-  </div>
-</section>
-
-/* SECTION 12: विद्यार्थ्यांना बसण्याची बैठक व्यवस्था */
-<section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-  <h2 className="text-sm font-bold border-b pb-2">१२. विद्यार्थ्यांना बसण्याची बैठक व्यवस्था</h2>
-  
-  <div className="space-y-1">
-    <label className="block text-xs font-semibold">१. बेंचवर / फरशीवर / जिमनीवर</label>
-    <select value={formData.student_seating_arrangement} 
-      onChange={e => updateField('student_seating_arrangement', e.target.value)}
-      className="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-white" disabled={isViewMode}>
-      <option value="">-- निवडा --</option>
-      <option value="बेंचवर">बेंचवर</option>
-      <option value="फरशीवर">फरशीवर</option>
-      <option value="जिमनीवर">जिमनीवर</option>
-    </select>
-  </div>
-
-  <div className="grid md:grid-cols-3 gap-4">
-    <div className="space-y-1">
-      <label className="block text-xs font-semibold">२. उपलब्ध बेंच संख्या</label>
-      <input type="number" min={0} value={formData.available_benches_count}
-        onChange={e => updateField('available_benches_count', e.target.value)}
-        className="w-full px-2 py-1 border border-gray-300 rounded text-xs text-right" placeholder="0" disabled={isViewMode} />
-    </div>
-    <div className="space-y-1">
-      <label className="block text-xs font-semibold">३. आवश्यक बेंच संख्या</label>
-      <input type="number" min={0} value={formData.required_benches_count}
-        onChange={e => updateField('required_benches_count', e.target.value)}
-        className="w-full px-2 py-1 border border-gray-300 rounded text-xs text-right" placeholder="0" disabled={isViewMode} />
-    </div>
-    <div className="space-y-1">
-      <label className="block text-xs font-semibold">४. कमी असणाऱ्या बेंच संख्या</label>
-      <input type="number" min={0} value={formData.shortage_benches_count}
-        onChange={e => updateField('shortage_benches_count', e.target.value)}
-        className="w-full px-2 py-1 border border-gray-300 rounded text-xs text-right" placeholder="0" disabled={isViewMode} />
-    </div>
-  </div>
-
-  <div className="space-y-1">
-    <label className="block text-xs font-semibold">५. मुलांना बसण्याचे बेंचची स्थिती काय आहे?</label>
-    <textarea rows={2} value={formData.benches_condition}
-      onChange={e => updateField('benches_condition', e.target.value)}
-      className="w-full px-2 py-1 border border-gray-300 rounded text-xs" placeholder="बेंचची स्थितीचे वर्णन"
-      disabled={isViewMode} />
-  </div>
-</section>
-
-/* SECTION 13: शाळा व शाळा परिसर स्वच्छ */
-<section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-  <h2 className="text-sm font-bold border-b pb-2">१३. शाळा व शाळा परिसर स्वच्छ आहे का ?</h2>
-  
-  <div className="space-y-2">
-    <p className="text-xs font-semibold">१. वर्ग खोल्या</p>
-    <div className="flex gap-6 text-xs">
-      <label className="flex items-center gap-2"><input type="radio" name="school_cleanliness_classrooms" value="होय" checked={formData.school_cleanliness_classrooms === 'होय'} onChange={e => updateField('school_cleanliness_classrooms', e.target.value)} disabled={isViewMode} /><span>होय</span></label>
-      <label className="flex items-center gap-2"><input type="radio" name="school_cleanliness_classrooms" value="नाही" checked={formData.school_cleanliness_classrooms === 'नाही'} onChange={e => updateField('school_cleanliness_classrooms', e.target.value)} disabled={isViewMode} /><span>नाही</span></label>
-    </div>
-  </div>
-
-  <div className="space-y-2">
-    <p className="text-xs font-semibold">२. इमारत</p>
-    <div className="flex gap-6 text-xs">
-      <label className="flex items-center gap-2"><input type="radio" name="school_cleanliness_building" value="होय" checked={formData.school_cleanliness_building === 'होय'} onChange={e => updateField('school_cleanliness_building', e.target.value)} disabled={isViewMode} /><span>होय</span></label>
-      <label className="flex items-center gap-2"><input type="radio" name="school_cleanliness_building" value="नाही" checked={formData.school_cleanliness_building === 'नाही'} onChange={e => updateField('school_cleanliness_building', e.target.value)} disabled={isViewMode} /><span>नाही</span></label>
-    </div>
-  </div>
-
-  <div className="space-y-2">
-    <p className="text-xs font-semibold">३. मैदान / शाळेचा परिसर</p>
-    <div className="flex gap-6 text-xs">
-      <label className="flex items-center gap-2"><input type="radio" name="school_cleanliness_playground" value="होय" checked={formData.school_cleanliness_playground === 'होय'} onChange={e => updateField('school_cleanliness_playground', e.target.value)} disabled={isViewMode} /><span>होय</span></label>
-      <label className="flex items-center gap-2"><input type="radio" name="school_cleanliness_playground" value="नाही" checked={formData.school_cleanliness_playground === 'नाही'} onChange={e => updateField('school_cleanliness_playground', e.target.value)} disabled={isViewMode} /><span>नाही</span></label>
-    </div>
-  </div>
-
-  <div className="space-y-2">
-    <p className="text-xs font-semibold">४. वर्गखोल्यांची रंगरंगोटी आहे का ?</p>
-    <div className="flex gap-6 text-xs">
-      <label className="flex items-center gap-2"><input type="radio" name="classrooms_painting" value="होय" checked={formData.classrooms_painting === 'होय'} onChange={e => updateField('classrooms_painting', e.target.value)} disabled={isViewMode} /><span>होय</span></label>
-      <label className="flex items-center gap-2"><input type="radio" name="classrooms_painting" value="नाही" checked={formData.classrooms_painting === 'नाही'} onChange={e => updateField('classrooms_painting', e.target.value)} disabled={isViewMode} /><span>नाही</span></label>
-    </div>
-  </div>
-
-  <div className="space-y-2">
-    <p className="text-xs font-semibold">५. वर्गखोल्यांचा वापर शैक्षणिक कामकाजासाठीच होतो का ?</p>
-    <p className="text-xs text-gray-600">इतर कामांसाठी उदा. शेळया बांधणे, गोठा, दुकान, व्यवस्थितपणे नसलेली यादी</p>
-    <div className="flex gap-6 text-xs">
-      <label className="flex items-center gap-2"><input type="radio" name="classrooms_academic_use_only" value="होय" checked={formData.classrooms_academic_use_only === 'होय'} onChange={e => updateField('classrooms_academic_use_only', e.target.value)} disabled={isViewMode} /><span>होय</span></label>
-      <label className="flex items-center gap-2"><input type="radio" name="classrooms_academic_use_only" value="नाही" checked={formData.classrooms_academic_use_only === 'नाही'} onChange={e => updateField('classrooms_academic_use_only', e.target.value)} disabled={isViewMode} /><span>नाही</span></label>
-    </div>
-  </div>
-</section>
-
-/* SECTION 14: अवैध वापर */
-<section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-  <h2 className="text-sm font-bold border-b pb-2">१४. शाळा इमारतीचा / शाळा परिसराचा वापर नागरिकांकडून अवैध कामासाठी केला जातो का ?</h2>
-  
-  <div className="space-y-2">
-    <p className="text-sm font-semibold">कायदा व सुव्यवस्थेचा भंग होतो का ?</p>
-    <div className="flex gap-6 text-sm">
-      <label className="flex items-center gap-2"><input type="radio" name="illegal_citizen_use" value="होय" checked={formData.illegal_citizen_use === 'होय'} onChange={e => updateField('illegal_citizen_use', e.target.value)} disabled={isViewMode} /><span>होय</span></label>
-      <label className="flex items-center gap-2"><input type="radio" name="illegal_citizen_use" value="नाही" checked={formData.illegal_citizen_use === 'नाही'} onChange={e => updateField('illegal_citizen_use', e.target.value)} disabled={isViewMode} /><span>नाही</span></label>
-    </div>
-  </div>
-
-  <div className="space-y-2">
-    <p className="text-sm font-semibold">पोलिस प्रशासनाने दखल घेवून बंदोबस्त करणे आवश्यक आहे का ?</p>
-    <div className="flex gap-6 text-sm">
-      <label className="flex items-center gap-2"><input type="radio" name="police_action_needed" value="होय" checked={formData.police_action_needed === 'होय'} onChange={e => updateField('police_action_needed', e.target.value)} disabled={isViewMode} /><span>होय</span></label>
-      <label className="flex items-center gap-2"><input type="radio" name="police_action_needed" value="नाही" checked={formData.police_action_needed === 'नाही'} onChange={e => updateField('police_action_needed', e.target.value)} disabled={isViewMode} /><span>नाही</span></label>
-    </div>
-  </div>
-</section>
-
-/* SECTION 15: अतिक्रमण */
-<section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-  <h2 className="text-sm font-bold border-b pb-2">१५. शाळेच्या इमारत व जागेवर अतिक्रमण झाले आहे का?</h2>
-  
-  <div className="space-y-2">
-    <p className="text-sm font-semibold">असल्यास काय स्थिती</p>
-    <div className="flex gap-6 text-sm">
-      <label className="flex items-center gap-2"><input type="radio" name="encroachment_status" value="होय" checked={formData.encroachment_status === 'होय'} onChange={e => updateField('encroachment_status', e.target.value)} disabled={isViewMode} /><span>होय</span></label>
-      <label className="flex items-center gap-2"><input type="radio" name="encroachment_status" value="नाही" checked={formData.encroachment_status === 'नाही'} onChange={e => updateField('encroachment_status', e.target.value)} disabled={isViewMode} /><span>नाही</span></label>
-    </div>
-  </div>
-
-  <div className="space-y-1">
-    <label className="block text-xs font-semibold">अतिक्रमणाची स्थितीचे वर्णन</label>
-    <textarea rows={3} value={formData.encroachment_condition}
-      onChange={e => updateField('encroachment_condition', e.target.value)}
-      className="w-full px-2 py-1 border border-gray-300 rounded text-xs" placeholder="अतिक्रमणाची स्थिती वर्णन"
-      disabled={isViewMode} />
-  </div>
-</section>
-
-/* SECTION 16: उलेखनीय बाबी */
-<section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-  <h2 className="text-sm font-bold border-b pb-2">१६. भौतिक सुविधा व इतर बाबीबाबत उलेखनीय बाबी</h2>
-  
-  <div className="space-y-1">
-    <label className="block text-xs font-semibold">उलेखनीय काम असल्यास येथे उल्लेख करावा</label>
-    <textarea rows={4} value={formData.physical_facilities_remark}
-      onChange={e => updateField('physical_facilities_remark', e.target.value)}
-      className="w-full px-2 py-1 border border-gray-300 rounded text-xs" placeholder="भौतिक सुविधा व इतर बाबींबाबत विशेष उल्लेख"
-      disabled={isViewMode} />
-  </div>
-</section>
+                          / JSX SECTIONS 11-16 (add to STEP 3)
+              
+              /* SECTION 11: शाळेमध्ये लाईटची सोय */
+              <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
+                <h2 className="text-sm font-bold border-b pb-2">११. शाळेमध्ये लाईटची सोय आहे का ?</h2>
+                
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold">१. सर्व खोल्यांमध्ये वीज उपलब्ध आहे का ?</p>
+                  <div className="flex gap-6 text-sm">
+                    <label className="flex items-center gap-2">
+                      <input type="radio" name="electricity_available_all_rooms" value="होय"
+                        checked={formData.electricity_available_all_rooms === 'होय'}
+                        onChange={e => updateField('electricity_available_all_rooms', e.target.value)} disabled={isViewMode} />
+                      <span>होय</span>
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input type="radio" name="electricity_available_all_rooms" value="नाही"
+                        checked={formData.electricity_available_all_rooms === 'नाही'}
+                        onChange={e => updateField('electricity_available_all_rooms', e.target.value)} disabled={isViewMode} />
+                      <span>नाही</span>
+                    </label>
+                  </div>
+                </div>
+              
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold">२. वीज बिल भरणा न केल्यामुळे बंद आहे का ?</p>
+                  <div className="flex gap-6 text-sm">
+                    <label className="flex items-center gap-2">
+                      <input type="radio" name="electricity_disconnected_bill" value="होय"
+                        checked={formData.electricity_disconnected_bill === 'होय'}
+                        onChange={e => updateField('electricity_disconnected_bill', e.target.value)} disabled={isViewMode} />
+                      <span>होय</span>
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input type="radio" name="electricity_disconnected_bill" value="नाही"
+                        checked={formData.electricity_disconnected_bill === 'नाही'}
+                        onChange={e => updateField('electricity_disconnected_bill', e.target.value)} disabled={isViewMode} />
+                      <span>नाही</span>
+                    </label>
+                  </div>
+                </div>
+              
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold">३. वीज जोडणी / दुरुस्ती आवश्यक असणाऱ्या खोल्यांची संख्या</label>
+                  <input type="number" min={0} value={formData.electricity_needed_rooms_count}
+                    onChange={e => updateField('electricity_needed_rooms_count', e.target.value)}
+                    className="w-full px-2 py-1 border border-gray-300 rounded text-xs text-right" placeholder="0"
+                    disabled={isViewMode} />
+                </div>
+              
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold">४. शाळेत पंखा व लाईट्स सुस्थितीत आहेत का ?</p>
+                  <div className="flex gap-6 text-sm">
+                    <label className="flex items-center gap-2">
+                      <input type="radio" name="fans_lights_condition_ok" value="होय"
+                        checked={formData.fans_lights_condition_ok === 'होय'}
+                        onChange={e => updateField('fans_lights_condition_ok', e.target.value)} disabled={isViewMode} />
+                      <span>होय</span>
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input type="radio" name="fans_lights_condition_ok" value="नाही"
+                        checked={formData.fans_lights_condition_ok === 'नाही'}
+                        onChange={e => updateField('fans_lights_condition_ok', e.target.value)} disabled={isViewMode} />
+                      <span>नाही</span>
+                    </label>
+                  </div>
+                </div>
+              </section>
+              
+              /* SECTION 12: विद्यार्थ्यांना बसण्याची बैठक व्यवस्था */
+              <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
+                <h2 className="text-sm font-bold border-b pb-2">१२. विद्यार्थ्यांना बसण्याची बैठक व्यवस्था</h2>
+                
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold">१. बेंचवर / फरशीवर / जिमनीवर</label>
+                  <select value={formData.student_seating_arrangement} 
+                    onChange={e => updateField('student_seating_arrangement', e.target.value)}
+                    className="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-white" disabled={isViewMode}>
+                    <option value="">-- निवडा --</option>
+                    <option value="बेंचवर">बेंचवर</option>
+                    <option value="फरशीवर">फरशीवर</option>
+                    <option value="जिमनीवर">जिमनीवर</option>
+                  </select>
+                </div>
+              
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <label className="block text-xs font-semibold">२. उपलब्ध बेंच संख्या</label>
+                    <input type="number" min={0} value={formData.available_benches_count}
+                      onChange={e => updateField('available_benches_count', e.target.value)}
+                      className="w-full px-2 py-1 border border-gray-300 rounded text-xs text-right" placeholder="0" disabled={isViewMode} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="block text-xs font-semibold">३. आवश्यक बेंच संख्या</label>
+                    <input type="number" min={0} value={formData.required_benches_count}
+                      onChange={e => updateField('required_benches_count', e.target.value)}
+                      className="w-full px-2 py-1 border border-gray-300 rounded text-xs text-right" placeholder="0" disabled={isViewMode} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="block text-xs font-semibold">४. कमी असणाऱ्या बेंच संख्या</label>
+                    <input type="number" min={0} value={formData.shortage_benches_count}
+                      onChange={e => updateField('shortage_benches_count', e.target.value)}
+                      className="w-full px-2 py-1 border border-gray-300 rounded text-xs text-right" placeholder="0" disabled={isViewMode} />
+                  </div>
+                </div>
+              
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold">५. मुलांना बसण्याचे बेंचची स्थिती काय आहे?</label>
+                  <textarea rows={2} value={formData.benches_condition}
+                    onChange={e => updateField('benches_condition', e.target.value)}
+                    className="w-full px-2 py-1 border border-gray-300 rounded text-xs" placeholder="बेंचची स्थितीचे वर्णन"
+                    disabled={isViewMode} />
+                </div>
+              </section>
+              
+              /* SECTION 13: शाळा व शाळा परिसर स्वच्छ */
+              <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
+                <h2 className="text-sm font-bold border-b pb-2">१३. शाळा व शाळा परिसर स्वच्छ आहे का ?</h2>
+                
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold">१. वर्ग खोल्या</p>
+                  <div className="flex gap-6 text-xs">
+                    <label className="flex items-center gap-2"><input type="radio" name="school_cleanliness_classrooms" value="होय" checked={formData.school_cleanliness_classrooms === 'होय'} onChange={e => updateField('school_cleanliness_classrooms', e.target.value)} disabled={isViewMode} /><span>होय</span></label>
+                    <label className="flex items-center gap-2"><input type="radio" name="school_cleanliness_classrooms" value="नाही" checked={formData.school_cleanliness_classrooms === 'नाही'} onChange={e => updateField('school_cleanliness_classrooms', e.target.value)} disabled={isViewMode} /><span>नाही</span></label>
+                  </div>
+                </div>
+              
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold">२. इमारत</p>
+                  <div className="flex gap-6 text-xs">
+                    <label className="flex items-center gap-2"><input type="radio" name="school_cleanliness_building" value="होय" checked={formData.school_cleanliness_building === 'होय'} onChange={e => updateField('school_cleanliness_building', e.target.value)} disabled={isViewMode} /><span>होय</span></label>
+                    <label className="flex items-center gap-2"><input type="radio" name="school_cleanliness_building" value="नाही" checked={formData.school_cleanliness_building === 'नाही'} onChange={e => updateField('school_cleanliness_building', e.target.value)} disabled={isViewMode} /><span>नाही</span></label>
+                  </div>
+                </div>
+              
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold">३. मैदान / शाळेचा परिसर</p>
+                  <div className="flex gap-6 text-xs">
+                    <label className="flex items-center gap-2"><input type="radio" name="school_cleanliness_playground" value="होय" checked={formData.school_cleanliness_playground === 'होय'} onChange={e => updateField('school_cleanliness_playground', e.target.value)} disabled={isViewMode} /><span>होय</span></label>
+                    <label className="flex items-center gap-2"><input type="radio" name="school_cleanliness_playground" value="नाही" checked={formData.school_cleanliness_playground === 'नाही'} onChange={e => updateField('school_cleanliness_playground', e.target.value)} disabled={isViewMode} /><span>नाही</span></label>
+                  </div>
+                </div>
+              
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold">४. वर्गखोल्यांची रंगरंगोटी आहे का ?</p>
+                  <div className="flex gap-6 text-xs">
+                    <label className="flex items-center gap-2"><input type="radio" name="classrooms_painting" value="होय" checked={formData.classrooms_painting === 'होय'} onChange={e => updateField('classrooms_painting', e.target.value)} disabled={isViewMode} /><span>होय</span></label>
+                    <label className="flex items-center gap-2"><input type="radio" name="classrooms_painting" value="नाही" checked={formData.classrooms_painting === 'नाही'} onChange={e => updateField('classrooms_painting', e.target.value)} disabled={isViewMode} /><span>नाही</span></label>
+                  </div>
+                </div>
+              
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold">५. वर्गखोल्यांचा वापर शैक्षणिक कामकाजासाठीच होतो का ?</p>
+                  <p className="text-xs text-gray-600">इतर कामांसाठी उदा. शेळया बांधणे, गोठा, दुकान, व्यवस्थितपणे नसलेली यादी</p>
+                  <div className="flex gap-6 text-xs">
+                    <label className="flex items-center gap-2"><input type="radio" name="classrooms_academic_use_only" value="होय" checked={formData.classrooms_academic_use_only === 'होय'} onChange={e => updateField('classrooms_academic_use_only', e.target.value)} disabled={isViewMode} /><span>होय</span></label>
+                    <label className="flex items-center gap-2"><input type="radio" name="classrooms_academic_use_only" value="नाही" checked={formData.classrooms_academic_use_only === 'नाही'} onChange={e => updateField('classrooms_academic_use_only', e.target.value)} disabled={isViewMode} /><span>नाही</span></label>
+                  </div>
+                </div>
+              </section>
+              
+              /* SECTION 14: अवैध वापर */
+              <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
+                <h2 className="text-sm font-bold border-b pb-2">१४. शाळा इमारतीचा / शाळा परिसराचा वापर नागरिकांकडून अवैध कामासाठी केला जातो का ?</h2>
+                
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold">कायदा व सुव्यवस्थेचा भंग होतो का ?</p>
+                  <div className="flex gap-6 text-sm">
+                    <label className="flex items-center gap-2"><input type="radio" name="illegal_citizen_use" value="होय" checked={formData.illegal_citizen_use === 'होय'} onChange={e => updateField('illegal_citizen_use', e.target.value)} disabled={isViewMode} /><span>होय</span></label>
+                    <label className="flex items-center gap-2"><input type="radio" name="illegal_citizen_use" value="नाही" checked={formData.illegal_citizen_use === 'नाही'} onChange={e => updateField('illegal_citizen_use', e.target.value)} disabled={isViewMode} /><span>नाही</span></label>
+                  </div>
+                </div>
+              
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold">पोलिस प्रशासनाने दखल घेवून बंदोबस्त करणे आवश्यक आहे का ?</p>
+                  <div className="flex gap-6 text-sm">
+                    <label className="flex items-center gap-2"><input type="radio" name="police_action_needed" value="होय" checked={formData.police_action_needed === 'होय'} onChange={e => updateField('police_action_needed', e.target.value)} disabled={isViewMode} /><span>होय</span></label>
+                    <label className="flex items-center gap-2"><input type="radio" name="police_action_needed" value="नाही" checked={formData.police_action_needed === 'नाही'} onChange={e => updateField('police_action_needed', e.target.value)} disabled={isViewMode} /><span>नाही</span></label>
+                  </div>
+                </div>
+              </section>
+              
+              /* SECTION 15: अतिक्रमण */
+              <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
+                <h2 className="text-sm font-bold border-b pb-2">१५. शाळेच्या इमारत व जागेवर अतिक्रमण झाले आहे का?</h2>
+                
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold">असल्यास काय स्थिती</p>
+                  <div className="flex gap-6 text-sm">
+                    <label className="flex items-center gap-2"><input type="radio" name="encroachment_status" value="होय" checked={formData.encroachment_status === 'होय'} onChange={e => updateField('encroachment_status', e.target.value)} disabled={isViewMode} /><span>होय</span></label>
+                    <label className="flex items-center gap-2"><input type="radio" name="encroachment_status" value="नाही" checked={formData.encroachment_status === 'नाही'} onChange={e => updateField('encroachment_status', e.target.value)} disabled={isViewMode} /><span>नाही</span></label>
+                  </div>
+                </div>
+              
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold">अतिक्रमणाची स्थितीचे वर्णन</label>
+                  <textarea rows={3} value={formData.encroachment_condition}
+                    onChange={e => updateField('encroachment_condition', e.target.value)}
+                    className="w-full px-2 py-1 border border-gray-300 rounded text-xs" placeholder="अतिक्रमणाची स्थिती वर्णन"
+                    disabled={isViewMode} />
+                </div>
+              </section>
+              
+              /* SECTION 16: उलेखनीय बाबी */
+              <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
+                <h2 className="text-sm font-bold border-b pb-2">१६. भौतिक सुविधा व इतर बाबीबाबत उलेखनीय बाबी</h2>
+                
+                <div className="space-y-1">
+                  <label className="block text-xs font-semibold">उलेखनीय काम असल्यास येथे उल्लेख करावा</label>
+                  <textarea rows={4} value={formData.physical_facilities_remark}
+                    onChange={e => updateField('physical_facilities_remark', e.target.value)}
+                    className="w-full px-2 py-1 border border-gray-300 rounded text-xs" placeholder="भौतिक सुविधा व इतर बाबींबाबत विशेष उल्लेख"
+                    disabled={isViewMode} />
+                </div>
+              </section>
 
             <div className="flex justify-between mt-4">
               <button
