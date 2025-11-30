@@ -13,6 +13,19 @@ import {
 import { supabase } from '../lib/supabase';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
+const formatDateForSupabase = (dateString: string): string | null => {
+  if (!dateString || dateString.trim() === '') return null;
+
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return null;
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
+
 interface MumbaiNyayalayTapasaniFormProps {
   user: SupabaseUser;
   onBack: () => void;
@@ -226,7 +239,7 @@ encroachment_status: string;
       const f = editingInspection.existingForm;
       setFormData(prev => ({
         ...prev,
-        inspection_date: f.inspection_date ?? '',
+        inspection_date: f.inspection_date ? String(f.inspection_date).split('T')[0] : '',
         district_name: f.district_name ?? '',
         taluka_name: f.taluka_name ?? '',
         center_name: f.center_name ?? '',
@@ -407,7 +420,7 @@ encroachment_status: string;
             category_id: inspectionMeta.category_id || null,
             location_name: inspectionMeta.location_name || 'Unknown Location',
             address: inspectionMeta.address || null,
-            planned_date: inspectionMeta.planned_date ? inspectionMeta.planned_date : null,
+            planned_date: formatDateForSupabase(inspectionMeta.planned_date),
             filled_by_name: user?.user_metadata?.full_name || user?.email || 'Unknown User'
           })
           .select('id')
@@ -419,7 +432,7 @@ encroachment_status: string;
 
       const payload = {
         inspection_id: inspectionId,
-        inspection_date: formData.inspection_date || new Date().toISOString().split('T')[0],
+        inspection_date: formatDateForSupabase(formData.inspection_date) || new Date().toISOString().split('T')[0],
         district_name: formData.district_name,
         taluka_name: formData.taluka_name,
         center_name: formData.center_name || null,
@@ -427,7 +440,7 @@ encroachment_status: string;
         management_name: formData.management_name || null,
         headmaster_name: formData.headmaster_name || null,
         udise_number: formData.udise_number || null,
-        visit_date: formData.inspection_date ? formData.inspection_date : null,
+        visit_date: formatDateForSupabase(formData.inspection_date),
 
         building_year: formData.building_year || null,
         building_type: formData.building_type || null,
