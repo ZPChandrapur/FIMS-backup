@@ -408,7 +408,7 @@ encroachment_status: string;
             location_name: inspectionMeta.location_name,
             address: inspectionMeta.address,
             planned_date: inspectionMeta.planned_date,
-            created_by: user.id
+            filled_by_name: user?.user_metadata?.full_name || user?.email || 'Unknown User'
           })
           .select('id')
           .single();
