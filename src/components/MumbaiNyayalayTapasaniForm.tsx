@@ -10,7 +10,7 @@ import {
 import { supabase } from '../lib/supabase';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
-interface MumbaiHighCourtFormProps {
+interface MumbaiNyayalayTapasaniForm {
   user: SupabaseUser;
   onBack: () => void;
   categories: any[];
