@@ -1701,7 +1701,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
                 </div>
               </section>
               
-              /* SECTION 13: शाळा व शाळा परिसर स्वच्छ */
+              {/* SECTION 13: शाळा व शाळा परिसर स्वच्छ  */}
               <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
                 <h2 className="text-sm font-bold border-b pb-2">१३. शाळा व शाळा परिसर स्वच्छ आहे का ?</h2>
                 
@@ -1747,7 +1747,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
                 </div>
               </section>
               
-              /* SECTION 14: अवैध वापर */
+              {/* SECTION 14: अवैध वापर */}
               <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
                 <h2 className="text-sm font-bold border-b pb-2">१४. शाळा इमारतीचा / शाळा परिसराचा वापर नागरिकांकडून अवैध कामासाठी केला जातो का ?</h2>
                 
@@ -1768,7 +1768,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
                 </div>
               </section>
               
-              /* SECTION 15: अतिक्रमण */
+               {/* SECTION 15: अतिक्रमण  */}
               <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
                 <h2 className="text-sm font-bold border-b pb-2">१५. शाळेच्या इमारत व जागेवर अतिक्रमण झाले आहे का?</h2>
                 
@@ -1789,7 +1789,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
                 </div>
               </section>
               
-              /* SECTION 16: उलेखनीय बाबी */
+               SECTION 16: उलेखनीय बाबी 
               <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
                 <h2 className="text-sm font-bold border-b pb-2">१६. भौतिक सुविधा व इतर बाबीबाबत उलेखनीय बाबी</h2>
                 
