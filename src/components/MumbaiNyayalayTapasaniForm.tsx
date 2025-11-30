@@ -189,6 +189,32 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
     ramp_available: '',
     ramp_ratio_ok: '',
     ramp_railings: ''
+
+// NEW PAYLOAD MAPPING (add to handleSave payload)
+electricity_available_all_rooms: formData.electricity_available_all_rooms === 'होय',
+electricity_disconnected_bill: formData.electricity_disconnected_bill === 'होय',
+electricity_needed_rooms_count: formData.electricity_needed_rooms_count ? Number(formData.electricity_needed_rooms_count) : null,
+fans_lights_condition_ok: formData.fans_lights_condition_ok === 'होय',
+
+student_seating_arrangement: formData.student_seating_arrangement || null,
+available_benches_count: formData.available_benches_count ? Number(formData.available_benches_count) : null,
+required_benches_count: formData.required_benches_count ? Number(formData.required_benches_count) : null,
+shortage_benches_count: formData.shortage_benches_count ? Number(formData.shortage_benches_count) : null,
+benches_condition: formData.benches_condition || null,
+
+school_cleanliness_classrooms: formData.school_cleanliness_classrooms === 'होय',
+school_cleanliness_building: formData.school_cleanliness_building === 'होय',
+school_cleanliness_playground: formData.school_cleanliness_playground === 'होय',
+classrooms_painting: formData.classrooms_painting === 'होय',
+classrooms_academic_use_only: formData.classrooms_academic_use_only === 'होय',
+
+illegal_citizen_use: formData.illegal_citizen_use === 'होय',
+police_action_needed: formData.police_action_needed === 'होय',
+
+encroachment_status: formData.encroachment_status === 'होय',
+encroachment_condition: formData.encroachment_condition || null,
+
+physical_facilities_remark: formData.physical_facilities_remark || null,
   
   });
 
