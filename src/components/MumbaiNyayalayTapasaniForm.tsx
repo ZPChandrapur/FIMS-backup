@@ -150,6 +150,19 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
     water_storage_type: '',
     water_tank_cleaning_done: '',
     water_tank_cleaning_interval_days: ''
+
+       // NEW FIELDS
+    protection_devotee_type: '',
+    protection_devotee_condition_ok: '',
+    playground_condition: '',
+    playground_ownership: '',
+    playground_area: '',
+    kitchen_shed_available: '',
+    kitchen_shed_cleanliness: '',
+    ramp_available: '',
+    ramp_ratio_ok: '',
+    ramp_railings: ''
+  
   });
 
   useEffect(() => {
