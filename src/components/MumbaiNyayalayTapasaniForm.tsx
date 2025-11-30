@@ -513,9 +513,11 @@ encroachment_status: string;
         
         facilities_measures: formData.facilities_measures || null,
         facilities_feedback: formData.facilities_feedback || null,
-        
+
         physical_facilities_remark: formData.physical_facilities_remark || null,
-      
+
+        filled_by_name: user?.user_metadata?.full_name || user?.email || 'Unknown User',
+
       };
 
       if (isEditMode && editingInspection?.form_id) {
@@ -547,10 +549,12 @@ encroachment_status: string;
           .eq('id', inspectionId);
       }
 
+      alert(submit ? 'तपासणी यशस्वीरित्या सादर केली!' : 'मसुदा यशस्वीरित्या जतन केला!');
       onInspectionCreated();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error saving inspection', err);
-      alert('जतन करताना त्रुटी आली.');
+      const errorMessage = err?.message || 'अज्ञात त्रुटी';
+      alert(`जतन करताना त्रुटी आली: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
