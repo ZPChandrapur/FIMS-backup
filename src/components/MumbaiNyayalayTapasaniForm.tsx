@@ -411,17 +411,26 @@ encroachment_status: string;
     try {
       setIsLoading(true);
 
-      let inspectionId = editingInspection?.inspection_id as string | undefined;
+      // support both `inspection_id` and `id` in editingInspection (some places use `id`)
+      let inspectionId = (editingInspection?.inspection_id ?? editingInspection?.id) as string | undefined;
 
       if (!inspectionId) {
+        // generate a human-friendly inspection number similar to other forms
+        const now = new Date();
+        const inspectionNumber = `MHC-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(Date.now()).slice(-6)}`;
+
         const { data, error } = await supabase
           .from('fims_inspections')
           .insert({
+            inspection_number: inspectionNumber,
             category_id: inspectionMeta.category_id || null,
+            inspector_id: user?.id || null,
+            filled_by_name: user?.user_metadata?.full_name || user?.email || 'Unknown User',
             location_name: inspectionMeta.location_name || 'Unknown Location',
             address: inspectionMeta.address || null,
             planned_date: formatDateForSupabase(inspectionMeta.planned_date),
-            filled_by_name: user?.user_metadata?.full_name || user?.email || 'Unknown User'
+            inspection_date: new Date().toISOString(),
+            status: submit ? 'submitted' : 'draft'
           })
           .select('id')
           .single();
