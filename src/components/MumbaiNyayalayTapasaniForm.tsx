@@ -405,9 +405,9 @@ encroachment_status: string;
           .from('fims_inspections')
           .insert({
             category_id: inspectionMeta.category_id || null,
-            location_name: inspectionMeta.location_name,
-            address: inspectionMeta.address,
-            planned_date: inspectionMeta.planned_date,
+            location_name: inspectionMeta.location_name || 'Unknown Location',
+            address: inspectionMeta.address || null,
+            planned_date: inspectionMeta.planned_date ? inspectionMeta.planned_date : null,
             filled_by_name: user?.user_metadata?.full_name || user?.email || 'Unknown User'
           })
           .select('id')
@@ -419,18 +419,18 @@ encroachment_status: string;
 
       const payload = {
         inspection_id: inspectionId,
-        inspection_date: formData.inspection_date,
+        inspection_date: formData.inspection_date || new Date().toISOString().split('T')[0],
         district_name: formData.district_name,
         taluka_name: formData.taluka_name,
-        center_name: formData.center_name,
+        center_name: formData.center_name || null,
         school_name: formData.school_name,
-        management_name: formData.management_name,
-        headmaster_name: formData.headmaster_name,
-        udise_number: formData.udise_number,
-        visit_date: formData.inspection_date || null,
+        management_name: formData.management_name || null,
+        headmaster_name: formData.headmaster_name || null,
+        udise_number: formData.udise_number || null,
+        visit_date: formData.inspection_date ? formData.inspection_date : null,
 
-        building_year: formData.building_year,
-        building_type: formData.building_type,
+        building_year: formData.building_year || null,
+        building_type: formData.building_type || null,
         building_condition_ok: formData.building_condition_ok === 'होय',
         building_repair_level: formData.building_repair_level || null,
         building_measures: formData.building_measures || null,
