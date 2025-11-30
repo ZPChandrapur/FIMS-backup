@@ -1168,64 +1168,67 @@ encroachment_status: string;
             </section>
 
             {/* SECTION 3: मुलांसाठी व मुलीसाठी स्वच्छतागृह */}
-            <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-              <h2 className="text-sm font-bold border-b pb-2 flex items-center gap-2">
-                <FileText className="w-4 h-4" />
-                ३. मुलांसाठी व मुलीसाठी स्वच्छतागृह
+            <section className="bg-green-50 border-2 border-green-200 rounded-xl p-5 md:p-6 space-y-5 mt-6 shadow-sm">
+              <h2 className="text-base font-bold text-gray-900 bg-gradient-to-r from-green-50 to-green-100 px-4 py-3 rounded-lg shadow-sm border-l-4 border-green-600 flex items-center gap-3">
+                <span className="bg-green-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shadow-md">३</span>
+                <span>मुलांसाठी व मुलीसाठी स्वच्छतागृह</span>
               </h2>
 
-              <div className="space-y-2">
-                <p className="text-sm font-semibold">
-                  (अ) मुलांसाठी व मुलीसाठी स्वतंत्र स्वच्छतागृह उपलब्ध आहे का ?
-                </p>
-                <div className="flex gap-6 text-sm">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="separate_toilets_available"
-                      value="होय"
-                      checked={
-                        formData.separate_toilets_available === 'होय'
-                      }
-                      onChange={e =>
-                        updateField(
-                          'separate_toilets_available',
-                          e.target.value
-                        )
-                      }
-                      disabled={isViewMode}
-                    />
-                    <span>होय</span>
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="separate_toilets_available"
-                      value="नाही"
-                      checked={
-                        formData.separate_toilets_available === 'नाही'
-                      }
-                      onChange={e =>
-                        updateField(
-                          'separate_toilets_available',
-                          e.target.value
-                        )
-                      }
-                      disabled={isViewMode}
-                    />
-                    <span>नाही</span>
-                  </label>
+              <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
+                <div className="space-y-3">
+                  <p className="text-sm font-medium text-gray-800">
+                    (अ) मुलांसाठी व मुलीसाठी स्वतंत्र स्वच्छतागृह उपलब्ध आहे का ?
+                  </p>
+                  <div className="flex gap-8 text-sm">
+                    <label className="flex items-center gap-2 cursor-pointer hover:text-green-600 transition-colors">
+                      <input
+                        type="radio"
+                        name="separate_toilets_available"
+                        value="होय"
+                        checked={
+                          formData.separate_toilets_available === 'होय'
+                        }
+                        onChange={e =>
+                          updateField(
+                            'separate_toilets_available',
+                            e.target.value
+                          )
+                        }
+                        disabled={isViewMode}
+                        className="w-4 h-4 text-green-600 focus:ring-2 focus:ring-green-500 border-gray-300"
+                      />
+                      <span className="font-medium">होय</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer hover:text-green-600 transition-colors">
+                      <input
+                        type="radio"
+                        name="separate_toilets_available"
+                        value="नाही"
+                        checked={
+                          formData.separate_toilets_available === 'नाही'
+                        }
+                        onChange={e =>
+                          updateField(
+                            'separate_toilets_available',
+                            e.target.value
+                          )
+                        }
+                        disabled={isViewMode}
+                        className="w-4 h-4 text-green-600 focus:ring-2 focus:ring-green-500 border-gray-300"
+                      />
+                      <span className="font-medium">नाही</span>
+                    </label>
+                  </div>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <p className="text-xs font-semibold">
-                    १) विद्यार्थ्यांच्या संख्येच्या प्रमाणात स्वच्छतागृहे
-                    उपलब्ध आहेत का ?
+              <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-200 space-y-5">
+                <div className="space-y-3">
+                  <p className="text-sm font-medium text-gray-800">
+                    १) विद्यार्थ्यांच्या संख्येच्या प्रमाणात स्वच्छतागृहे उपलब्ध आहेत का ?
                   </p>
-                  <div className="flex gap-6 text-xs">
-                    <label className="flex items-center gap-2">
+                  <div className="flex gap-8 text-sm">
+                    <label className="flex items-center gap-2 cursor-pointer hover:text-green-600 transition-colors">
                       <input
                         type="radio"
                         name="toilets_as_per_strength"
@@ -1240,10 +1243,11 @@ encroachment_status: string;
                           )
                         }
                         disabled={isViewMode}
+                        className="w-4 h-4 text-green-600 focus:ring-2 focus:ring-green-500 border-gray-300"
                       />
-                      <span>होय</span>
+                      <span className="font-medium">होय</span>
                     </label>
-                    <label className="flex items-center gap-2">
+                    <label className="flex items-center gap-2 cursor-pointer hover:text-green-600 transition-colors">
                       <input
                         type="radio"
                         name="toilets_as_per_strength"
@@ -1258,18 +1262,19 @@ encroachment_status: string;
                           )
                         }
                         disabled={isViewMode}
+                        className="w-4 h-4 text-green-600 focus:ring-2 focus:ring-green-500 border-gray-300"
                       />
-                      <span>नाही</span>
+                      <span className="font-medium">नाही</span>
                     </label>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <p className="text-xs font-semibold">
+                <div className="space-y-3">
+                  <p className="text-sm font-medium text-gray-800">
                     २) शौचालयांची नियमित स्वच्छता होते का ?
                   </p>
-                  <div className="flex gap-6 text-xs">
-                    <label className="flex items-center gap-2">
+                  <div className="flex gap-8 text-sm">
+                    <label className="flex items-center gap-2 cursor-pointer hover:text-green-600 transition-colors">
                       <input
                         type="radio"
                         name="toilets_regular_cleaning"
@@ -1284,10 +1289,11 @@ encroachment_status: string;
                           )
                         }
                         disabled={isViewMode}
+                        className="w-4 h-4 text-green-600 focus:ring-2 focus:ring-green-500 border-gray-300"
                       />
-                      <span>होय</span>
+                      <span className="font-medium">होय</span>
                     </label>
-                    <label className="flex items-center gap-2">
+                    <label className="flex items-center gap-2 cursor-pointer hover:text-green-600 transition-colors">
                       <input
                         type="radio"
                         name="toilets_regular_cleaning"
@@ -1302,18 +1308,19 @@ encroachment_status: string;
                           )
                         }
                         disabled={isViewMode}
+                        className="w-4 h-4 text-green-600 focus:ring-2 focus:ring-green-500 border-gray-300"
                       />
-                      <span>नाही</span>
+                      <span className="font-medium">नाही</span>
                     </label>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <p className="text-xs font-semibold">
+                <div className="space-y-3">
+                  <p className="text-sm font-medium text-gray-800">
                     ३) शौचालयांमध्ये पाण्याची मुबलक सोय आहे का ?
                   </p>
-                  <div className="flex gap-6 text-xs">
-                    <label className="flex items-center gap-2">
+                  <div className="flex gap-8 text-sm">
+                    <label className="flex items-center gap-2 cursor-pointer hover:text-green-600 transition-colors">
                       <input
                         type="radio"
                         name="toilets_enough_water"
@@ -1328,10 +1335,11 @@ encroachment_status: string;
                           )
                         }
                         disabled={isViewMode}
+                        className="w-4 h-4 text-green-600 focus:ring-2 focus:ring-green-500 border-gray-300"
                       />
-                      <span>होय</span>
+                      <span className="font-medium">होय</span>
                     </label>
-                    <label className="flex items-center gap-2">
+                    <label className="flex items-center gap-2 cursor-pointer hover:text-green-600 transition-colors">
                       <input
                         type="radio"
                         name="toilets_enough_water"
@@ -1346,8 +1354,9 @@ encroachment_status: string;
                           )
                         }
                         disabled={isViewMode}
+                        className="w-4 h-4 text-green-600 focus:ring-2 focus:ring-green-500 border-gray-300"
                       />
-                      <span>नाही</span>
+                      <span className="font-medium">नाही</span>
                     </label>
                   </div>
                 </div>
