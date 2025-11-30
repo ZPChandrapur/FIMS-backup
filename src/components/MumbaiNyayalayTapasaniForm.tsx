@@ -189,8 +189,25 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
     ramp_available: '',
     ramp_ratio_ok: '',
     ramp_railings: ''
-
-add pending
+    electricity_available_all_rooms: '',
+      electricity_disconnected_bill: '',
+    electricity_needed_rooms_count: '', 
+      fans_lights_condition_ok: '',
+    student_seating_arrangement: '',
+      available_benches_count: '',
+    required_benches_count: '',
+      shortage_benches_count: '',
+      benches_condition: '',
+    school_cleanliness_classrooms: '',
+      school_cleanliness_building: '',
+    school_cleanliness_playground: '',
+      classrooms_painting: '',
+    classrooms_academic_use_only: '',
+      illegal_citizen_use: '',
+    police_action_needed: '',
+      encroachment_status: '',
+      encroachment_condition: '',
+    physical_facilities_remark: ''
   
   });
 
