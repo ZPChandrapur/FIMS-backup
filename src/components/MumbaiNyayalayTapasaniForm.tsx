@@ -188,7 +188,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
     kitchen_shed_cleanliness: '',
     ramp_available: '',
     ramp_ratio_ok: '',
-    ramp_railings: ''
+    ramp_railings: '',
     electricity_available_all_rooms: '',
       electricity_disconnected_bill: '',
     electricity_needed_rooms_count: '', 
