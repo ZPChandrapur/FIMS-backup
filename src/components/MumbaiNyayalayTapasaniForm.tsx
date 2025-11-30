@@ -1655,7 +1655,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
                 </div>
               </section>
               
-              /* SECTION 12: विद्यार्थ्यांना बसण्याची बैठक व्यवस्था */
+              {/* SECTION 12: विद्यार्थ्यांना बसण्याची बैठक व्यवस्था */}
               <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
                 <h2 className="text-sm font-bold border-b pb-2">१२. विद्यार्थ्यांना बसण्याची बैठक व्यवस्था</h2>
                 
