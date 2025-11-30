@@ -155,6 +155,15 @@ encroachment_status: string;
     location_accuracy: null
   });
 
+  // Auto-select category for this form (matches other form components)
+  const mumbaiCategory = categories.find(cat => cat.form_type === 'High Court Order Inspection Form');
+
+  useEffect(() => {
+    if (mumbaiCategory) {
+      setInspectionMeta(prev => ({ ...prev, category_id: mumbaiCategory.id }));
+    }
+  }, [mumbaiCategory]);
+
   const [formData, setFormData] = useState<MumbaiNyayalayFormData>({
     inspection_date: '',
     district_name: '',
@@ -249,9 +258,10 @@ encroachment_status: string;
         udise_number: f.udise_number ?? ''
       }));
 
-      // populate inspection meta (location) when editing
+      // populate inspection meta (location & category) when editing
       setInspectionMeta(prev => ({
         ...prev,
+        category_id: editingInspection.category_id ?? prev.category_id,
         location_name: editingInspection.location_name || prev.location_name,
         address: editingInspection.address || prev.address,
         planned_date: editingInspection.planned_date ? String(editingInspection.planned_date).split('T')[0] : prev.planned_date,
