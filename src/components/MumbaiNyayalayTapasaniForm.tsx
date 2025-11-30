@@ -30,7 +30,7 @@ interface InspectionMeta {
   location_accuracy: NullableNumber;
 }
 
-interface SchoolInspectionFormData {
+interface MumbaiNyayalayTapasaniForm {
   inspection_date: string;
   district_name: string;
   taluka_name: string;
@@ -97,7 +97,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniForm> = 
     location_accuracy: null
   });
 
-  const [formData, setFormData] = useState<SchoolInspectionFormData>({
+  const [formData, setFormData] = useState<MumbaiNyayalayTapasaniForm>({
     inspection_date: '',
     district_name: '',
     taluka_name: '',
@@ -157,9 +157,9 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniForm> = 
     }
   }, [editingInspection]);
 
-  const updateField = <K extends keyof SchoolInspectionFormData>(
+  const updateField = <K extends keyof MumbaiNyayalayTapasaniForm>(
     key: K,
-    value: SchoolInspectionFormData[K]
+    value: MumbaiNyayalayTapasaniForm[K]
   ) => {
     setFormData(prev => ({ ...prev, [key]: value }));
   };
