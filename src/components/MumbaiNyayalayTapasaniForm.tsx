@@ -108,13 +108,14 @@ illegal_citizen_use: string;
 police_action_needed: string;
 
 encroachment_status: string;
-encroachment_condition: string;
+  encroachment_condition: string;
 
-physical_facilities_remark: string;
+  facilities_measures: string;
+  facilities_feedback: string;
+
+  physical_facilities_remark: string;
   
-}
-
-export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProps> = ({
+}export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProps> = ({
   user,
   onBack,
   categories,
@@ -211,6 +212,10 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
     police_action_needed: '',
       encroachment_status: '',
       encroachment_condition: '',
+
+    facilities_measures: '',
+    facilities_feedback: '',
+
     physical_facilities_remark: ''
   
   });
@@ -504,6 +509,9 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
         
         encroachment_status: formData.encroachment_status === 'होय',
         encroachment_condition: formData.encroachment_condition || null,
+        
+        facilities_measures: formData.facilities_measures || null,
+        facilities_feedback: formData.facilities_feedback || null,
         
         physical_facilities_remark: formData.physical_facilities_remark || null,
       
@@ -1160,7 +1168,8 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
 
             {/* SECTION 3: मुलांसाठी व मुलीसाठी स्वच्छतागृह */}
             <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-              <h2 className="text-sm font-bold border-b pb-2">
+              <h2 className="text-sm font-bold border-b pb-2 flex items-center gap-2">
+                <FileText className="w-4 h-4" />
                 ३. मुलांसाठी व मुलीसाठी स्वच्छतागृह
               </h2>
 
@@ -1353,7 +1362,8 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
           <>
             {/* SECTION 4: CWSN */}
             <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-              <h2 className="text-sm font-bold border-b pb-2">
+              <h2 className="text-sm font-bold border-b pb-2 flex items-center gap-2">
+                <FileText className="w-4 h-4" />
                 ४. विशेष गरजा असलेल्या विद्यार्थ्यांसाठी (CWSN) स्वच्छतागृह
               </h2>
 
@@ -1484,7 +1494,8 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
 
             {/* SECTION 5: पिण्याचे / वापराचे पाणी */}
             <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-              <h2 className="text-sm font-bold border-b pb-2">
+              <h2 className="text-sm font-bold border-b pb-2 flex items-center gap-2">
+                <FileText className="w-4 h-4" />
                 ५. मुलांना पिण्याचे स्वच्छ पाणी व वापरासाठी पाणी
               </h2>
 
@@ -1686,7 +1697,10 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
 
             {/* SECTION 6: संरक्षक भक्त */}
             <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-              <h2 className="text-sm font-bold border-b pb-2">६. संरक्षक भक्त</h2>
+              <h2 className="text-sm font-bold border-b pb-2 flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                ६. संरक्षक भक्त
+              </h2>
               <div className="space-y-1 md:col-span-2">
                 <label className="block text-xs font-semibold">(अ) पाकी भक्त / तारेचे कंु</label>
                 <select value={formData.protection_devotee_type} onChange={e => updateField('protection_devotee_type', e.target.value)}
@@ -1719,7 +1733,10 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
 
             {/* SECTION 8: खेळण्यासाठी मैदान */}
             <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-              <h2 className="text-sm font-bold border-b pb-2">८. मुलांना खेळण्यासाठी मैदान</h2>
+              <h2 className="text-sm font-bold border-b pb-2 flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                ८. मुलांना खेळण्यासाठी मैदान
+              </h2>
               <div className="space-y-2">
                 <p className="text-sm font-semibold">१. मैदानाची स्थिती</p>
                 <div className="flex gap-6 text-sm">
@@ -1758,7 +1775,10 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
 
             {/* SECTION 9: किचनशेड */}
             <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-              <h2 className="text-sm font-bold border-b pb-2">९. किचनशेड उपलब्ध आहे का ? व स्थिती</h2>
+              <h2 className="text-sm font-bold border-b pb-2 flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                ९. किचनशेड उपलब्ध आहे का ? व स्थिती
+              </h2>
               <div className="space-y-2">
                 <p className="text-sm font-semibold">किचनशेड उपलब्ध आहे का ?</p>
                 <div className="flex gap-6 text-sm">
@@ -1797,7 +1817,10 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
 
             {/* SECTION 10: उताराचा रॅम्प */}
             <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-              <h2 className="text-sm font-bold border-b pb-2">१०. उताराचा रॅम्प (Ramp) आहे का ?</h2>
+              <h2 className="text-sm font-bold border-b pb-2 flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                १०. उताराचा रॅम्प (Ramp) आहे का ?
+              </h2>
               <div className="space-y-2">
                 <p className="text-sm font-semibold">रॅम्प उपलब्ध आहे का ?</p>
                 <div className="flex gap-6 text-sm">
@@ -1851,8 +1874,11 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
               </div>
             </section>
               { /* SECTION 11: शाळेमध्ये लाईटची सोय */}
-              <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-                <h2 className="text-sm font-bold border-b pb-2">११. शाळेमध्ये लाईटची सोय आहे का ?</h2>
+              <section className="bg-white border rounded-lg p-4 md:p-5 space-य-4 mt-4">
+                <h2 className="text-sm font-bold border-b pb-2 flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  ११. शाळेमध्ये लाईटची सोय आहे का ?
+                </h2>
                 
                 <div className="space-y-2">
                   <p className="text-sm font-semibold">१. सर्व खोल्यांमध्ये वीज उपलब्ध आहे का ?</p>
@@ -1919,7 +1945,10 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
               
               {/* SECTION 12: विद्यार्थ्यांना बसण्याची बैठक व्यवस्था */}
               <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-                <h2 className="text-sm font-bold border-b pb-2">१२. विद्यार्थ्यांना बसण्याची बैठक व्यवस्था</h2>
+                <h2 className="text-sm font-bold border-b pb-2 flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  १२. विद्यार्थ्यांना बसण्याची बैठक व्यवस्था
+                </h2>
                 
                 <div className="space-y-1">
                   <label className="block text-xs font-semibold">१. बेंचवर / फरशीवर / जिमनीवर</label>
@@ -1965,7 +1994,10 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
               
               {/* SECTION 13: शाळा व शाळा परिसर स्वच्छ  */}
               <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-                <h2 className="text-sm font-bold border-b pb-2">१३. शाळा व शाळा परिसर स्वच्छ आहे का ?</h2>
+                <h2 className="text-sm font-bold border-b pb-2 flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  १३. शाळा व शाळा परिसर स्वच्छ आहे का ?
+                </h2>
                 
                 <div className="space-y-2">
                   <p className="text-xs font-semibold">१. वर्ग खोल्या</p>
@@ -2011,7 +2043,10 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
               
               {/* SECTION 14: अवैध वापर */}
               <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-                <h2 className="text-sm font-bold border-b pb-2">१४. शाळा इमारतीचा / शाळा परिसराचा वापर नागरिकांकडून अवैध कामासाठी केला जातो का ?</h2>
+                <h2 className="text-sm font-bold border-b pb-2 flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  १४. शाळा इमारतीचा / शाळा परिसराचा वापर नागरिकांकडून अवैध कामासाठी केला जातो का ?
+                </h2>
                 
                 <div className="space-y-2">
                   <p className="text-sm font-semibold">कायदा व सुव्यवस्थेचा भंग होतो का ?</p>
@@ -2032,7 +2067,10 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
               
                {/* SECTION 15: अतिक्रमण  */}
               <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-                <h2 className="text-sm font-bold border-b pb-2">१५. शाळेच्या इमारत व जागेवर अतिक्रमण झाले आहे का?</h2>
+                <h2 className="text-sm font-bold border-b pb-2 flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  १५. शाळेच्या इमारत व जागेवर अतिक्रमण झाले आहे का?
+                </h2>
                 
                 <div className="space-y-2">
                   <p className="text-sm font-semibold">असल्यास काय स्थिती</p>
@@ -2051,9 +2089,40 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
                 </div>
               </section>
               
+              {/* SECTION 16: उपाययोजना व अभिप्राय */}
+              <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
+                <h2 className="text-sm font-bold border-b pb-2 flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  १६. भौतिक सुविधा व इतर बाबीबाबत उपाययोजना व अभिप्राय
+                </h2>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="block text-xs font-semibold">करावयाच्या उपाययोजना (Measures to be taken)</label>
+                    <textarea rows={4} value={formData.facilities_measures}
+                      onChange={e => updateField('facilities_measures', e.target.value)}
+                      className="w-full px-2 py-1 border border-gray-300 rounded text-xs" 
+                      placeholder="भौतिक सुविधांसंबंधी करावयाच्या उपाययोजना"
+                      disabled={isViewMode} />
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <label className="block text-xs font-semibold">अभिप्राय (Remarks/Opinion)</label>
+                    <textarea rows={4} value={formData.facilities_feedback}
+                      onChange={e => updateField('facilities_feedback', e.target.value)}
+                      className="w-full px-2 py-1 border border-gray-300 rounded text-xs" 
+                      placeholder="भौतिक सुविधांविषयी निरीक्षकांचा अभिप्राय"
+                      disabled={isViewMode} />
+                  </div>
+                </div>
+              </section>
+              
             
               <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
-                <h2 className="text-sm font-bold border-b pb-2">१६. भौतिक सुविधा व इतर बाबीबाबत उलेखनीय बाबी</h2>
+                <h2 className="text-sm font-bold border-b pb-2 flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  १७. भौतिक सुविधा व इतर बाबीबाबत उलेखनीय बाबी
+                </h2>
                 
                 <div className="space-y-1">
                   <label className="block text-xs font-semibold">उलेखनीय काम असल्यास येथे उल्लेख करावा</label>
