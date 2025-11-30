@@ -314,7 +314,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
         water_tank_cleaning_interval_days:
           formData.water_tank_cleaning_interval_days
             ? Number(formData.water_tank_cleaning_interval_days)
-            : null
+            : null,
 
            // NEW FIELDS
         protection_devotee_type: formData.protection_devotee_type || null,
