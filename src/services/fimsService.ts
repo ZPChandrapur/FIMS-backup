@@ -585,7 +585,7 @@ export const getRajyaTapasaniForm = async (inspectionId: string): Promise<any> =
   }
 };
 
-export const createMumbaiHighCourtForm = async (formData: any): Promise<any> => {debugger;
+export const createMumbaiHighCourtForm = async (formData: any): Promise<any> => {
   if (!isSupabaseConfigured || !supabase) {
     throw new Error('Supabase client not initialized');
   }
