@@ -548,41 +548,54 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-6">
-        <div className="flex items-center justify-between mb-2">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-800"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>मागे</span>
-          </button>
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6 mb-4 md:mb-6">
+          {editingInspection?.mode === 'view' && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+              <p className="text-blue-800 text-sm font-medium">
+                {t('fims.viewMode')} - {t('fims.formReadOnly')}
+              </p>
+            </div>
+          )}
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between mb-4">
             <button
-              onClick={() => handleSave(false)}
-              disabled={isLoading || isViewMode}
-              className="flex items-center gap-1 px-3 py-1.5 text-xs bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-60"
+              onClick={onBack}
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors duration-200"
             >
-              <Save className="w-4 h-4" />
-              मसुदा जतन करा
+              <ArrowLeft className="h-5 w-5" />
+              <span>Back</span>
             </button>
-            <button
-              onClick={() => handleSave(true)}
-              disabled={isLoading || isViewMode}
-              className="flex items-center gap-1 px-3 py-1.5 text-xs bg-green-600 hover:bg-green-700 text-white rounded disabled:opacity-60"
-            >
-              <Send className="w-4 h-4" />
-              अंतिम सादर करा
-            </button>
+
+            <h1 className="text-lg md:text-xl font-bold text-gray-900 text-center">
+              {editingInspection?.mode === 'view' ? t('fims.viewInspection') : 
+               editingInspection?.mode === 'edit' ? t('fims.editInspection') : 
+               t('fims.newInspection')} - मुंबई न्यायालय तपासणी प्रपत्र
+            </h1>
+
+            <div className="w-20" />
+          </div>
+
+          {/* step indicator */}
+          <div className="flex items-center justify-center mb-2">
+            {[1,2,3,4].map((s)=> (
+              <div key={s} className="flex items-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${currentStep >= s ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-600'}`}>
+                  {s}
+                </div>
+                {s < 4 && <div className={`w-16 h-1 mx-2 ${currentStep > s ? 'bg-red-600' : 'bg-gray-200'}`} />}
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-xs">
-          <ClipboardCheck className="w-4 h-4 text-gray-600" />
-          <span className="font-semibold">पायरी {currentStep} / 4</span>
-        </div>
+        <div className="bg-gradient-to-br from-white via-red-50/30 to-pink-50/30 rounded-xl shadow-lg border-2 border-red-200 p-4 md:p-6 mb-4 md:mb-6">
+          <div className="flex items-center gap-2 text-xs mb-3">
+            <ClipboardCheck className="w-4 h-4 text-gray-600" />
+            <span className="font-semibold">पायरी {currentStep} / 4</span>
+          </div>
 
         {/* STEP 1: basic school info */}
         {currentStep === 1 && (
@@ -2112,6 +2125,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
             </div>
           </section>
         )}
+        </div>
       </div>
     </div>
   );
