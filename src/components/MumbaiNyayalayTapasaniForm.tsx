@@ -84,7 +84,7 @@ interface MumbaiNyayalayFormData {
   ramp_ratio_ok: string;
   ramp_railings: string;
 
-  // NEW INTERFACE FIELDS (add to MumbaiNyayalayFormData)
+
 electricity_available_all_rooms: string;
 electricity_disconnected_bill: string;
 electricity_needed_rooms_count: string;
