@@ -10,7 +10,7 @@ import {
 import { supabase } from '../lib/supabase';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
-interface MumbaiNyayalayTapasaniForm {
+interface MumbaiNyayalayTapasaniFormProps {
   user: SupabaseUser;
   onBack: () => void;
   categories: any[];
@@ -30,7 +30,7 @@ interface InspectionMeta {
   location_accuracy: NullableNumber;
 }
 
-interface MumbaiNyayalayTapasaniForm {
+interface MumbaiNyayalayFormData {
   inspection_date: string;
   district_name: string;
   taluka_name: string;
@@ -73,7 +73,7 @@ interface MumbaiNyayalayTapasaniForm {
   water_tank_cleaning_interval_days: string;
 }
 
-export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniForm> = ({
+export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProps> = ({
   user,
   onBack,
   categories,
@@ -97,7 +97,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniForm> = 
     location_accuracy: null
   });
 
-  const [formData, setFormData] = useState<MumbaiNyayalayTapasaniForm>({
+  const [formData, setFormData] = useState<MumbaiNyayalayFormData>({
     inspection_date: '',
     district_name: '',
     taluka_name: '',
