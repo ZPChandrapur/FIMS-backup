@@ -548,7 +548,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"' }}>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6 mb-4 md:mb-6">
@@ -606,69 +606,73 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
             </h2>
 
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="block text-xs font-semibold">
-                  तपासणी दिनांक
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  तपासणी दिनांक <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
                   value={formData.inspection_date}
                   onChange={e => updateField('inspection_date', e.target.value)}
-                  className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   disabled={isViewMode}
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="block text-xs font-semibold">जिल्हा</label>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">जिल्हा <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   value={formData.district_name}
                   onChange={e => updateField('district_name', e.target.value)}
-                  className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="जिल्हाचे नाव प्रविष्ट करा"
                   disabled={isViewMode}
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="block text-xs font-semibold">तालुका</label>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">तालुका <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   value={formData.taluka_name}
                   onChange={e => updateField('taluka_name', e.target.value)}
-                  className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="तालुक्याचे नाव प्रविष्ट करा"
                   disabled={isViewMode}
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="block text-xs font-semibold">
-                  केंद्राचे नाव
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  केंद्राचे नाव <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.center_name}
                   onChange={e => updateField('center_name', e.target.value)}
-                  className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="केंद्राचे नाव प्रविष्ट करा"
                   disabled={isViewMode}
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="block text-xs font-semibold">
-                  शाळेचे नाव
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  शाळेचे नाव <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.school_name}
                   onChange={e => updateField('school_name', e.target.value)}
-                  className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="शाळेचे नाव प्रविष्ट करा"
                   disabled={isViewMode}
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="block text-xs font-semibold">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
                   व्यवस्थापनाचे नाव
                 </label>
                 <input
@@ -677,14 +681,15 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
                   onChange={e =>
                     updateField('management_name', e.target.value)
                   }
-                  className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="व्यवस्थापनाचे नाव प्रविष्ट करा"
                   disabled={isViewMode}
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="block text-xs font-semibold">
-                  मुख्याध्यापक / मुख्याध्यापिका
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  मुख्याध्यापक / मुख्याध्यापिका <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -692,20 +697,22 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
                   onChange={e =>
                     updateField('headmaster_name', e.target.value)
                   }
-                  className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="मुख्याध्यापकाचे नाव प्रविष्ट करा"
                   disabled={isViewMode}
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="block text-xs font-semibold">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
                   UDISE क्रमांक
                 </label>
                 <input
                   type="text"
                   value={formData.udise_number}
                   onChange={e => updateField('udise_number', e.target.value)}
-                  className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="UDISE क्रमांक प्रविष्ट करा"
                   disabled={isViewMode}
                 />
               </div>
@@ -810,7 +817,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
               <div className="bg-white rounded-lg p-4 shadow-sm">
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="space-y-1">
-                    <label className="block text-xs font-semibold text-gray-700">
+                    <label className="block text-sm font-medium text-gray-700">
                       (अ) शाळा इमारत बांधकाम वर्ष
                     </label>
                     <input
@@ -828,7 +835,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
                   </div>
 
                   <div className="space-y-1 md:col-span-2">
-                    <label className="block text-xs font-semibold text-gray-700">
+                    <label className="block text-sm font-medium text-gray-700">
                       (ब) शाळा बांधकाम प्रकार
                     </label>
                     <select
@@ -1004,7 +1011,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
               <div className="bg-white rounded-lg p-4 shadow-sm">
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="space-y-1">
-                    <label className="block text-xs font-semibold text-gray-700">
+                    <label className="block text-sm font-medium text-gray-700">
                       १) आवश्यक खोल्यांची संख्या.
                     </label>
                     <input
@@ -1021,7 +1028,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-xs font-semibold text-gray-700">
+                    <label className="block text-sm font-medium text-gray-700">
                       २) उपलब्ध खोल्यांची संख्या.
                     </label>
                     <input
@@ -1038,7 +1045,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-xs font-semibold text-gray-700">
+                    <label className="block text-sm font-medium text-gray-700">
                       ३) नव्याने आवश्यक असणाऱ्या खोल्यांची संख्या.
                     </label>
                     <input
