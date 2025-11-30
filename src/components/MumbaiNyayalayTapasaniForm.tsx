@@ -73,7 +73,7 @@ interface SchoolInspectionFormData {
   water_tank_cleaning_interval_days: string;
 }
 
-export const MumbaiHighCourtSchoolInspectionForm: React.FC<MumbaiHighCourtFormProps> = ({
+export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniForm> = ({
   user,
   onBack,
   categories,
