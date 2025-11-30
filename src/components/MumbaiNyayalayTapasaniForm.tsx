@@ -281,6 +281,8 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
         ramp_available: formData.ramp_available === 'होय',
         ramp_ratio_ok: formData.ramp_ratio_ok === 'होय',
         ramp_railings: formData.ramp_railings === 'होय'
+
+      
       };
 
       if (isEditMode && editingInspection?.form_id) {
@@ -1345,6 +1347,173 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
                       disabled={isViewMode}
                     />
                   </div>
+                </div>
+              </div>
+            </section>
+
+            {/* SECTION 6: संरक्षक भक्त */}
+            <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
+              <h2 className="text-sm font-bold border-b pb-2">६. संरक्षक भक्त</h2>
+              <div className="space-y-1 md:col-span-2">
+                <label className="block text-xs font-semibold">(अ) पाकी भक्त / तारेचे कंु</label>
+                <select value={formData.protection_devotee_type} onChange={e => updateField('protection_devotee_type', e.target.value)}
+                  className="w-full md:w-2/3 px-2 py-1 border border-gray-300 rounded text-xs bg-white" disabled={isViewMode}>
+                  <option value="">-- निवडा --</option>
+                  <option value="पाकी भक्त">पाकी भक्त</option>
+                  <option value="तारेचे कंु">तारेचे कंु</option>
+                  <option value="दोन्ही">दोन्ही</option>
+                  <option value="नाही">नाही</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm font-semibold">(ब) संरक्षक भक्त सुस्थितीत आहे का?</p>
+                <div className="flex gap-6 text-sm">
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="protection_devotee_condition_ok" value="होय"
+                      checked={formData.protection_devotee_condition_ok === 'होय'}
+                      onChange={e => updateField('protection_devotee_condition_ok', e.target.value)} disabled={isViewMode} />
+                    <span>होय</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="protection_devotee_condition_ok" value="नाही"
+                      checked={formData.protection_devotee_condition_ok === 'नाही'}
+                      onChange={e => updateField('protection_devotee_condition_ok', e.target.value)} disabled={isViewMode} />
+                    <span>नाही</span>
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            {/* SECTION 8: खेळण्यासाठी मैदान */}
+            <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
+              <h2 className="text-sm font-bold border-b pb-2">८. मुलांना खेळण्यासाठी मैदान</h2>
+              <div className="space-y-2">
+                <p className="text-sm font-semibold">१. मैदानाची स्थिती</p>
+                <div className="flex gap-6 text-sm">
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="playground_condition" value="होय"
+                      checked={formData.playground_condition === 'होय'}
+                      onChange={e => updateField('playground_condition', e.target.value)} disabled={isViewMode} />
+                    <span>होय</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="playground_condition" value="नाही"
+                      checked={formData.playground_condition === 'नाही'}
+                      onChange={e => updateField('playground_condition', e.target.value)} disabled={isViewMode} />
+                    <span>नाही</span>
+                  </label>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="block text-xs font-semibold">२. शासकीय / खाजगी जागा /सार्वजनिक</label>
+                <select value={formData.playground_ownership} onChange={e => updateField('playground_ownership', e.target.value)}
+                  className="w-full px-2 py-1 border border-gray-300 rounded text-xs bg-white" disabled={isViewMode}>
+                  <option value="">-- निवडा --</option>
+                  <option value="शासकीय">शासकीय</option>
+                  <option value="खाजगी">खाजगी</option>
+                  <option value="सार्वजनिक">सार्वजनिक</option>
+                </select>
+              </div>
+              <div className="space-y-1">
+                <label className="block text-xs font-semibold">३. क्षेत्रफळ किती ?</label>
+                <input type="text" value={formData.playground_area}
+                  onChange={e => updateField('playground_area', e.target.value)}
+                  className="w-full px-2 py-1 border border-gray-300 rounded text-xs" placeholder="उदा. 5000 चौरस फूट"
+                  disabled={isViewMode} />
+              </div>
+            </section>
+
+            {/* SECTION 9: किचनशेड */}
+            <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
+              <h2 className="text-sm font-bold border-b pb-2">९. किचनशेड उपलब्ध आहे का ? व स्थिती</h2>
+              <div className="space-y-2">
+                <p className="text-sm font-semibold">किचनशेड उपलब्ध आहे का ?</p>
+                <div className="flex gap-6 text-sm">
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="kitchen_shed_available" value="होय"
+                      checked={formData.kitchen_shed_available === 'होय'}
+                      onChange={e => updateField('kitchen_shed_available', e.target.value)} disabled={isViewMode} />
+                    <span>होय</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="kitchen_shed_available" value="नाही"
+                      checked={formData.kitchen_shed_available === 'नाही'}
+                      onChange={e => updateField('kitchen_shed_available', e.target.value)} disabled={isViewMode} />
+                    <span>नाही</span>
+                  </label>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs font-semibold">स्वच्छता आहे का ?</p>
+                <div className="flex gap-6 text-xs">
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="kitchen_shed_cleanliness" value="होय"
+                      checked={formData.kitchen_shed_cleanliness === 'होय'}
+                      onChange={e => updateField('kitchen_shed_cleanliness', e.target.value)} disabled={isViewMode} />
+                    <span>होय</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="kitchen_shed_cleanliness" value="नाही"
+                      checked={formData.kitchen_shed_cleanliness === 'नाही'}
+                      onChange={e => updateField('kitchen_shed_cleanliness', e.target.value)} disabled={isViewMode} />
+                    <span>नाही</span>
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            {/* SECTION 10: उताराचा रॅम्प */}
+            <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
+              <h2 className="text-sm font-bold border-b pb-2">१०. उताराचा रॅम्प (Ramp) आहे का ?</h2>
+              <div className="space-y-2">
+                <p className="text-sm font-semibold">रॅम्प उपलब्ध आहे का ?</p>
+                <div className="flex gap-6 text-sm">
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="ramp_available" value="होय"
+                      checked={formData.ramp_available === 'होय'}
+                      onChange={e => updateField('ramp_available', e.target.value)} disabled={isViewMode} />
+                    <span>होय</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="ramp_available" value="नाही"
+                      checked={formData.ramp_available === 'नाही'}
+                      onChange={e => updateField('ramp_available', e.target.value)} disabled={isViewMode} />
+                    <span>नाही</span>
+                  </label>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs font-semibold">निकषा प्रमाणे आहे का ? (उतार 1:12)</p>
+                <div className="flex gap-6 text-xs">
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="ramp_ratio_ok" value="होय"
+                      checked={formData.ramp_ratio_ok === 'होय'}
+                      onChange={e => updateField('ramp_ratio_ok', e.target.value)} disabled={isViewMode} />
+                    <span>होय</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="ramp_ratio_ok" value="नाही"
+                      checked={formData.ramp_ratio_ok === 'नाही'}
+                      onChange={e => updateField('ramp_ratio_ok', e.target.value)} disabled={isViewMode} />
+                    <span>नाही</span>
+                  </label>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-xs font-semibold">दोन्ही बाजुने कठडे आहेत का ?</p>
+                <div className="flex gap-6 text-xs">
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="ramp_railings" value="होय"
+                      checked={formData.ramp_railings === 'होय'}
+                      onChange={e => updateField('ramp_railings', e.target.value)} disabled={isViewMode} />
+                    <span>होय</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="ramp_railings" value="नाही"
+                      checked={formData.ramp_railings === 'नाही'}
+                      onChange={e => updateField('ramp_railings', e.target.value)} disabled={isViewMode} />
+                    <span>नाही</span>
+                  </label>
                 </div>
               </div>
             </section>
