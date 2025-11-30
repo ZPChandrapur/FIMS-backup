@@ -83,6 +83,33 @@ interface MumbaiNyayalayFormData {
   ramp_available: string;
   ramp_ratio_ok: string;
   ramp_railings: string;
+
+  // NEW INTERFACE FIELDS (add to MumbaiNyayalayFormData)
+electricity_available_all_rooms: string;
+electricity_disconnected_bill: string;
+electricity_needed_rooms_count: string;
+fans_lights_condition_ok: string;
+
+student_seating_arrangement: string;
+available_benches_count: string;
+required_benches_count: string;
+shortage_benches_count: string;
+benches_condition: string;
+
+school_cleanliness_classrooms: string;
+school_cleanliness_building: string;
+school_cleanliness_playground: string;
+classrooms_painting: string;
+classrooms_academic_use_only: string;
+
+illegal_citizen_use: string;
+police_action_needed: string;
+
+encroachment_status: string;
+encroachment_condition: string;
+
+physical_facilities_remark: string;
+  
 }
 
 export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProps> = ({
@@ -1517,6 +1544,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
                 </div>
               </div>
             </section>
+            
 
             <div className="flex justify-between mt-4">
               <button
