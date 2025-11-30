@@ -269,6 +269,18 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
           formData.water_tank_cleaning_interval_days
             ? Number(formData.water_tank_cleaning_interval_days)
             : null
+
+           // NEW FIELDS
+        protection_devotee_type: formData.protection_devotee_type || null,
+        protection_devotee_condition_ok: formData.protection_devotee_condition_ok === 'होय',
+        playground_condition: formData.playground_condition === 'होय',
+        playground_ownership: formData.playground_ownership || null,
+        playground_area: formData.playground_area || null,
+        kitchen_shed_available: formData.kitchen_shed_available === 'होय',
+        kitchen_shed_cleanliness: formData.kitchen_shed_cleanliness === 'होय',
+        ramp_available: formData.ramp_available === 'होय',
+        ramp_ratio_ok: formData.ramp_ratio_ok === 'होय',
+        ramp_railings: formData.ramp_railings === 'होय'
       };
 
       if (isEditMode && editingInspection?.form_id) {
