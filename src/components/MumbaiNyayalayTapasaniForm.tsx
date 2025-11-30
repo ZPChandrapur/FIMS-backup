@@ -5,7 +5,9 @@ import {
   ClipboardCheck,
   Save,
   Send,
-  School
+  School,
+  MapPin,
+  Camera
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
@@ -122,6 +124,8 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [uploadedPhotos, setUploadedPhotos] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
 
   const isViewMode = editingInspection?.mode === 'view';
   const isEditMode = editingInspection?.mode === 'edit';
@@ -225,8 +229,157 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
         headmaster_name: f.headmaster_name ?? '',
         udise_number: f.udise_number ?? ''
       }));
+
+      // populate inspection meta (location) when editing
+      setInspectionMeta(prev => ({
+        ...prev,
+        location_name: editingInspection.location_name || prev.location_name,
+        address: editingInspection.address || prev.address,
+        planned_date: editingInspection.planned_date ? String(editingInspection.planned_date).split('T')[0] : prev.planned_date,
+        latitude: editingInspection.latitude ?? prev.latitude,
+        longitude: editingInspection.longitude ?? prev.longitude,
+        location_accuracy: editingInspection.location_accuracy ?? prev.location_accuracy
+      }));
     }
   }, [editingInspection]);
+
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert(t('fims.geolocationNotSupported') || 'Geolocation not supported');
+      return;
+    }
+
+    setIsLoading(true);
+
+    let bestPosition: GeolocationPosition | null = null;
+    let watchId: number | null = null;
+    let attempts = 0;
+    const maxAttempts = 3;
+    const accuracyThreshold = 50;
+
+    const processLocation = async (position: GeolocationPosition) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
+
+      setInspectionMeta(prev => ({
+        ...prev,
+        latitude: lat,
+        longitude: lng,
+        location_accuracy: accuracy
+      }));
+
+      try {
+        const response = await fetch(
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${import.meta.env.VITE_GOOGLE_API_KEY}`
+        );
+        const data = await response.json();
+        if (data.results && data.results.length > 0) {
+          const locationName = data.results[0].formatted_address;
+          setInspectionMeta(prev => ({ ...prev, address: locationName }));
+        }
+      } catch (error) {
+        console.error('Error getting location name:', error);
+      }
+    };
+
+    const handlePosition = async (position: GeolocationPosition) => {
+      attempts++;
+      const accuracy = position.coords.accuracy;
+
+      if (!bestPosition || accuracy < bestPosition.coords.accuracy) {
+        bestPosition = position;
+      }
+
+      if (accuracy <= accuracyThreshold) {
+        if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+        await processLocation(position);
+        setIsLoading(false);
+        return;
+      }
+
+      if (attempts >= maxAttempts) {
+        if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+        if (bestPosition) await processLocation(bestPosition);
+        setIsLoading(false);
+      }
+    };
+
+    const handleError = (error: GeolocationPositionError) => {
+      console.error('Error getting location:', error);
+      if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+      if (bestPosition) processLocation(bestPosition as GeolocationPosition);
+      else {
+        setIsLoading(false);
+        alert(t('fims.unableToGetLocation') || 'Unable to get location');
+      }
+      setIsLoading(false);
+    };
+
+    watchId = navigator.geolocation.watchPosition(handlePosition, handleError, {
+      enableHighAccuracy: true,
+      timeout: 30000,
+      maximumAge: 0
+    });
+
+    setTimeout(() => {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        if (bestPosition && attempts > 0) processLocation(bestPosition as GeolocationPosition);
+        else alert('Unable to get location. Please try again or check your GPS settings.');
+        setIsLoading(false);
+      }
+    }, 45000);
+  };
+
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    if (uploadedPhotos.length + files.length > 5) {
+      alert(t('fims.maxPhotosAllowed') || 'Maximum 5 photos allowed');
+      return;
+    }
+    setUploadedPhotos(prev => [...prev, ...files]);
+  };
+
+  const removePhoto = (index: number) => {
+    setUploadedPhotos(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const uploadPhotosToSupabase = async (inspectionId: string) => {
+    if (uploadedPhotos.length === 0) return;
+    setIsUploading(true);
+    try {
+      for (let i = 0; i < uploadedPhotos.length; i++) {
+        const file = uploadedPhotos[i];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `High Court Order Inspection Form_${inspectionId}_${Date.now()}_${i}.${fileExt}`;
+
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('field-visit-images')
+          .upload(fileName, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage.from('field-visit-images').getPublicUrl(fileName) as any;
+        const publicUrl = data?.publicUrl || '';
+
+        const { error: dbError } = await supabase.from('fims_inspection_photos').insert({
+          inspection_id: inspectionId,
+          photo_url: publicUrl,
+          photo_name: file.name,
+          description: `मुंबई न्यायालय तपासणी फोटो ${i + 1}`,
+          photo_order: i + 1
+        });
+
+        if (dbError) throw dbError;
+      }
+    } catch (error) {
+      console.error('Error uploading photos:', error);
+      throw error;
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const updateField = <K extends keyof MumbaiNyayalayTapasaniForm>(
     key: K,
@@ -369,6 +522,15 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
         if (error) throw error;
       }
 
+      // upload photos (if any)
+      try {
+        if (inspectionId && uploadedPhotos.length > 0) {
+          await uploadPhotosToSupabase(inspectionId);
+        }
+      } catch (err) {
+        console.error('Error uploading photos after save:', err);
+      }
+
       if (submit) {
         await supabase
           .from('fims_inspections')
@@ -419,7 +581,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
 
         <div className="flex items-center gap-2 text-xs">
           <ClipboardCheck className="w-4 h-4 text-gray-600" />
-          <span className="font-semibold">पायरी {currentStep} / 3</span>
+          <span className="font-semibold">पायरी {currentStep} / 4</span>
         </div>
 
         {/* STEP 1: basic school info */}
@@ -547,8 +709,83 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
           </section>
         )}
 
-        {/* STEP 2: इमारत + वर्ग खोल्या + मुलांसाठी स्वच्छतागृह */}
+        {/* STEP 2: Location step (new) */}
         {currentStep === 2 && (
+          <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
+            <h2 className="text-sm font-bold border-b pb-2 flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              स्थान माहिती (Location Information)
+            </h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold">स्थानाचे नाव *</label>
+                <input
+                  type="text"
+                  value={inspectionMeta.location_name}
+                  onChange={e => setInspectionMeta(prev => ({ ...prev, location_name: e.target.value }))}
+                  className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                  disabled={isViewMode}
+                />
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold">नियोजित तारीख</label>
+                  <input
+                    type="date"
+                    value={inspectionMeta.planned_date}
+                    onChange={e => setInspectionMeta(prev => ({ ...prev, planned_date: e.target.value }))}
+                    className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                    disabled={isViewMode}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold">GPS Location</label>
+                  <button
+                    type="button"
+                    onClick={getCurrentLocation}
+                    disabled={isLoading || isViewMode}
+                    className="w-full px-3 py-1.5 bg-blue-600 text-white rounded text-xs"
+                  >
+                    {isLoading ? 'स्थान मिळवत आहे...' : 'सध्याचे स्थान मिळवा'}
+                  </button>
+                </div>
+              </div>
+
+              {inspectionMeta.latitude && inspectionMeta.longitude && (
+                <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded text-xs">
+                  <p>
+                    Latitude: {inspectionMeta.latitude?.toFixed(6)} | Longitude: {inspectionMeta.longitude?.toFixed(6)}
+                  </p>
+                  {inspectionMeta.location_accuracy && (
+                    <p className="text-xs">Accuracy: {Math.round(inspectionMeta.location_accuracy)}m</p>
+                  )}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-xs font-semibold">संपूर्ण पत्ता</label>
+                <textarea
+                  value={inspectionMeta.address}
+                  onChange={e => setInspectionMeta(prev => ({ ...prev, address: e.target.value }))}
+                  rows={3}
+                  className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                  disabled={isViewMode}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-between mt-4">
+              <button onClick={() => setCurrentStep(1)} className="px-4 py-1.5 text-xs bg-gray-200 rounded">मागे</button>
+              <button onClick={() => setCurrentStep(3)} className="px-4 py-1.5 text-xs bg-blue-600 text-white rounded">पुढे</button>
+            </div>
+          </section>
+        )}
+
+        {/* STEP 3: इमारत + वर्ग खोल्या + मुलांसाठी स्वच्छतागृह (combined form) */}
+        {currentStep === 3 && (
           <>
             {/* SECTION 1: इमारत */}
             <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
@@ -1069,20 +1306,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
               </div>
             </section>
 
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={() => setCurrentStep(1)}
-                className="px-4 py-1.5 text-xs bg-gray-200 rounded"
-              >
-                मागे
-              </button>
-              <button
-                onClick={() => setCurrentStep(3)}
-                className="px-4 py-1.5 text-xs bg-blue-600 text-white rounded"
-              >
-                पुढे
-              </button>
-            </div>
+            {/* many following sections (classrooms, toilets, CWSN, water, etc.) are already present below; keep them as part of this combined step */}
           </>
         )}
 
@@ -1810,14 +2034,83 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
                 मागे
               </button>
               <button
-                onClick={() => handleSave(true)}
-                disabled={isLoading || isViewMode}
-                className="px-4 py-1.5 text-xs bg-green-600 text-white rounded disabled:opacity-60"
+                onClick={() => setCurrentStep(4)}
+                className="px-4 py-1.5 text-xs bg-blue-600 text-white rounded"
               >
-                अंतिम सादर करा
+                पुढे (Photos)
               </button>
             </div>
           </>
+        )}
+
+        {/* STEP 4: Photo upload */}
+        {currentStep === 4 && (
+          <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
+            <h2 className="text-sm font-bold border-b pb-2 flex items-center gap-2">
+              <Camera className="w-4 h-4" />
+              फोटो दस्तऐवजीकरण (Photo Documentation)
+            </h2>
+
+            <div className="space-y-4">
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                {!isViewMode && (
+                  <>
+                    <input type="file" id="photo-upload" multiple accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+                    <label htmlFor="photo-upload" className="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white rounded cursor-pointer text-xs">
+                      फोटो निवडा
+                    </label>
+                    <p className="text-xs text-gray-500 mt-2">Maximum 5 photos allowed</p>
+                  </>
+                )}
+                {isViewMode && (!editingInspection?.fims_inspection_photos || editingInspection.fims_inspection_photos.length === 0) && (
+                  <p className="text-xs text-gray-500">No photos available</p>
+                )}
+              </div>
+
+              {uploadedPhotos.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-medium">Uploaded Photos ({uploadedPhotos.length}/5)</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+                    {uploadedPhotos.map((photo, idx) => (
+                      <div key={idx} className="relative">
+                        <img src={URL.createObjectURL(photo)} alt={photo.name} className="w-full h-24 object-cover rounded" />
+                        {!isViewMode && (
+                          <button onClick={() => removePhoto(idx)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full px-1">×</button>
+                        )}
+                        <p className="text-xs truncate mt-1">{photo.name}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {isViewMode && editingInspection?.fims_inspection_photos && editingInspection.fims_inspection_photos.length > 0 && (
+                <div>
+                  <h4 className="text-xs font-medium">Inspection Photos ({editingInspection.fims_inspection_photos.length})</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+                    {editingInspection.fims_inspection_photos.map((p: any) => (
+                      <div key={p.id}>
+                        <img src={p.photo_url} alt={p.photo_name} className="w-full h-24 object-cover rounded" />
+                        <p className="text-xs truncate mt-1">{p.photo_name}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-between mt-4">
+              <button onClick={() => setCurrentStep(3)} className="px-4 py-1.5 text-xs bg-gray-200 rounded">मागे</button>
+              <div className="flex items-center gap-2">
+                {!isViewMode && (
+                  <button onClick={() => handleSave(false)} disabled={isLoading || isUploading} className="px-3 py-1.5 text-xs bg-gray-200 rounded">मसुदा जतन करा</button>
+                )}
+                {!isViewMode && (
+                  <button onClick={() => handleSave(true)} disabled={isLoading || isUploading} className="px-3 py-1.5 text-xs bg-green-600 text-white rounded">अंतिम सादर करा</button>
+                )}
+              </div>
+            </div>
+          </section>
         )}
       </div>
     </div>
