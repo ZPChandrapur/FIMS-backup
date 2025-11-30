@@ -176,7 +176,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
     water_tank_capacity_liters: '',
     water_storage_type: '',
     water_tank_cleaning_done: '',
-    water_tank_cleaning_interval_days: ''
+    water_tank_cleaning_interval_days: '',
 
        // NEW FIELDS
     protection_devotee_type: '',
