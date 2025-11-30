@@ -1729,12 +1729,12 @@ encroachment_status: string;
               </h2>
               <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-200 space-y-5">
                 <div className="space-y-3">
-                  <label className="block text-sm font-medium text-gray-800">(अ) पाकी भक्त / तारेचे कंु</label>
+                  <label className="block text-sm font-medium text-gray-800">(अ) पक्की भिंत / तारेचे कुंपण </label>
                   <select value={formData.protection_devotee_type} onChange={e => updateField('protection_devotee_type', e.target.value)}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent" disabled={isViewMode}>
                     <option value="">-- निवडा --</option>
-                    <option value="पाकी भक्त">- पक्की भिंत </option>
-                    <option value="तारेचे कंु">- तारेचे कुंपण</option>
+                    <option value="पाकी भक्त"> पक्की भिंत </option>
+                    <option value="तारेचे कंु">तारेचे कुंपण</option>
                     <option value="दोन्ही">दोन्ही</option>
                     <option value="नाही">नाही</option>
                   </select>
