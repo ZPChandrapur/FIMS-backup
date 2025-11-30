@@ -1789,7 +1789,7 @@ export const MumbaiNyayalayTapasaniForm: React.FC<MumbaiNyayalayTapasaniFormProp
                 </div>
               </section>
               
-               SECTION 16: उलेखनीय बाबी 
+            
               <section className="bg-white border rounded-lg p-4 md:p-5 space-y-4 mt-4">
                 <h2 className="text-sm font-bold border-b pb-2">१६. भौतिक सुविधा व इतर बाबीबाबत उलेखनीय बाबी</h2>
                 
